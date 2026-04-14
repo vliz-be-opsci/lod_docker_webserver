@@ -1,0 +1,10 @@
+{
+  "linkset": [
+    {
+      "describedby": [
+        { "href": "/wrx/s5/resource.ttl",    "type": "text/turtle" },
+        { "href": "/wrx/s5/resource.jsonld",  "type": "application/ld+json" }
+      ]
+    }
+  ]
+}

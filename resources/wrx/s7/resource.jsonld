@@ -1,0 +1,11 @@
+{
+  "@context": {
+    "ex":   "http://example.org/wrx/s7/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "dct":  "http://purl.org/dc/terms/"
+  },
+  "@id": "http://example.org/wrx/s7/resource",
+  "@type": "ex:WRXTestResource",
+  "rdfs:label": "WRX Strategy 7 — Sitemap Signposting",
+  "dct:description": "RDF metadata discovered via sitemap signposting (S7)."
+}

@@ -1,0 +1,11 @@
+{
+  "@context": {
+    "ex":   "http://example.org/wrx/s2/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "dct":  "http://purl.org/dc/terms/"
+  },
+  "@id": "http://example.org/wrx/s2/resource",
+  "@type": "ex:WRXTestResource",
+  "rdfs:label": "WRX Strategy 2 — HTTP Link Header DescribedBy",
+  "dct:description": "RDF metadata discovered via HTTP Link header with rel=describedby (S2)."
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:dct="http://purl.org/dc/terms/"
+  xmlns:ex="http://example.org/wrx/s1/">
+
+  <rdf:Description rdf:about="http://example.org/wrx/s1/resource">
+    <rdf:type rdf:resource="http://example.org/wrx/s1/WRXTestResource"/>
+    <rdfs:label>WRX Strategy 1 — Content Negotiation Test Resource</rdfs:label>
+    <dct:description>Served via HTTP content negotiation (S1). The server matches the client Accept header and returns the best RDF serialisation.</dct:description>
+  </rdf:Description>
+</rdf:RDF>

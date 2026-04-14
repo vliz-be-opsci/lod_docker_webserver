@@ -1,0 +1,8 @@
+@prefix ex:   <http://example.org/wrx/s7/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+
+ex:resource
+    a ex:WRXTestResource ;
+    rdfs:label "WRX Strategy 7 — Sitemap Signposting" ;
+    dct:description "RDF metadata discovered via sitemap signposting (S7). robots.txt lists sitemap.xml, which contains an xhtml:link rel=describedby entry pointing to this Turtle file." .

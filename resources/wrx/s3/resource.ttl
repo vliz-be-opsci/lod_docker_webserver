@@ -1,0 +1,8 @@
+@prefix ex:   <http://example.org/wrx/s3/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+
+ex:resource
+    a ex:WRXTestResource ;
+    rdfs:label "WRX Strategy 3 — HTTP Link Header Linkset" ;
+    dct:description "RDF metadata discovered via HTTP Link header with rel=linkset (S3). The linkset document (application/linkset+json) lists describedby targets pointing to this RDF file." .

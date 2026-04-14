@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WRX Strategy 6 — Embedded RDF Script</title>
+</head>
+<body>
+  <h1>WRX Strategy 6 — Embedded RDF Script</h1>
+  <p>
+    The RDF metadata for this resource is embedded directly in the HTML page as a
+    <code>&lt;script type="application/ld+json"&gt;</code> block (S6 — embedded script).
+    No separate HTTP request is needed to discover the metadata.
+  </p>
+
+  <script type="application/ld+json">
+{
+  "@context": {
+    "ex":   "http://example.org/wrx/s6/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "dct":  "http://purl.org/dc/terms/"
+  },
+  "@id": "http://example.org/wrx/s6/resource",
+  "@type": "ex:WRXTestResource",
+  "rdfs:label": "WRX Strategy 6 — Embedded RDF Script",
+  "dct:description": "RDF metadata embedded in an HTML page via <script type=application/ld+json> (S6). No separate HTTP request is required to discover the RDF."
+}
+  </script>
+</body>
+</html>

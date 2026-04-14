@@ -29,12 +29,14 @@ def _negotiate_file(entry: dict, accept_header: str) -> Path | None:
 
 @app.get("/{path:path}", response_model=None)
 async def serve_resource(request: Request, path: str) -> Response:
-    """Serve an RDF resource with content negotiation.
+    """Serve a resource — three dispatch modes determined by the entry's ``kind`` field:
 
-    Supports:
-    - Accept header negotiation (text/turtle, application/ld+json, application/rdf+xml, text/n3)
-    - ?format= query parameter override (e.g. ?format=turtle)
-    - ?mode= query parameter pass-through (used by some test suites)
+    * ``conneg`` (default when ``files`` key is present) — full content
+      negotiation via Accept header and optional ``?format=`` query param.
+    * ``html`` — return an HTML file, optionally adding HTTP ``Link`` headers
+      for FAIR signposting (S2: describedby, S3: linkset).
+    * ``static`` — return a file verbatim with a fixed Content-Type (used for
+      RDF files, linkset documents, ``robots.txt``, ``sitemap.xml``, etc.).
     """
     # Build the lookup key, optionally including query params for keyed variants.
     base_key = f"/{path}"
@@ -47,12 +49,39 @@ async def serve_resource(request: Request, path: str) -> Response:
     if entry is None:
         return PlainTextResponse("Resource not found", status_code=404)
 
+    kind = entry.get("kind", "conneg")
+
+    # ------------------------------------------------------------------
+    # HTML page — serve an HTML file, optionally with Link headers
+    # ------------------------------------------------------------------
+    if kind == "html":
+        file_path: Path = entry["file"]
+        if not file_path.exists():
+            return PlainTextResponse("Resource file not found on disk", status_code=404)
+        extra_headers: dict[str, str] = {}
+        link_headers: list[str] = entry.get("link_headers", [])
+        if link_headers:
+            extra_headers["Link"] = ", ".join(link_headers)
+        return FileResponse(path=file_path, media_type="text/html", headers=extra_headers)
+
+    # ------------------------------------------------------------------
+    # Static file — serve verbatim with a fixed Content-Type
+    # ------------------------------------------------------------------
+    if kind == "static":
+        file_path = entry["file"]
+        if not file_path.exists():
+            return PlainTextResponse("Resource file not found on disk", status_code=404)
+        return FileResponse(path=file_path, media_type=entry["content_type"])
+
+    # ------------------------------------------------------------------
+    # Content negotiation (default)
+    # ------------------------------------------------------------------
     # ?format= override takes priority over the Accept header.
     format_param = request.query_params.get("format")
     if format_param:
         mime = FORMAT_ALIAS_MAP.get(format_param.lower())
         if mime and mime in entry["files"]:
-            file_path: Path = entry["files"][mime]
+            file_path = entry["files"][mime]
         else:
             return PlainTextResponse(
                 f"Unsupported format: {format_param}", status_code=406
@@ -84,3 +113,4 @@ def _mime_for_path(path: Path) -> str:
         ".nq": "application/n-quads",
     }
     return suffix_map.get(path.suffix.lower(), "application/octet-stream")
+

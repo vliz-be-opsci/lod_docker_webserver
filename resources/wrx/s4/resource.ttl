@@ -1,0 +1,8 @@
+@prefix ex:   <http://example.org/wrx/s4/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+
+ex:resource
+    a ex:WRXTestResource ;
+    rdfs:label "WRX Strategy 4 — HTML DescribedBy Link Tag" ;
+    dct:description "RDF metadata discovered via HTML <link rel=describedby> in the page head (S4 — signposting via HTML link). The link element points to this Turtle file." .

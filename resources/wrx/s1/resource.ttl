@@ -1,0 +1,8 @@
+@prefix ex:   <http://example.org/wrx/s1/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+
+ex:resource
+    a ex:WRXTestResource ;
+    rdfs:label "WRX Strategy 1 — Content Negotiation Test Resource" ;
+    dct:description "Served via HTTP content negotiation (S1). The server matches the client Accept header and returns the best RDF serialisation: text/turtle, application/ld+json, application/rdf+xml, application/n-triples, or text/n3." .
