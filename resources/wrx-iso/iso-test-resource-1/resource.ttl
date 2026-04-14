@@ -1,0 +1,7 @@
+@prefix ex: <http://example.org/wrx/iso/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ex:iso-test-resource-1
+    a ex:ISOTestResource ;
+    rdfs:label "WRX ISO Test Resource 1" ;
+    ex:description "ISO-norm test resource required by the WRX RDF-navigation tests." .

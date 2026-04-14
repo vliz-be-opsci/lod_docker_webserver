@@ -1,0 +1,10 @@
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@id": "http://example.org/resource5",
+  "@type": "ex:TestResource",
+  "rdfs:label": "Dereference Test Resource 5",
+  "ex:description": "Sample resource used by py-sema dereference_test5 scenario."
+}

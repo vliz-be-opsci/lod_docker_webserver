@@ -1,0 +1,7 @@
+@prefix ex: <http://example.org/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ex:resource3
+    a ex:TestResource ;
+    rdfs:label "Dereference Test Resource 3" ;
+    ex:description "Sample resource used by py-sema dereference_test3 scenario." .

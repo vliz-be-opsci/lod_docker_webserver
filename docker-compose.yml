@@ -1,0 +1,9 @@
+services:
+  test-server:
+    build: .
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./resources:/app/resources:ro   # mount resources read-only for easy updates
+    restart: unless-stopped

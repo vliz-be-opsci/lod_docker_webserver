@@ -1,0 +1,10 @@
+{
+  "@context": {
+    "ex": "http://example.org/wrx/iso/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@id": "http://example.org/wrx/iso/iso-test-resource-1",
+  "@type": "ex:ISOTestResource",
+  "rdfs:label": "WRX ISO Test Resource 1",
+  "ex:description": "ISO-norm test resource required by the WRX RDF-navigation tests."
+}
