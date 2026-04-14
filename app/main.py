@@ -35,10 +35,14 @@ def _build_homepage_sections() -> tuple[list[str], list[str]]:
 
         if kind == "conneg":
             files = entry.get("files", {})
-            file_lines = "<ul>" + "".join(
-                f"<li><code>{escape(mime)}</code> - {escape(_relative_display_path(path))}</li>"
-                for mime, path in sorted(files.items())
-            ) + "</ul>"
+            file_lines = (
+                "<ul>"
+                + "".join(
+                    f"<li><code>{escape(mime)}</code> - {escape(_relative_display_path(path))}</li>"
+                    for mime, path in sorted(files.items())
+                )
+                + "</ul>"
+            )
             endpoint_rows.append(
                 "<tr>"
                 f"<td><code>{escape(endpoint)}</code></td>"
@@ -58,14 +62,21 @@ def _build_homepage_sections() -> tuple[list[str], list[str]]:
             continue
 
         file_path = entry["file"]
-        content_type = "text/html" if kind == "html" else entry.get(
-            "content_type", "application/octet-stream"
+        content_type = (
+            "text/html"
+            if kind == "html"
+            else entry.get("content_type", "application/octet-stream")
         )
         details = ""
         if entry.get("link_headers"):
-            details = "<ul>" + "".join(
-                f"<li><code>{escape(header)}</code></li>" for header in entry["link_headers"]
-            ) + "</ul>"
+            details = (
+                "<ul>"
+                + "".join(
+                    f"<li><code>{escape(header)}</code></li>"
+                    for header in entry["link_headers"]
+                )
+                + "</ul>"
+            )
 
         endpoint_rows.append(
             "<tr>"
@@ -312,7 +323,9 @@ async def serve_resource(request: Request, path: str) -> Response:
         link_headers: list[str] = entry.get("link_headers", [])
         if link_headers:
             extra_headers["Link"] = ", ".join(link_headers)
-        return FileResponse(path=file_path, media_type="text/html", headers=extra_headers)
+        return FileResponse(
+            path=file_path, media_type="text/html", headers=extra_headers
+        )
 
     # ------------------------------------------------------------------
     # Static file — serve verbatim with a fixed Content-Type
