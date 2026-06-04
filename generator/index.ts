@@ -48,6 +48,22 @@ function buildNavigation(activeId: string): string {
   return html;
 }
 
+// Helper to generate correct RDFa attribute (property or rel) and value using Terms or CURIEs
+function getRdfaAttribute(key: string, isRelation: boolean): string {
+  const parts = key.split(":");
+  if (parts.length === 2) {
+    const [prefix, local] = parts;
+    if (prefix === "schema") {
+      // Default vocab is https://schema.org/, so schema properties can be terms
+      return isRelation ? `rel="${local}"` : `property="${local}"`;
+    } else {
+      // Other prefixes use CURIEs (e.g. foaf:knows, owl:sameAs)
+      return isRelation ? `rel="${prefix}:${local}"` : `property="${prefix}:${local}"`;
+    }
+  }
+  return isRelation ? `rel="${key}"` : `property="${key}"`;
+}
+
 async function main() {
   console.log(`Starting static generation for LOD Testbed...`);
   console.log(`Base URL: ${BASE_URL}`);
@@ -180,14 +196,14 @@ async function main() {
       // Base properties
       let nameAttrs = "";
       if (hasMicrodata) nameAttrs += ` itemprop="https://schema.org/name"`;
-      if (hasRdfa) nameAttrs += ` property="https://schema.org/name"`;
+      if (hasRdfa) nameAttrs += ` property="name"`;
 
       let descAttrs = "";
       if (hasMicrodata) descAttrs += ` itemprop="https://schema.org/description"`;
-      if (hasRdfa) descAttrs += ` property="https://schema.org/description"`;
+      if (hasRdfa) descAttrs += ` property="description"`;
 
       let typeAttrs = "";
-      if (hasRdfa) typeAttrs += ` property="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"`;
+      if (hasRdfa) typeAttrs += ` rel="rdf:type" resource="https://schema.org/${resource.type}"`;
 
       centerHtml += `
         <tr>
@@ -208,7 +224,6 @@ async function main() {
       for (const [key, value] of Object.entries(resource.properties)) {
         const isRel = isRelationProperty(key);
         const mdProp = expandPredicate(key);
-        const rdfaProp = expandPredicate(key);
         const values = Array.isArray(value) ? value : [value];
         const valHtml = values.map(v => {
           if (isRel) {
@@ -223,7 +238,7 @@ async function main() {
               }
             }
             if (hasRdfa) {
-              linkAttrs += ` rel="${rdfaProp}" resource="${targetUri}"`;
+              linkAttrs += ` ${getRdfaAttribute(key, true)} resource="${targetUri}"`;
             }
 
             if (v.startsWith("resource-")) {
@@ -236,7 +251,7 @@ async function main() {
           
           let propAttrs = "";
           if (hasMicrodata) propAttrs += ` itemprop="${mdProp}"`;
-          if (hasRdfa) propAttrs += ` property="${rdfaProp}"`;
+          if (hasRdfa) propAttrs += ` ${getRdfaAttribute(key, false)}`;
           return `<span ${propAttrs}>${v}</span>`;
         }).join(", ");
 
