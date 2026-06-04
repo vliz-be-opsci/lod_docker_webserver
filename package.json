@@ -1,0 +1,17 @@
+{
+  "name": "lod-discovery-generator",
+  "version": "1.0.0",
+  "description": "Generator for LOD Discovery Testbed & LOD Webserver",
+  "main": "generator/index.ts",
+  "type": "module",
+  "scripts": {
+    "generate": "bun run generator/index.ts"
+  },
+  "dependencies": {
+    "n3": "^1.17.2"
+  },
+  "devDependencies": {
+    "@types/n3": "^1.10.4",
+    "typescript": "^5.0.0"
+  }
+}
