@@ -607,7 +607,14 @@ export function generateMatrix(limit: number): PageConfig[] {
   const singleStrategies = STRATEGIES_META.map(s => s.id);
   for (let i = 0; i < 30; i++) {
     const strat = singleStrategies[i];
-    const resource = RESOURCES[i % totalResources];
+    let resource = RESOURCES[i % totalResources];
+    
+    // Ensure strategies are bound to resources containing the appropriate properties
+    if (strat === DiscoveryStrategy.FOAF || strat === DiscoveryStrategy.SAME_AS) {
+      resource = RESOURCES.find(r => r.id === "resource-marc") || resource;
+    } else if (strat === DiscoveryStrategy.PROVENANCE) {
+      resource = RESOURCES.find(r => r.id === "resource-arms-mbon") || resource;
+    }
     
     matrix.push({
       id: `page-${i}`,
