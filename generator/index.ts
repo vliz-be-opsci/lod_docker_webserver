@@ -934,6 +934,16 @@ async function main() {
       if (page.strategies.includes(DiscoveryStrategy.DESCRIBED_BY_LINK)) {
         expectedGraph.physical.edges.push({ source: pageUrl, target: `${BASE_URL}/rdf/${page.resourceId}.ttl`, type: "describedby-link" });
       }
+      if (page.strategies.includes(DiscoveryStrategy.CANONICAL)) {
+        const resIndex = RESOURCES.findIndex(r => r.id === page.resourceId);
+        if (resIndex !== -1) {
+          expectedGraph.physical.edges.push({
+            source: pageUrl,
+            target: `${BASE_URL}/pages/page-${resIndex}.html`,
+            type: "canonical-link"
+          });
+        }
+      }
     }
 
     // Manifest

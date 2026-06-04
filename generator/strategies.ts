@@ -418,8 +418,15 @@ export function getStrategyMetadataTags(strategy: DiscoveryStrategy, page: PageC
   const pageUrl = `${baseUri}/pages/${page.id}.html`;
   
   switch (strategy) {
-    case DiscoveryStrategy.CANONICAL:
+    case DiscoveryStrategy.CANONICAL: {
+      if (resourceId) {
+        const resIndex = RESOURCES.findIndex(r => r.id === resourceId);
+        if (resIndex !== -1) {
+          return `<link rel="canonical" href="${baseUri}/pages/page-${resIndex}.html">`;
+        }
+      }
       return `<link rel="canonical" href="${pageUrl}">`;
+    }
       
     case DiscoveryStrategy.OPEN_GRAPH: {
       const resource = resourceId ? RESOURCES.find(r => r.id === resourceId) : undefined;
