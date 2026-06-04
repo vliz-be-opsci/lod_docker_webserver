@@ -447,8 +447,56 @@ export function getStrategyMetadataTags(strategy: DiscoveryStrategy, page: PageC
       return tags;
     }
       
-    case DiscoveryStrategy.DUBLIN_CORE:
-      return `  <meta name="DC.title" content="${page.title}">\n  <meta name="DC.identifier" content="${pageUrl}">\n  <meta name="DC.format" content="text/html">`;
+    case DiscoveryStrategy.DUBLIN_CORE: {
+      const resource = resourceId ? RESOURCES.find(r => r.id === resourceId) : undefined;
+      const title = resource ? resource.title : page.title;
+      const identifier = resource ? expandUri(resource.id, baseUri) : pageUrl;
+      const description = resource ? resource.description : "LOD discovery testbed page.";
+      
+      let tags = `  <link rel="schema.DC" href="http://purl.org/DC/elements/1.1/" />\n`;
+      tags += `  <meta name="DC.title" content="${title}">\n`;
+      tags += `  <meta name="DC.identifier" content="${identifier}">\n`;
+      tags += `  <meta name="DC.description" content="${description}">\n`;
+      tags += `  <meta name="DC.format" content="text/html">`;
+
+      if (resource) {
+        tags += `\n  <meta name="DC.type" content="${resource.type}">`;
+
+        // Helper to resolve resource reference or return the original value
+        const resolveVal = (v: string) => {
+          if (v.startsWith("resource-")) {
+            const r = RESOURCES.find(res => res.id === v);
+            return r ? r.title : v;
+          }
+          return v;
+        };
+
+        // Check for creator / author
+        const creator = resource.properties["schema:creator"] || resource.properties["schema:author"] || resource.properties["foaf:name"];
+        if (creator) {
+          const creators = Array.isArray(creator) ? creator : [creator];
+          for (const c of creators) {
+            tags += `\n  <meta name="DC.creator" content="${resolveVal(c)}">`;
+          }
+        }
+
+        // Check for publisher
+        const publisher = resource.properties["schema:publisher"];
+        if (publisher) {
+          const publishers = Array.isArray(publisher) ? publisher : [publisher];
+          for (const p of publishers) {
+            tags += `\n  <meta name="DC.publisher" content="${resolveVal(p)}">`;
+          }
+        }
+
+        // Check for date
+        const date = resource.properties["schema:datePublished"];
+        if (date) {
+          tags += `\n  <meta name="DC.date" content="${date}">`;
+        }
+      }
+      return tags;
+    }
       
     case DiscoveryStrategy.ALTERNATE:
       if (resourceId) {
