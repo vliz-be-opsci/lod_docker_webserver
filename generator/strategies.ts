@@ -421,8 +421,31 @@ export function getStrategyMetadataTags(strategy: DiscoveryStrategy, page: PageC
     case DiscoveryStrategy.CANONICAL:
       return `<link rel="canonical" href="${pageUrl}">`;
       
-    case DiscoveryStrategy.OPEN_GRAPH:
-      return `  <meta property="og:title" content="${page.title}">\n  <meta property="og:type" content="website">\n  <meta property="og:url" content="${pageUrl}">`;
+    case DiscoveryStrategy.OPEN_GRAPH: {
+      const resource = resourceId ? RESOURCES.find(r => r.id === resourceId) : undefined;
+      const title = resource ? resource.title : page.title;
+      const description = resource ? resource.description : "LOD discovery testbed page.";
+      
+      // Determine Open Graph type
+      let ogType = "website";
+      if (resource) {
+        if (resource.type === "Person") {
+          ogType = "profile";
+        } else if (resource.type === "ResearchPaper") {
+          ogType = "article";
+        }
+      }
+      
+      const imageUrl = `${baseUri}/images/LOD_discovery_overview_horizontal.png`;
+      
+      let tags = `  <meta property="og:title" content="${title}">\n`;
+      tags += `  <meta property="og:type" content="${ogType}">\n`;
+      tags += `  <meta property="og:url" content="${pageUrl}">\n`;
+      tags += `  <meta property="og:image" content="${imageUrl}">\n`;
+      tags += `  <meta property="og:description" content="${description}">\n`;
+      tags += `  <meta property="og:site_name" content="LOD Compliance Discovery Testbed">`;
+      return tags;
+    }
       
     case DiscoveryStrategy.DUBLIN_CORE:
       return `  <meta name="DC.title" content="${page.title}">\n  <meta name="DC.identifier" content="${pageUrl}">\n  <meta name="DC.format" content="text/html">`;

@@ -20,7 +20,8 @@ function ensureDirs() {
     path.join(DIST_DIR, "manifests"),
     path.join(DIST_DIR, "graph"),
     path.join(DIST_DIR, "channels"),
-    path.join(DIST_DIR, ".well-known")
+    path.join(DIST_DIR, ".well-known"),
+    path.join(DIST_DIR, "images")
   ];
   for (const dir of dirs) {
     if (!fs.existsSync(dir)) {
@@ -74,6 +75,16 @@ async function main() {
 
   // 1. Write Shared CSS
   fs.writeFileSync(path.join(DIST_DIR, "style.css"), getCssContent());
+
+  // Copy diagram images
+  const srcImgDir = path.resolve(process.cwd(), "generator", "images");
+  const destImgDir = path.join(DIST_DIR, "images");
+  if (fs.existsSync(srcImgDir)) {
+    const files = fs.readdirSync(srcImgDir);
+    for (const file of files) {
+      fs.copyFileSync(path.join(srcImgDir, file), path.join(destImgDir, file));
+    }
+  }
 
   // 2. Generate Page Matrix
   const pages = generateMatrix(GEN_LIMIT);
