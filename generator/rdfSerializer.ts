@@ -79,7 +79,11 @@ export function serializeJsonLd(resource: Resource, baseUri: string): string {
 
   for (const [key, value] of Object.entries(resource.properties)) {
     const isRel = isRelationProperty(key);
-    if (Array.isArray(value)) {
+    if (key === "schema:hasPart" && Array.isArray(value)) {
+      expandedProperties[key] = {
+        "@list": value.map(v => ({ "@id": expandUri(v, baseUri) }))
+      };
+    } else if (Array.isArray(value)) {
       expandedProperties[key] = value.map(v => isRel ? { "@id": expandUri(v, baseUri) } : v);
     } else {
       expandedProperties[key] = isRel ? { "@id": expandUri(value, baseUri) } : value;
@@ -124,21 +128,30 @@ export function serializeTurtle(resource: Resource, baseUri: string): string {
   for (const [key, value] of Object.entries(resource.properties)) {
     const predUri = expandPredicate(key);
     const isRel = isRelationProperty(key);
-    const values = Array.isArray(value) ? value : [value];
 
-    for (const val of values) {
-      if (isRel) {
-        writer.addQuad(
-          namedNode(resUri),
-          namedNode(predUri),
-          namedNode(expandUri(val, baseUri))
-        );
-      } else {
-        writer.addQuad(
-          namedNode(resUri),
-          namedNode(predUri),
-          literal(val)
-        );
+    if (key === "schema:hasPart" && Array.isArray(value)) {
+      const listElements = value.map(val => namedNode(expandUri(val, baseUri)));
+      writer.addQuad(
+        namedNode(resUri),
+        namedNode(predUri),
+        writer.list(listElements)
+      );
+    } else {
+      const values = Array.isArray(value) ? value : [value];
+      for (const val of values) {
+        if (isRel) {
+          writer.addQuad(
+            namedNode(resUri),
+            namedNode(predUri),
+            namedNode(expandUri(val, baseUri))
+          );
+        } else {
+          writer.addQuad(
+            namedNode(resUri),
+            namedNode(predUri),
+            literal(val)
+          );
+        }
       }
     }
   }
@@ -173,15 +186,24 @@ export function serializeRDFXML(resource: Resource, baseUri: string): string {
     const isRel = isRelationProperty(key);
     const [prefix, localName] = key.split(":");
     const tag = `${prefix}:${localName}`;
-    const values = Array.isArray(value) ? value : [value];
 
-    for (const val of values) {
-      if (isRel) {
+    if (key === "schema:hasPart" && Array.isArray(value)) {
+      xml += `    <${tag} rdf:parseType="Collection">\n`;
+      for (const val of value) {
         const valUri = escapeXml(expandUri(val, baseUri));
-        xml += `    <${tag} rdf:resource="${valUri}"/>\n`;
-      } else {
-        const valEscaped = escapeXml(val);
-        xml += `    <${tag}>${valEscaped}</${tag}>\n`;
+        xml += `      <rdf:Description rdf:about="${valUri}"/>\n`;
+      }
+      xml += `    </${tag}>\n`;
+    } else {
+      const values = Array.isArray(value) ? value : [value];
+      for (const val of values) {
+        if (isRel) {
+          const valUri = escapeXml(expandUri(val, baseUri));
+          xml += `    <${tag} rdf:resource="${valUri}"/>\n`;
+        } else {
+          const valEscaped = escapeXml(val);
+          xml += `    <${tag}>${valEscaped}</${tag}>\n`;
+        }
       }
     }
   }
