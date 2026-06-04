@@ -33,6 +33,25 @@ Combining these two dimensions yields four distinct discovery categories:
 +-----------------+--------------------------------+--------------------------------+
 ```
 
+### LOD Discovery Overview Diagram
+![LOD Discovery Overview](images/LOD_discovery_overview_horizontal.png)
+
+### Quadrant Diagrams
+
+For a detailed breakdown of discovery methods in each quadrant, refer to the diagrams below:
+
+#### Quadrant 1: Resource-Level Direct RDF
+![Quadrant 1: Resource-Direct Methods](images/12_Resource-Direct_Discovery_Methods_vertical.png)
+
+#### Quadrant 2: Resource-Level Inferenced RDF
+![Quadrant 2: Resource-Inferred Methods](images/Resource-Inferred_Linked_Data_Discovery_Methods.png)
+
+#### Quadrant 3: Domain-Level Direct RDF
+![Quadrant 3: Domain-Direct Methods](images/Domain-Direct_Linked_Data_Discovery_vertical.png)
+
+#### Quadrant 4: Domain-Level Inferenced RDF
+![Quadrant 4: Domain-Inferred Methods](images/LOD_Discovery_Quadrant_4_Methods.png)
+
 ---
 
 ## 2. Analysis of the 30 Discovery Methods

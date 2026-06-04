@@ -73,6 +73,25 @@ Discovery methods are classified along two primary dimensions:
    * **Direct RDF**: Native RDF serialization (e.g., Turtle, JSON-LD) requiring no custom property translation.
    * **Inferenced RDF**: Non-RDF payloads (e.g., HTML, XML, JSON) containing metadata that must be translated into RDF graphs.
 
+### LOD Discovery Overview
+![LOD Discovery Overview](generator/images/LOD_discovery_overview_horizontal.png)
+
+### Quadrant Diagrams
+
+For a detailed breakdown of discovery methods in each quadrant, refer to the diagrams below:
+
+#### Quadrant 1: Resource-Level Direct RDF
+![Quadrant 1: Resource-Direct Methods](generator/images/12_Resource-Direct_Discovery_Methods_vertical.png)
+
+#### Quadrant 2: Resource-Level Inferenced RDF
+![Quadrant 2: Resource-Inferred Methods](generator/images/Resource-Inferred_Linked_Data_Discovery_Methods.png)
+
+#### Quadrant 3: Domain-Level Direct RDF
+![Quadrant 3: Domain-Direct Methods](generator/images/Domain-Direct_Linked_Data_Discovery_vertical.png)
+
+#### Quadrant 4: Domain-Level Inferenced RDF
+![Quadrant 4: Domain-Inferred Methods](generator/images/LOD_Discovery_Quadrant_4_Methods.png)
+
 ---
 
 ## ⚠️ Implementation Status Note
