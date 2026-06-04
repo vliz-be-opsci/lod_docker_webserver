@@ -677,7 +677,7 @@ export class LodOrchestrator {
 
 ### 4. Scoring & Confidence Model Integration
 The 2x2 taxonomy directly influences the confidence scoring of the discovered RDF:
-*   **Resource-Direct (RD) [Score: 90-100]**: Direct publisher statements for the specific resource.
-*   **Resource-Inferenced (RI) [Score: 70-89]**: Parsed properties on the page (requires translation mapping, which might lose precision).
-*   **Domain-Direct (DD) [Score: 60-79]**: High confidence catalog metadata but retrieved from a domain registry, which might have sync delays.
-*   **Domain-Inferenced (DI) [Score: 30-59]**: Crawled site index entries (lowest confidence, lacks direct formatting structure).
+*   **Resource-Direct (RD) [Rank: 1]**: Direct publisher statements for the specific resource.
+*   **Resource-Inferenced (RI) [Rank: 3]**: Parsed properties on the page (requires translation mapping, which might lose precision).
+*   **Domain-Direct (DD) [Rank: 2]**: High confidence catalog metadata but retrieved from a domain registry, which might have sync delays.
+*   **Domain-Inferenced (DI) [Rank: 4]**: Crawled site index entries (lowest confidence, lacks direct formatting structure).
