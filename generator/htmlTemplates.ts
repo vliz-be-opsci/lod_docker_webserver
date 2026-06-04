@@ -217,6 +217,13 @@ main {
   font-weight: 600;
 }
 
+.item-link.active-on-page {
+  background: var(--sea-blue-glow);
+  border-color: var(--sea-blue);
+  color: var(--vliz-blue);
+  border-left: 3px solid var(--sea-blue);
+}
+
 .item-link .badge {
   font-size: 0.75rem;
   padding: 0.15rem 0.4rem;

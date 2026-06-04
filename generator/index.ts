@@ -37,14 +37,19 @@ function cleanDist() {
 }
 
 // Builds the sidebar navigation dynamically, hiding the detailed test pages and exposing overview, matrix, and channels.
-function buildNavigation(activeId: string): string {
+function buildNavigation(activeId: string, activeStrategies: DiscoveryStrategy[] = []): string {
   let html = `<li><a href="/" class="item-link ${activeId === 'index' ? 'active' : ''}">Overview</a></li>\n`;
   html += `<li><a href="/pages/matrix.html" class="item-link ${activeId === 'matrix' ? 'active' : ''}">Total Pages Test</a></li>\n`;
   html += `<li><a href="/pages/classification.html" class="item-link ${activeId === 'classification' ? 'active' : ''}">Classification Matrix</a></li>\n`;
   html += `<li class="section-title">Discovery Channels</li>\n`;
   for (const strat of STRATEGIES_META) {
-    const activeClass = activeId === `channel-${strat.id}` ? 'active' : '';
-    html += `<li><a href="/channels/${strat.id.toLowerCase()}.html" class="item-link ${activeClass}">${strat.name}</a></li>\n`;
+    let classes = "item-link";
+    if (activeId === `channel-${strat.id}`) {
+      classes += " active";
+    } else if (activeStrategies.includes(strat.id)) {
+      classes += " active-on-page";
+    }
+    html += `<li><a href="/channels/${strat.id.toLowerCase()}.html" class="${classes}">${strat.name}</a></li>\n`;
   }
   return html;
 }
@@ -110,7 +115,6 @@ async function main() {
 
   // 4. Render Individual testbed pages (page-x.html)
   const nginxHeaders: string[] = [];
-  const navigationHtml = buildNavigation(""); // Empty active ID for specific pages since they aren't directly in sidebar
 
   for (let idx = 0; idx < pages.length; idx++) {
     const page = pages[idx];
@@ -338,7 +342,7 @@ async function main() {
       page,
       metadataTags,
       bodyMarkup,
-      navigationHtml,
+      buildNavigation("", page.strategies),
       finalCenterHtml
     );
 
