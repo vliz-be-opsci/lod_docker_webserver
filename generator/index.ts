@@ -535,7 +535,7 @@ async function main() {
       <span class="resource-type-badge">LOD Taxonomy</span>
       <h2 class="resource-title">Discovery Classification Matrix</h2>
       <p class="resource-desc">
-        A 2x2 taxonomy dividing the 30 web resource discovery methods based on their <strong>Location of Discovery</strong> (Resource vs. Domain level) and their <strong>Extraction Type</strong> (Direct vs. Inferenced RDF).
+        A 2x2 taxonomy dividing the \${STRATEGIES_META.length} web resource discovery methods based on their <strong>Location of Discovery</strong> (Resource vs. Domain level) and their <strong>Extraction Type</strong> (Direct vs. Inferenced RDF).
       </p>
     </div>
 
@@ -720,7 +720,7 @@ async function main() {
       </div>
       <div class="dashboard-card">
         <h3>Discovery Channels</h3>
-        <div class="stats-number">30</div>
+        <div class="stats-number">\${STRATEGIES_META.length}</div>
         <p style="color: var(--text-secondary); margin: 0;">Distinct discovery strategies executed across pages.</p>
       </div>
     </div>
@@ -984,6 +984,39 @@ async function main() {
 
   // 14. Write Nginx headers config file
   fs.writeFileSync(path.join(DIST_DIR, "nginx-headers.conf"), nginxHeaders.join("\n"));
+
+  // 14.5 Write Nginx content negotiation maps config file
+  let nginxConeg = `# Content Negotiation maps generated dynamically\n\n`;
+  nginxConeg += `map $res_id $html_path_for_res {\n`;
+  nginxConeg += `    default /;\n`;
+  for (const resource of RESOURCES) {
+    const page = pages.find(p => p.resourceId === resource.id && !p.isHidden);
+    if (page) {
+      nginxConeg += `    ${resource.id} /pages/${page.id}.html;\n`;
+    }
+  }
+  nginxConeg += `}\n\n`;
+  
+  nginxConeg += `map $http_accept $rdf_suffix {\n`;
+  nginxConeg += `    ~*turtle            "ttl";\n`;
+  nginxConeg += `    ~*ld\\+json          "jsonld";\n`;
+  nginxConeg += `    ~*jsonld            "jsonld";\n`;
+  nginxConeg += `    ~*rdf\\+xml          "rdf";\n`;
+  nginxConeg += `    default             "html";\n`;
+  nginxConeg += `}\n\n`;
+
+  nginxConeg += `map $rdf_suffix:$page_id $page_coneg_redirect {\n`;
+  nginxConeg += `    default "";\n`;
+  for (const page of pages) {
+    if (page.resourceId) {
+      nginxConeg += `    ttl:${page.id} /rdf/${page.resourceId}.ttl;\n`;
+      nginxConeg += `    jsonld:${page.id} /rdf/${page.resourceId}.jsonld;\n`;
+      nginxConeg += `    rdf:${page.id} /rdf/${page.resourceId}.rdf;\n`;
+    }
+  }
+  nginxConeg += `}\n`;
+
+  fs.writeFileSync(path.join(DIST_DIR, "nginx-coneg.conf"), nginxConeg);
 
   console.log(`Testbed generation completed successfully!`);
 }

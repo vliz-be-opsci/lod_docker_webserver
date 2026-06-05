@@ -54,9 +54,9 @@ For a detailed breakdown of discovery methods in each quadrant, refer to the dia
 
 ---
 
-## 2. Analysis of the 30 Discovery Methods
+## 2. Analysis of the 31 Discovery Methods
 
-Below is a detailed analysis of all 30 discovery strategies. For each method, we present the four possibilities, specifications, extra usage context, recommended categorization, and, where applicable, the proposed RDF retrieval design.
+Below is a detailed analysis of all 31 discovery strategies. For each method, we present the four possibilities, specifications, extra usage context, recommended categorization, and, where applicable, the proposed RDF retrieval design.
 
 ---
 
@@ -617,6 +617,28 @@ Below is a detailed analysis of all 30 discovery strategies. For each method, we
 
     Triples:
     <nodeA> lod:inCycleWith <nodeB>, <nodeC> .
+    ```
+
+---
+
+### 31. CONTENT_NEGOTIATION (Content Negotiation)
+*   **Specification**: [HTTP/1.1 Content Negotiation (RFC 9110)](https://www.rfc-editor.org/rfc/rfc9110.html#section-12) / [W3C Linked Data Principles](https://www.w3.org/DesignIssues/LinkedData.html)
+*   **Extra Context**: Content negotiation allows a single URI to serve multiple formats of a resource. Clients requesting RDF formats receive redirects (303 See Other) to the serialized files, while web browsers receive the human-readable HTML representation.
+*   **Four Possibilities**:
+    *   *Resource-Direct* (Recommended): The client requests `/resource/resource-x` with specific semantic MIME types in the Accept header (e.g. `text/turtle`), and gets redirected directly to the native RDF file.
+    *   *Resource-Inferenced*: The client requests a resource page and gets a non-RDF representation requiring further extraction.
+    *   *Domain-Direct*: Finding content negotiation configurations at separate domain endpoints.
+    *   *Domain-Inferenced*: Evaluating domain-level mappings to guess content negotiation structures.
+*   **Recommendation**: **Resource-Direct**
+*   **Rationale**: By dereferencing the resource URI directly with an Accept header of a native RDF format, the client receives a 303 Redirect leading directly to the native RDF serialization without any intermediate HTML parsing or property mapping.
+*   **Proposed RDF Retrieval Design**:
+    ```
+    1. Request resource URI (e.g. /resource/resource-x) with Accept header (e.g. text/turtle).
+    2. Follow 303 Redirect to the corresponding RDF representation.
+    3. Parse the returned RDF payload directly.
+
+    Triples:
+    Directly parsed from the retrieved representation.
     ```
 
 ---

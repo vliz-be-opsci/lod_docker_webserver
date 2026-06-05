@@ -410,6 +410,20 @@ export const STRATEGIES_META: StrategyMeta[] = [
     specLink: "https://www.w3.org/DesignIssues/LinkedData.html",
     extraInfo: "Validates cycle-detection algorithms in the crawler, ensuring it doesn't enter infinite loops when crawling mutually referenced resource pages.",
     proposedRdfRetrieval: "1. Verify Crawl: Identify topological cycles in hyperlink paths (A -> B -> C -> A).\n2. Map: Assert cycle membership properties to verify navigation capability.\n\nTriples:\n<nodeA> lod:inCycleWith <nodeB>, <nodeC> ."
+  },
+  {
+    id: DiscoveryStrategy.CONTENT_NEGOTIATION,
+    name: "Content Negotiation",
+    category: "HTTP Header",
+    description: "Resolving resource URIs with Accept headers to return specific RDF representations (Turtle, JSON-LD, RDF/XML) or HTML.",
+    codeSnippet: 'GET /resource/resource-x with Accept: text/turtle -> 303 Redirect to /rdf/resource-x.ttl',
+    standard: "HTTP/1.1 Content Negotiation (RFC 9110) / W3C Linked Data Principles",
+    provenance: "W3C / IETF",
+    location: "Resource",
+    extraction: "Direct",
+    specLink: "https://www.rfc-editor.org/rfc/rfc9110.html#section-12",
+    extraInfo: "Content negotiation allows a single URI to serve multiple formats of a resource. Clients requesting RDF formats receive redirects (303 See Other) to the serialized files, while web browsers receive the human-readable HTML representation.",
+    proposedRdfRetrieval: "1. Request resource URI (e.g. /resource/resource-x) with Accept header (e.g. text/turtle).\n2. Follow 303 Redirect to the corresponding RDF representation.\n3. Parse the returned RDF payload directly.\n\nTriples:\nDirectly parsed from the retrieved representation."
   }
 ];
 
@@ -603,9 +617,9 @@ export function generateMatrix(limit: number): PageConfig[] {
   const matrix: PageConfig[] = [];
   const totalResources = RESOURCES.length;
 
-  // 1. Single strategy pages (page-0 to page-29)
+  // 1. Single strategy pages (page-0 to page-30)
   const singleStrategies = STRATEGIES_META.map(s => s.id);
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 31; i++) {
     const strat = singleStrategies[i];
     let resource = RESOURCES[i % totalResources];
     
@@ -626,7 +640,7 @@ export function generateMatrix(limit: number): PageConfig[] {
     });
   }
 
-  // 2. Pairwise combinations (page-30 to page-59)
+  // 2. Pairwise combinations (page-31 to page-60)
   // Let's pair HTML_LINKS with others, and some semantic pairings
   for (let i = 0; i < 30; i++) {
     const stratA = DiscoveryStrategy.HTML_LINKS;
@@ -634,7 +648,7 @@ export function generateMatrix(limit: number): PageConfig[] {
     const resource = RESOURCES[(i + 5) % totalResources];
 
     matrix.push({
-      id: `page-${30 + i}`,
+      id: `page-${31 + i}`,
       title: `Pairwise: HTML Links + ${STRATEGIES_META[(i + 1) % STRATEGIES_META.length].name}`,
       resourceId: resource.id,
       strategies: [stratA, stratB],
@@ -643,7 +657,7 @@ export function generateMatrix(limit: number): PageConfig[] {
     });
   }
 
-  // 3. Triple combinations (page-60 to page-89)
+  // 3. Triple combinations (page-61 to page-90)
   for (let i = 0; i < 30; i++) {
     const stratA = DiscoveryStrategy.HTML_LINKS;
     const stratB = DiscoveryStrategy.JSON_LD_SCRIPT;
@@ -651,7 +665,7 @@ export function generateMatrix(limit: number): PageConfig[] {
     const resource = RESOURCES[(i + 8) % totalResources];
 
     matrix.push({
-      id: `page-${60 + i}`,
+      id: `page-${61 + i}`,
       title: `Triple Combo: HTML + JSON-LD + ${STRATEGIES_META[(i + 2) % STRATEGIES_META.length].name}`,
       resourceId: resource.id,
       strategies: [stratA, stratB, stratC],
@@ -660,12 +674,12 @@ export function generateMatrix(limit: number): PageConfig[] {
     });
   }
 
-  // 4. Full-stack compliance pages (page-90 to page-109)
+  // 4. Full-stack compliance pages (page-91 to page-109)
   // These exercise a large bunch of tags simultaneously
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 19; i++) {
     const resource = RESOURCES[i % totalResources];
     matrix.push({
-      id: `page-${90 + i}`,
+      id: `page-${91 + i}`,
       title: `Full Stack Compliance Suite Node ${i}`,
       resourceId: resource.id,
       strategies: [
