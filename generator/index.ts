@@ -151,7 +151,7 @@ async function main() {
     }
 
     for (const strat of page.strategies) {
-      metadataTags += getStrategyMetadataTags(strat, page, BASE_URL) + "\n";
+      metadataTags += getStrategyMetadataTags(strat, page, BASE_URL, pages) + "\n";
       if (serials && resource) {
         bodyMarkup += getStrategyBodyMarkup(strat, page, BASE_URL, serials.jsonld, serials.ttl, resource) + "\n";
       }
@@ -160,7 +160,7 @@ async function main() {
     // Build Nginx Headers for this page
     const headersMap: Record<string, string> = {};
     for (const strat of page.strategies) {
-      const h = getStrategyHeaders(strat, page, BASE_URL);
+      const h = getStrategyHeaders(strat, page, BASE_URL, pages);
       Object.assign(headersMap, h);
     }
     if (page.customHeaders) {
@@ -526,16 +526,18 @@ async function main() {
   };
 
   const q1Count = STRATEGIES_META.filter(s => (s.location === "Resource" || s.location === "Both") && (s.extraction === "Direct" || s.extraction === "Both")).length;
-  const q2Count = STRATEGIES_META.filter(s => (s.location === "Resource" || s.location === "Both") && (s.extraction === "Inferenced" || s.extraction === "Both")).length;
-  const q3Count = STRATEGIES_META.filter(s => (s.location === "Domain" || s.location === "Both") && (s.extraction === "Direct" || s.extraction === "Both")).length;
-  const q4Count = STRATEGIES_META.filter(s => (s.location === "Domain" || s.location === "Both") && (s.extraction === "Inferenced" || s.extraction === "Both")).length;
+  const q2Count = STRATEGIES_META.filter(s => (s.location === "Resource" || s.location === "Both") && (s.extraction === "Uplifted" || s.extraction === "Both")).length;
+  const q3Count = STRATEGIES_META.filter(s => (s.location === "Resource" || s.location === "Both") && (s.extraction === "Reasoned" || s.extraction === "Both")).length;
+  const q4Count = STRATEGIES_META.filter(s => (s.location === "Domain" || s.location === "Both") && (s.extraction === "Direct" || s.extraction === "Both")).length;
+  const q5Count = STRATEGIES_META.filter(s => (s.location === "Domain" || s.location === "Both") && (s.extraction === "Uplifted" || s.extraction === "Both")).length;
+  const q6Count = STRATEGIES_META.filter(s => (s.location === "Domain" || s.location === "Both") && (s.extraction === "Reasoned" || s.extraction === "Both")).length;
 
   const classificationCenterHtml = `
     <div class="resource-header">
       <span class="resource-type-badge">LOD Taxonomy</span>
       <h2 class="resource-title">Discovery Classification Matrix</h2>
       <p class="resource-desc">
-        A 2x2 taxonomy dividing the \${STRATEGIES_META.length} web resource discovery methods based on their <strong>Location of Discovery</strong> (Resource vs. Domain level) and their <strong>Extraction Type</strong> (Direct vs. Inferenced RDF).
+        A 2x3 taxonomy dividing the \${STRATEGIES_META.length} web resource discovery methods based on their <strong>Location of Discovery</strong> (Resource vs. Domain level) and their <strong>Interpretation Type</strong> (Direct vs. Uplifted vs. Reasoned RDF).
       </p>
     </div>
 
@@ -546,38 +548,58 @@ async function main() {
           <span>Resource Level &amp; Direct</span>
           <span class="quadrant-badge">Q1</span>
         </div>
-        <p class="quadrant-desc">RDF retrieved directly from the resource URI itself as native serialization (Turtle, JSON-LD, etc.).</p>
+        <p class="quadrant-desc">RDF retrieved directly from the resource URI itself as native serialization (via Content Negotiation).</p>
         <div class="quadrant-count" id="count-q1">${q1Count}</div>
       </div>
 
-      <!-- Q2: Resource Level & Inferenced RDF -->
+      <!-- Q2: Resource Level & Uplifted RDF -->
       <div class="quadrant-card" id="card-q2" onclick="selectQuadrant('q2')">
         <div class="quadrant-header">
-          <span>Resource Level &amp; Inferenced</span>
+          <span>Resource Level &amp; Uplifted</span>
           <span class="quadrant-badge">Q2</span>
         </div>
-        <p class="quadrant-desc">RDF parsed and mapped from non-RDF tags/markup (Microdata, RDFa, Open Graph) on the resource page.</p>
+        <p class="quadrant-desc">RDF embedded in page markup (Microdata, RDFa, OG) or script tags (JSON-LD, Turtle) linking to the resource.</p>
         <div class="quadrant-count" id="count-q2">${q2Count}</div>
       </div>
 
-      <!-- Q3: Domain Level & Direct RDF -->
+      <!-- Q3: Resource Level & Reasoned RDF -->
       <div class="quadrant-card" id="card-q3" onclick="selectQuadrant('q3')">
         <div class="quadrant-header">
-          <span>Domain Level &amp; Direct</span>
+          <span>Resource Level &amp; Reasoned</span>
           <span class="quadrant-badge">Q3</span>
         </div>
-        <p class="quadrant-desc">RDF retrieved directly from separate domain/catalog-wide endpoints (DCAT catalogs, Linksets, etc.).</p>
+        <p class="quadrant-desc">Enriched semantic properties inferred by client-side logical rules (sameAs, FOAF knows, SKOS concept hierarchy).</p>
         <div class="quadrant-count" id="count-q3">${q3Count}</div>
       </div>
 
-      <!-- Q4: Domain Level & Inferenced RDF -->
+      <!-- Q4: Domain Level & Direct RDF -->
       <div class="quadrant-card" id="card-q4" onclick="selectQuadrant('q4')">
         <div class="quadrant-header">
-          <span>Domain Level &amp; Inferenced</span>
+          <span>Domain Level &amp; Direct</span>
           <span class="quadrant-badge">Q4</span>
         </div>
-        <p class="quadrant-desc">RDF inferred or harvested from domain-wide XML index files (Sitemaps, robots.txt, Atom/RSS feeds).</p>
+        <p class="quadrant-desc">RDF catalog listings queried directly from separate domain/catalog-wide endpoints (DCAT catalogs).</p>
         <div class="quadrant-count" id="count-q4">${q4Count}</div>
+      </div>
+
+      <!-- Q5: Domain Level & Uplifted RDF -->
+      <div class="quadrant-card" id="card-q5" onclick="selectQuadrant('q5')">
+        <div class="quadrant-header">
+          <span>Domain Level &amp; Uplifted</span>
+          <span class="quadrant-badge">Q5</span>
+        </div>
+        <p class="quadrant-desc">RDF inferred or harvested from domain-wide XML index files (Sitemaps, robots.txt, RSS/Atom feeds).</p>
+        <div class="quadrant-count" id="count-q5">${q5Count}</div>
+      </div>
+
+      <!-- Q6: Domain Level & Reasoned RDF -->
+      <div class="quadrant-card" id="card-q6" onclick="selectQuadrant('q6')">
+        <div class="quadrant-header">
+          <span>Domain Level &amp; Reasoned</span>
+          <span class="quadrant-badge">Q6</span>
+        </div>
+        <p class="quadrant-desc">Transitive hierarchies, containment, or loop validation rules evaluated across domain boundaries.</p>
+        <div class="quadrant-count" id="count-q6">${q6Count}</div>
       </div>
     </div>
 
@@ -622,19 +644,27 @@ async function main() {
         if (quadId === 'q1') {
           filtered = STRATEGIES_DATA.filter(s => (s.location === "Resource" || s.location === "Both") && (s.extraction === "Direct" || s.extraction === "Both"));
           title = "Resource Level &amp; Direct RDF Strategies";
-          desc = "Native RDF payloads retrieved directly from the resource URI itself (e.g. content negotiation, describedby headers/links, embedded JSON-LD scripts).";
+          desc = "Native RDF payloads retrieved directly from the resource URI itself (e.g. Content Negotiation).";
         } else if (quadId === 'q2') {
-          filtered = STRATEGIES_DATA.filter(s => (s.location === "Resource" || s.location === "Both") && (s.extraction === "Inferenced" || s.extraction === "Both"));
-          title = "Resource Level &amp; Inferenced RDF Strategies";
-          desc = "Non-RDF payloads retrieved from the resource URI (like HTML pages) where the client parses attributes (Microdata, RDFa, Open Graph) to map them into RDF.";
+          filtered = STRATEGIES_DATA.filter(s => (s.location === "Resource" || s.location === "Both") && (s.extraction === "Uplifted" || s.extraction === "Both"));
+          title = "Resource Level &amp; Uplifted / Linked RDF Strategies";
+          desc = "Payloads containing metadata (link headers/tags) or embedded script tags (JSON-LD, Embedded Turtle), or requiring HTML parsing (Microdata, RDFa, OG).";
         } else if (quadId === 'q3') {
+          filtered = STRATEGIES_DATA.filter(s => (s.location === "Resource" || s.location === "Both") && (s.extraction === "Reasoned" || s.extraction === "Both"));
+          title = "Resource Level &amp; Reasoned RDF Strategies";
+          desc = "Client-side logical entailment and reasoning rules evaluated on the retrieved triples (sameAs equivalence, FOAF social connections, SKOS taxonomies).";
+        } else if (quadId === 'q4') {
           filtered = STRATEGIES_DATA.filter(s => (s.location === "Domain" || s.location === "Both") && (s.extraction === "Direct" || s.extraction === "Both"));
           title = "Domain Level &amp; Direct RDF Strategies";
-          desc = "Native RDF payloads retrieved from separate host/domain level endpoints (such as DCAT catalogs, domain-wide Linksets, or RDF-based resource maps).";
-        } else if (quadId === 'q4') {
-          filtered = STRATEGIES_DATA.filter(s => (s.location === "Domain" || s.location === "Both") && (s.extraction === "Inferenced" || s.extraction === "Both"));
-          title = "Domain Level &amp; Inferenced RDF Strategies";
-          desc = "Non-RDF payloads retrieved from separate domain level endpoints (like sitemaps, robots.txt, Atom/RSS XML feeds) which are parsed to discover resource endpoints.";
+          desc = "Direct queries of native RDF datasets or DCAT catalogs at separate domain endpoints.";
+        } else if (quadId === 'q5') {
+          filtered = STRATEGIES_DATA.filter(s => (s.location === "Domain" || s.location === "Both") && (s.extraction === "Uplifted" || s.extraction === "Both"));
+          title = "Domain Level &amp; Uplifted / Linked RDF Strategies";
+          desc = "Domain level indexing documents (robots.txt, sitemaps, RSS/Atom feeds, custom API catalogs) mapped into graph structures.";
+        } else if (quadId === 'q6') {
+          filtered = STRATEGIES_DATA.filter(s => (s.location === "Domain" || s.location === "Both") && (s.extraction === "Reasoned" || s.extraction === "Both"));
+          title = "Domain Level &amp; Reasoned RDF Strategies";
+          desc = "Reasoning rules applied across domain boundary aggregations, transitivity containment (isPartOf), and bidirectional cycle validation.";
         }
 
         document.getElementById('list-title').innerHTML = title;
@@ -694,6 +724,31 @@ async function main() {
   fs.writeFileSync(path.join(DIST_DIR, "pages", "classification.html"), renderedClassificationHtml);
 
   // 7. Generate Index/Overview Page (index.html)
+  const resourceNodes = RESOURCES.map(r => ({
+    id: r.id,
+    label: r.title,
+    group: r.type,
+    title: r.description
+  }));
+
+  const resourceEdges: { from: string; to: string; label: string }[] = [];
+  for (const resource of RESOURCES) {
+    for (const [key, value] of Object.entries(resource.properties)) {
+      const values = Array.isArray(value) ? value : [value];
+      for (const val of values) {
+        if (typeof val === "string" && val.startsWith("resource-")) {
+          if (RESOURCES.some(r => r.id === val)) {
+            resourceEdges.push({
+              from: resource.id,
+              to: val,
+              label: key
+            });
+          }
+        }
+      }
+    }
+  }
+
   const indexPage: PageConfig = {
     id: "index",
     title: "Overview",
@@ -720,7 +775,7 @@ async function main() {
       </div>
       <div class="dashboard-card">
         <h3>Discovery Channels</h3>
-        <div class="stats-number">\${STRATEGIES_META.length}</div>
+        <div class="stats-number">${STRATEGIES_META.length}</div>
         <p style="color: var(--text-secondary); margin: 0;">Distinct discovery strategies executed across pages.</p>
       </div>
     </div>
@@ -734,6 +789,194 @@ async function main() {
         Start crawl traversal: <a href="/pages/matrix.html" style="color: var(--sea-blue); font-weight: bold; text-decoration: none;">View Total Pages Matrix &rarr;</a>
       </p>
     </div>
+
+    <div class="doc-info" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+      <h3 style="margin-bottom: 0;">LOD Resource Connection Graph</h3>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">
+        Below is the semantic web of resources hosted on this server. Drag nodes to explore, scroll to zoom, and click a node to view its detailed properties and direct links in the panel.
+      </p>
+      
+      <div class="network-container" style="display: flex; gap: 1.5rem; min-height: 520px; width: 100%;">
+        <div id="resource-network" style="flex: 7; height: 520px; border: 1px solid var(--border-color); border-radius: 12px; background: #fafafa; position: relative;">
+          <!-- Network canvas goes here -->
+        </div>
+        <div id="network-details-card" class="panel" style="flex: 5; margin: 0; max-height: 520px; display: flex; flex-direction: column; background: #ffffff; padding: 1.25rem;">
+          <h4 style="margin-top: 0; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; font-family: 'Outfit', sans-serif; color: var(--vliz-blue);">Resource Details</h4>
+          <div id="network-details-content" style="flex: 1; overflow-y: auto; font-size: 0.9rem; color: var(--text-secondary);">
+            <div style="text-align: center; margin-top: 5rem; color: var(--text-muted);">
+              <p>Click a node in the graph to view its detailed metadata properties and dereferencing paths.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script>
+      (function() {
+        const nodesArray = ${JSON.stringify(resourceNodes)};
+        const edgesArray = ${JSON.stringify(resourceEdges)};
+        const resourcesMap = new Map(${JSON.stringify(RESOURCES)}.map(r => [r.id, r]));
+        
+        // Define styling colors based on group type
+        const typeColors = {
+          "Person": { background: "rgba(53, 77, 155, 0.12)", border: "var(--vliz-blue)" },
+          "Organization": { background: "rgba(49, 183, 188, 0.12)", border: "var(--sea-blue)" },
+          "Dataset": { background: "rgba(247, 201, 124, 0.12)", border: "#b48a3c" },
+          "Software": { background: "rgba(225, 29, 72, 0.08)", border: "#e11d48" },
+          "ResearchPaper": { background: "rgba(147, 51, 234, 0.08)", border: "#9333ea" },
+          "API": { background: "rgba(5, 150, 105, 0.08)", border: "#059669" },
+          "Project": { background: "rgba(217, 119, 6, 0.08)", border: "#d97706" },
+          "Collection": { background: "rgba(8, 145, 178, 0.08)", border: "#0891b2" }
+        };
+
+        const styledNodes = nodesArray.map(node => {
+          const colors = typeColors[node.group] || { background: "#f3f4f6", border: "#9ca3af" };
+          return {
+            id: node.id,
+            label: node.label,
+            title: node.title,
+            color: {
+              background: colors.background,
+              border: colors.border,
+              highlight: { background: colors.background, border: colors.border }
+            },
+            borderWidth: 2,
+            shape: "box",
+            margin: 10,
+            font: {
+              face: "Outfit, Inter, sans-serif",
+              color: "var(--text-primary)",
+              size: 13,
+              bold: { color: "var(--vliz-blue)", size: 13, vadjust: -1 }
+            },
+            shapeProperties: {
+              borderRadius: 6
+            }
+          };
+        });
+
+        const styledEdges = edgesArray.map(edge => {
+          return {
+            from: edge.from,
+            to: edge.to,
+            label: edge.label,
+            font: {
+              face: "monospace",
+              size: 9,
+              color: "var(--text-muted)",
+              background: "#fafafa",
+              strokeWidth: 0
+            },
+            arrows: {
+              to: { enabled: true, scaleFactor: 0.5 }
+            },
+            color: {
+              color: "rgba(53, 77, 155, 0.2)",
+              highlight: "var(--vliz-blue)"
+            },
+            smooth: {
+              type: "curvedCW",
+              roundness: 0.15
+            }
+          };
+        });
+
+        const container = document.getElementById('resource-network');
+        const data = {
+          nodes: new vis.DataSet(styledNodes),
+          edges: new vis.DataSet(styledEdges)
+        };
+        const options = {
+          physics: {
+            stabilization: true,
+            barnesHut: {
+              gravitationalConstant: -1800,
+              centralGravity: 0.3,
+              springLength: 120,
+              springConstant: 0.04,
+              damping: 0.09
+            }
+          },
+          interaction: {
+            hover: true,
+            tooltipDelay: 200
+          }
+        };
+
+        const network = new vis.Network(container, data, options);
+
+        network.on("selectNode", function(params) {
+          const nodeId = params.nodes[0];
+          const resource = resourcesMap.get(nodeId);
+          if (!resource) return;
+
+          const detailsDiv = document.getElementById('network-details-content');
+          
+          let propRows = "";
+          for (const [key, value] of Object.entries(resource.properties)) {
+            const vals = Array.isArray(value) ? value : [value];
+            const valLinks = vals.map(v => {
+              if (v.startsWith("resource-")) {
+                const targetRes = resourcesMap.get(v);
+                const label = targetRes ? targetRes.title : v;
+                return \`<a href="#" onclick="focusNode('\${v}'); return false;" style="color: var(--vliz-blue); text-decoration: underline; font-weight: 500;">\${label}</a>\`;
+              }
+              if (v.startsWith("http://") || v.startsWith("https://")) {
+                return \`<a href="\${v}" target="_blank" style="color: var(--sea-blue); text-decoration: underline; word-break: break-all;">\${v}</a>\`;
+              }
+              return \`<span>\${v}</span>\`;
+            }).join(", ");
+
+            propRows += \`
+              <tr>
+                <td style="font-family: monospace; color: var(--vliz-blue); font-weight: 600; padding: 0.4rem; font-size: 0.8rem; border-bottom: 1px solid rgba(53, 77, 155, 0.08); width: 35%;">\${key}</td>
+                <td style="padding: 0.4rem; font-size: 0.85rem; border-bottom: 1px solid rgba(53, 77, 155, 0.08); word-break: break-all; color: var(--text-primary);">\${valLinks}</td>
+              </tr>
+            \`;
+          }
+
+          detailsDiv.innerHTML = \`
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; height: 100%;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span class="resource-type-badge" style="margin-bottom: 0; font-size: 0.7rem; padding: 0.15rem 0.5rem;">\${resource.type}</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace;">\${resource.id}</span>
+              </div>
+              <h3 style="margin: 0.25rem 0; font-family: 'Outfit', sans-serif; color: var(--vliz-blue); font-size: 1.25rem; font-weight: 700;">\${resource.title}</h3>
+              <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.45;">\${resource.description}</p>
+              
+              <div style="flex: 1; overflow-y: auto; margin-top: 0.5rem; border: 1px solid rgba(53, 77, 155, 0.08); border-radius: 8px; background: #fafafa; max-height: 250px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tbody>
+                    \${propRows}
+                  </tbody>
+                </table>
+              </div>
+
+              <div style="margin-top: auto; display: flex; gap: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(53, 77, 155, 0.08);">
+                <a href="/rdf/\${resource.id}.ttl" target="_blank" class="badge-pill" style="text-decoration: none; margin: 0; background: var(--vliz-blue-glow); color: var(--vliz-blue); font-weight: bold; border-color: rgba(53, 77, 155, 0.15);">TTL (Turtle)</a>
+                <a href="/rdf/\${resource.id}.jsonld" target="_blank" class="badge-pill" style="text-decoration: none; margin: 0; background: var(--sea-blue-glow); color: var(--sea-blue); font-weight: bold; border-color: rgba(49, 183, 188, 0.15);">JSON-LD</a>
+                <a href="/api/\${resource.id}" target="_blank" class="badge-pill" style="text-decoration: none; margin: 0; background: var(--sand-glow); color: #b48a3c; font-weight: bold; border-color: rgba(247, 201, 124, 0.3);">API JSON</a>
+              </div>
+            </div>
+          \`;
+        });
+
+        network.on("deselectNode", function(params) {
+          document.getElementById('network-details-content').innerHTML = \`
+            <div style="text-align: center; margin-top: 5rem; color: var(--text-muted);">
+              <p>Click a node in the graph to view its detailed metadata properties and dereferencing paths.</p>
+            </div>
+          \`;
+        });
+
+        window.focusNode = function(nodeId) {
+          network.selectNodes([nodeId]);
+          network.dispatchEvent("selectNode", { nodes: [nodeId] });
+          network.focus(nodeId, { scale: 1.0, animation: true });
+        };
+      })();
+    </script>
   `;
 
   let indexSidebarHtml = "";
@@ -782,7 +1025,7 @@ async function main() {
   for (const page of pages) {
     sitemap += `  <url>\n    <loc>${BASE_URL}/pages/${page.id}.html</loc>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n`;
     if (page.resourceId) {
-      sitemap += `    <xhtml:link rel="describedby" href="${BASE_URL}/rdf/${page.resourceId}.ttl"/>\n`;
+      sitemap += `    <xhtml:link rel="describedby" type="text/turtle" href="${BASE_URL}/rdf/${page.resourceId}.ttl"/>\n`;
       sitemap += `    <xhtml:link rel="alternate" type="text/turtle" href="${BASE_URL}/rdf/${page.resourceId}.ttl"/>\n`;
       sitemap += `    <xhtml:link rel="alternate" type="application/ld+json" href="${BASE_URL}/rdf/${page.resourceId}.jsonld"/>\n`;
       sitemap += `    <xhtml:link rel="alternate" type="application/rdf+xml" href="${BASE_URL}/rdf/${page.resourceId}.rdf"/>\n`;
@@ -793,7 +1036,9 @@ async function main() {
   fs.writeFileSync(path.join(DIST_DIR, "sitemap.xml"), sitemap);
 
   // 10. Generate Robots.txt
-  let robots = `# Robots.txt for LOD Testbed\nUser-agent: *\nAllow: /\n\n# Sitemap Reference (Strategy 18)\nSitemap: ${BASE_URL}/sitemap.xml\n\n# Special robots entry pointing to page-110 (Strategy 18 / Hidden Scenario 1)\nDisallow: /private/\nAllow: /pages/page-110.html\n`;
+  const robotsPage = pages.find(p => p.isHidden && p.strategies.includes(DiscoveryStrategy.ROBOTS));
+  const robotsPageId = robotsPage ? robotsPage.id : "page-110";
+  let robots = `# Robots.txt for LOD Testbed\nUser-agent: *\nAllow: /\n\n# Sitemap Reference (Strategy 18)\nSitemap: ${BASE_URL}/sitemap.xml\n\n# Special robots entry pointing to ${robotsPageId} (Strategy 18 / Hidden Scenario 1)\nDisallow: /private/\nAllow: /pages/${robotsPageId}.html\n`;
   fs.writeFileSync(path.join(DIST_DIR, "robots.txt"), robots);
 
   // 11. Generate Web Manifest
@@ -878,7 +1123,7 @@ async function main() {
   // Physical Graph Edges
   expectedGraph.physical.edges.push({ source: `${BASE_URL}/`, target: `${BASE_URL}/pages/matrix.html`, type: "html-link" });
   expectedGraph.physical.edges.push({ source: `${BASE_URL}/robots.txt`, target: `${BASE_URL}/sitemap.xml`, type: "sitemap-ref" });
-  expectedGraph.physical.edges.push({ source: `${BASE_URL}/robots.txt`, target: `${BASE_URL}/pages/page-110.html`, type: "robots-only-ref" });
+  expectedGraph.physical.edges.push({ source: `${BASE_URL}/robots.txt`, target: `${BASE_URL}/pages/${robotsPageId}.html`, type: "robots-only-ref" });
 
   // Channel Pages links
   for (const strat of STRATEGIES_META) {
@@ -940,10 +1185,10 @@ async function main() {
       }
       if (page.strategies.includes(DiscoveryStrategy.CANONICAL)) {
         const resIndex = RESOURCES.findIndex(r => r.id === page.resourceId);
-        if (resIndex !== -1) {
+        if (resIndex !== -1 && pages[resIndex]) {
           expectedGraph.physical.edges.push({
             source: pageUrl,
-            target: `${BASE_URL}/pages/page-${resIndex}.html`,
+            target: `${BASE_URL}/pages/${pages[resIndex].id}.html`,
             type: "canonical-link"
           });
         }

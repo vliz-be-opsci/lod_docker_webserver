@@ -12,7 +12,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "HTML5 Hyperlink Specification",
     provenance: "W3C / WHATWG HTML Living Standard",
     location: "Resource",
-    extraction: "Inferenced",
+    extraction: "Uplifted",
     specLink: "https://html.spec.whatwg.org/multipage/links.html",
     extraInfo: "Traditional hyperlinks are parsed by crawlers to build a physical site graph. In LOD discovery, they are followed as fallback links when explicit discovery headers are missing, allowing standard web discovery.",
     proposedRdfRetrieval: "1. Parse DOM: Identify <a href=\"URL\"> tags in the page body.\n2. Filter: Skip mailto:, tel:, and local hash anchors.\n3. Map: Relate the current page URI to the target URL.\n\nTriples:\n<> schema:relatedLink <URL> ;\n   rdfs:seeAlso <URL> ."
@@ -26,7 +26,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "RFC 8288 (Web Linking)",
     provenance: "Internet Engineering Task Force (IETF)",
     location: "Resource",
-    extraction: "Direct",
+    extraction: "Uplifted",
     specLink: "https://datatracker.ietf.org/doc/html/rfc8288",
     extraInfo: "Served directly in HTTP headers, avoiding payload parsing. Highly recommended for machine discovery because clients can verify metadata availability before downloading HTML bodies."
   },
@@ -39,7 +39,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "JSON-LD 1.1 W3C Recommendation",
     provenance: "W3C Semantic Web Working Group",
     location: "Resource",
-    extraction: "Direct",
+    extraction: "Uplifted",
     specLink: "https://www.w3.org/TR/json-ld11/",
     extraInfo: "Valid RDF serialized inside an HTML script tag. Popularized by search engines like Google for structured data extraction. Easy to parse using native JSON utilities."
   },
@@ -52,7 +52,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "RDFa Core 1.1 W3C Recommendation",
     provenance: "W3C Semantic Web Working Group",
     location: "Resource",
-    extraction: "Inferenced",
+    extraction: "Uplifted",
     specLink: "https://www.w3.org/TR/rdfa-core/",
     extraInfo: "Embeds RDF attributes directly inside existing HTML tags. Avoids double-templating, but parsing requires a full DOM parser and namespace resolution.",
     proposedRdfRetrieval: "1. Parse DOM: Traverse HTML tags looking for about, typeof, property, resource, and vocab attributes.\n2. Resolve Namespaces: Map prefixes (e.g. schema:) using prefix/vocab definitions.\n3. Map: Extract triples based on W3C RDFa Core 1.1 rules.\n\nTriples:\n<subject> <predicate> <object> ."
@@ -66,7 +66,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "HTML Microdata W3C Working Group Note",
     provenance: "W3C Semantic Web Working Group",
     location: "Resource",
-    extraction: "Inferenced",
+    extraction: "Uplifted",
     specLink: "https://www.w3.org/TR/microdata/",
     extraInfo: "HTML5-native metadata nesting standard. Mostly used with schema.org. In LOD discovery, Microdata statements are translated into RDF triples using standard vocabulary mapping.",
     proposedRdfRetrieval: "1. Parse DOM: Traverse HTML tags looking for itemscope, itemtype, itemprop, and itemid attributes.\n2. Map Types: Map itemtype to rdf:type. Map itemid to subject URI.\n3. Map Properties: Map itemprop keys to predicates using the itemtype vocabulary prefix.\n\nTriples:\n<itemid> a <itemtype> ;\n         <itemprop> <value> ."
@@ -80,7 +80,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "Open Graph Protocol Specification",
     provenance: "Facebook (Meta) Open Graph Initiative",
     location: "Resource",
-    extraction: "Inferenced",
+    extraction: "Uplifted",
     specLink: "https://ogp.me/",
     extraInfo: "Originally created by Facebook to facilitate preview generation. Provides basic metadata (title, type, url, image) which the testbed maps to schema.org equivalents.",
     proposedRdfRetrieval: "1. Parse DOM: Extract <meta property=\"og:key\" content=\"value\"> elements from HTML head.\n2. Map Keys: Translate og:title -> schema:name, og:description -> schema:description, og:image -> schema:image, og:url -> schema:url, og:type -> rdf:type.\n\nTriples:\n<canonicalUrl> a schema:WebPage ;\n               schema:name \"value\" ;\n               schema:description \"value\" ."
@@ -94,7 +94,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "Dublin Core Metadata Element Set (ISO 15836)",
     provenance: "Dublin Core Metadata Initiative (DCMI)",
     location: "Resource",
-    extraction: "Inferenced",
+    extraction: "Uplifted",
     specLink: "https://www.dublincore.org/specifications/dublin-core/dcmi-terms/",
     extraInfo: "A classic metadata standard for describing resources. Expressed via meta tags in HTML headers and mapped directly to Dublin Core metadata terms.",
     proposedRdfRetrieval: "1. Parse DOM: Extract <meta name=\"DC.key\" content=\"value\"> elements from HTML head.\n2. Map Keys: Map directly to Dublin Core metadata namespace terms (http://purl.org/dc/terms/key).\n\nTriples:\n<currentUri> dcterms:title \"value\" ;\n             dcterms:creator \"value\" ;\n             dcterms:identifier \"value\" ."
@@ -108,7 +108,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "RFC 6596 (Canonical Link Relation)",
     provenance: "Internet Engineering Task Force (IETF)",
     location: "Resource",
-    extraction: "Inferenced",
+    extraction: "Uplifted",
     specLink: "https://datatracker.ietf.org/doc/html/rfc6596",
     extraInfo: "Guides search engines to the preferred URL for a resource. Used in LOD node normalization to resolve graph identity and avoid duplicate resource nodes.",
     proposedRdfRetrieval: "1. Parse DOM: Extract <link rel=\"canonical\" href=\"URL\"> from HTML head.\n2. Map Identity: Map the current resource URL to the canonical URL as equivalent.\n\nTriples:\n<currentUri> owl:sameAs <canonicalUrl> ;\n             schema:url <canonicalUrl> ."
@@ -122,7 +122,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "HTML5 Alternate Link Relations / RFC 5988",
     provenance: "W3C / IETF",
     location: "Resource",
-    extraction: "Direct",
+    extraction: "Uplifted",
     specLink: "https://html.spec.whatwg.org/multipage/links.html#link-type-alternate",
     extraInfo: "Points to alternate representations of the current resource. Commonly used in LOD discovery to locate alternate formats like Turtle, JSON-LD, or RDF/XML.",
   },
@@ -135,7 +135,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "RFC 5988 (Web Linking) / Linked Data",
     provenance: "IETF / W3C",
     location: "Resource",
-    extraction: "Direct",
+    extraction: "Uplifted",
     specLink: "https://datatracker.ietf.org/doc/html/rfc8288#section-3",
     extraInfo: "A standard link relation indicating that the linked resource describes the current resource. Used in FAIR Signposting to connect landing pages directly to RDF metadata."
   },
@@ -148,9 +148,10 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "FOAF (Friend of a Friend) Vocabulary Specification",
     provenance: "FOAF Project / W3C Semantic Web",
     location: "Resource",
-    extraction: "Direct",
+    extraction: "Reasoned",
     specLink: "http://xmlns.com/foaf/spec/",
-    extraInfo: "A native RDF vocabulary for describing people and social relationships. Resolves connections between individual resource graphs dynamically."
+    extraInfo: "A native RDF vocabulary for describing people and social relationships. Resolves connections between individual resource graphs dynamically.",
+    proposedRdfRetrieval: "1. Traverse Graph: Find triples with foaf:knows predicate.\n2. Fetch: De-reference the target URI of the knows relation.\n3. Merge & Reason: Add the new graph context to the current model, linking resources dynamically to build a unified profile graph."
   },
   {
     id: DiscoveryStrategy.SAME_AS,
@@ -161,9 +162,10 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "OWL 2 Web Ontology Language W3C Recommendation",
     provenance: "W3C Semantic Web Working Group",
     location: "Resource",
-    extraction: "Direct",
+    extraction: "Reasoned",
     specLink: "https://www.w3.org/TR/owl2-syntax/#Individual_Equality.2FInequality",
-    extraInfo: "Declares that two URIs represent the exact same concept/entity. Crucial for web-scale Linked Data federation and identity reconciliation."
+    extraInfo: "Declares that two URIs represent the exact same concept/entity. Crucial for web-scale Linked Data federation and identity reconciliation.",
+    proposedRdfRetrieval: "1. Match equivalence: Find owl:sameAs relations in the active triples.\n2. Consolidated mapping: Group all URIs in the same owl:sameAs equivalence class.\n3. Entailment: Reason that properties asserted on URI A also hold for URI B."
   },
   {
     id: DiscoveryStrategy.SKOS,
@@ -174,9 +176,10 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "SKOS Simple Knowledge Organization System W3C Recommendation",
     provenance: "W3C Semantic Web Working Group",
     location: "Resource",
-    extraction: "Direct",
+    extraction: "Reasoned",
     specLink: "https://www.w3.org/TR/skos-reference/",
-    extraInfo: "W3C standard for sharing taxonomy and hierarchy relationships (broader, narrower, related). Allows structured vocabulary discovery."
+    extraInfo: "W3C standard for sharing taxonomy and hierarchy relationships (broader, narrower, related). Allows structured vocabulary discovery.",
+    proposedRdfRetrieval: "1. Parse hierarchy: Extract SKOS relations (skos:broader, skos:narrower, skos:related).\n2. Transitive inference: If concept A is narrower than B, and B is narrower than C, reason that A is narrower than C.\n3. Symmetric mapping: If A is skos:related to B, assert that B is skos:related to A."
   },
   {
     id: DiscoveryStrategy.RDF_COLLECTIONS,
@@ -187,9 +190,10 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "RDF 1.1 Schema and Semantics W3C Recommendation",
     provenance: "W3C Semantic Web Working Group",
     location: "Resource",
-    extraction: "Direct",
+    extraction: "Reasoned",
     specLink: "https://www.w3.org/TR/rdf11-mt/",
-    extraInfo: "Models ordered lists (first/rest) or container groups inside RDF. Useful for crawling page sequences in collections."
+    extraInfo: "Models ordered lists (first/rest) or container groups inside RDF. Useful for crawling page sequences in collections.",
+    proposedRdfRetrieval: "1. Walk list nodes: Traverse rdf:first and rdf:rest chains to resolve rdf:List members.\n2. Container reasoning: Traverse rdf:_1, rdf:_2 properties of Bag, Seq, or Alt structures.\n3. Sequence: Order resources based on container/list position for processing."
   },
   {
     id: DiscoveryStrategy.RSS_FEED,
@@ -200,7 +204,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "RSS 2.0 Specification",
     provenance: "RSS Advisory Board",
     location: "Domain",
-    extraction: "Inferenced",
+    extraction: "Uplifted",
     specLink: "https://www.rssboard.org/rss-specification",
     extraInfo: "A standard syndication format. Parsed by crawlers at the domain level to identify newly updated resource pages and extract basic title/description properties.",
     proposedRdfRetrieval: "1. Parse XML: Retrieve the RSS feed payload and parse channel and item elements.\n2. Map Channel: Map channel/title -> schema:name. Map channel to schema:DataCatalog.\n3. Map Items: For each item, map item/link -> subject. Map title -> schema:name, pubDate -> schema:datePublished.\n\nTriples:\n<feedUrl> a schema:DataCatalog ; schema:name \"Feed\" .\n<itemLink> a schema:Dataset ; schema:name \"Item Name\" ; schema:datePublished \"pubDate\" ; schema:isPartOf <feedUrl> ."
@@ -214,7 +218,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "RFC 4287 (Atom Syndication Format)",
     provenance: "Internet Engineering Task Force (IETF)",
     location: "Domain",
-    extraction: "Inferenced",
+    extraction: "Uplifted",
     specLink: "https://datatracker.ietf.org/doc/html/rfc4287",
     extraInfo: "A robust syndication protocol. Unlike RSS, it supports well-defined author, link, and entry elements, facilitating more structured metadata harvesting.",
     proposedRdfRetrieval: "1. Parse XML: Retrieve the Atom feed and parse feed and entry elements.\n2. Map Feed: Map feed/title -> schema:name. Map feed to schema:DataCatalog.\n3. Map Entries: For each entry, map entry/link[rel=alternate] -> subject. Map title -> schema:name, updated -> schema:dateModified.\n\nTriples:\n<feedUrl> a schema:DataCatalog ; schema:name \"Feed\" .\n<entryLink> a schema:Dataset ; schema:name \"Entry Name\" ; schema:dateModified \"updated\" ; schema:isPartOf <feedUrl> ."
@@ -228,7 +232,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "XML Sitemap Schema Protocol v0.9",
     provenance: "Sitemaps.org Consortium (Google, Yahoo, Bing)",
     location: "Domain",
-    extraction: "Inferenced",
+    extraction: "Uplifted",
     specLink: "https://www.sitemaps.org/protocol.html",
     extraInfo: "An XML file mapping all URLs available for crawling. Sitemaps are parsed in LOD discovery to bootstrap discovery and crawl domain-wide resources.",
     proposedRdfRetrieval: "1. Parse XML: Parse the XML sitemap schema looking for url/loc, lastmod, changefreq, and priority.\n2. Map Sitemap: Map sitemap URL to dcat:Catalog.\n3. Map Entries: Map each loc URL to dcat:CatalogRecord. Map lastmod -> dcat:listingDate and schema:dateModified.\n\nTriples:\n<sitemapUrl> a dcat:Catalog .\n<locUrl> a dcat:CatalogRecord ; dcat:listingDate \"lastmod\" ; schema:isPartOf <sitemapUrl> ."
@@ -242,7 +246,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "Robots Exclusion Protocol (RFC 9309)",
     provenance: "Internet Engineering Task Force (IETF)",
     location: "Domain",
-    extraction: "Inferenced",
+    extraction: "Uplifted",
     specLink: "https://datatracker.ietf.org/doc/html/rfc9309",
     extraInfo: "Contains crawling policies and lists Sitemap locations. The testbed checks this file at the host root to discover entry points without site-wide crawling.",
     proposedRdfRetrieval: "1. Parse Text: Fetch robots.txt at host root. Extract Sitemap: URL lines.\n2. Map: Assert relationship between host domain Website and the sitemaps.\n\nTriples:\n<domainUri> a schema:WebSite ;\n            schema:hasPart <sitemapUrl> ."
@@ -256,7 +260,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "Web App Manifest W3C Recommendation",
     provenance: "W3C Web Application Working Group",
     location: "Domain",
-    extraction: "Inferenced",
+    extraction: "Uplifted",
     specLink: "https://www.w3.org/TR/appmanifest/",
     extraInfo: "A JSON file describing a web application's identity. Parsed to capture host-wide application metadata and branding terms.",
     proposedRdfRetrieval: "1. Parse JSON: Retrieve manifest.json. Parse standard keys (name, short_name, description, start_url).\n2. Map Manifest: Map to schema:WebApplication vocabulary terms.\n\nTriples:\n<domainUri> a schema:WebApplication ;\n            schema:name \"Name\" ;\n            schema:description \"Description\" ;\n            schema:targetUrl <start_url> ."
@@ -270,7 +274,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "RFC 8615 (Well-Known URIs)",
     provenance: "Internet Engineering Task Force (IETF)",
     location: "Both",
-    extraction: "Both",
+    extraction: "Uplifted",
     specLink: "https://datatracker.ietf.org/doc/html/rfc8615",
     extraInfo: "Provides standard host-level endpoint discovery (e.g. `/.well-known/api-catalog`). In LOD discovery, it serves as the entry-point fallback for bootstrapping.",
     proposedRdfRetrieval: "1. Probe: Check Well-Known URL (e.g. /.well-known/api-catalog or /.well-known/lod-catalog).\n2. Map JSON: Parse JSON keys (sitemap, resource_map) and map to EntryPoints.\n3. Map Linksets: Parse Linkset mappings directly to assertions.\n\nTriples:\n<domainUri> a schema:WebAPI ;\n            schema:entryPoint [ a schema:EntryPoint ; schema:urlTemplate \"/.well-known/api-catalog\" ] ."
@@ -284,7 +288,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "RESTful API Hypermedia Design Pattern",
     provenance: "W3C / IETF HTTP & REST Guidelines",
     location: "Domain",
-    extraction: "Inferenced",
+    extraction: "Uplifted",
     specLink: "https://www.w3.org/TR/dwbp/",
     extraInfo: "Uses standard hypermedia links in JSON API responses to guide client crawlers from endpoint catalogs to specific resource records.",
     proposedRdfRetrieval: "1. Parse Headers/Payload: Extract hypermedia links in JSON API fields or headers.\n2. Map: Translate IANA relation types to RDF properties (e.g. rel=collection -> iana:collection).\n\nTriples:\n<apiEndpoint> a dcat:DataService ;\n              dcat:endpointURL <apiEndpoint> ;\n              dcat:servesDataset <datasetUri> ."
@@ -298,7 +302,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "RFC 8288 (Web Linking)",
     provenance: "Internet Engineering Task Force (IETF)",
     location: "Resource",
-    extraction: "Inferenced",
+    extraction: "Uplifted",
     specLink: "https://datatracker.ietf.org/doc/html/rfc8288",
     extraInfo: "Advertises collection structures, parent links, and navigation relations (prev, next, up, first) directly in HTTP response headers.",
     proposedRdfRetrieval: "1. Parse Headers: Extract HTTP Link headers with relations (collection, item, up, prev, next).\n2. Map: Map relation strings directly to IANA link relation predicates (http://www.iana.org/assignments/relation/rel).\n\nTriples:\n<currentUri> <http://www.iana.org/assignments/relation/collection> <collectionUri> ;\n             <http://www.iana.org/assignments/relation/up> <parentUri> ."
@@ -312,7 +316,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "HTML5 Standard Link Relations (Prev/Next)",
     provenance: "W3C / WHATWG",
     location: "Resource",
-    extraction: "Inferenced",
+    extraction: "Uplifted",
     specLink: "https://html.spec.whatwg.org/multipage/links.html#link-type-next",
     extraInfo: "Navigational pagination links in HTML head (prev/next) that let crawlers step through dataset pages sequentially without discovering a master catalog.",
     proposedRdfRetrieval: "1. Parse DOM: Extract <link rel=\"next\" href=\"URL\"> or rel=\"prev\" from HTML head.\n2. Map: Map directly to IANA next/prev relation predicates or schema:nextItem/prevItem.\n\nTriples:\n<currentUri> <http://www.iana.org/assignments/relation/next> <nextUrl> ;\n             <http://www.iana.org/assignments/relation/prev> <prevUrl> ."
@@ -326,7 +330,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "RDF 1.1 Turtle W3C Recommendation",
     provenance: "W3C Semantic Web Working Group",
     location: "Resource",
-    extraction: "Direct",
+    extraction: "Uplifted",
     specLink: "https://www.w3.org/TR/turtle/",
     extraInfo: "Turtle RDF graph embedded inside HTML using `<script type='text/turtle'>`. Avoids JSON overhead, though it requires specific client turtle parsing libraries."
   },
@@ -339,7 +343,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "JSON-LD 1.1 W3C Recommendation (Graph Structures)",
     provenance: "W3C Semantic Web Working Group",
     location: "Resource",
-    extraction: "Direct",
+    extraction: "Uplifted",
     specLink: "https://www.w3.org/TR/json-ld11/#syntax-rules-for-the-graph-object",
     extraInfo: "Wraps multiple resource nodes in an `@graph` array inside a single JSON-LD script, permitting bulk semantic metadata delivery."
   },
@@ -352,7 +356,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "OAI Object Reuse and Exchange (OAI-ORE) Specification",
     provenance: "Open Archives Initiative",
     location: "Both",
-    extraction: "Both",
+    extraction: "Uplifted",
     specLink: "https://www.openarchives.org/ore/1.0/toc.html",
     extraInfo: "Host-level index mapping semantic resources to their multiple formats and metadata locations, avoiding page-by-page link guessing.",
     proposedRdfRetrieval: "1. Parse JSON: Parse the resource map document detailing resource URIs and representations.\n2. Map: Map according to OAI Object Reuse and Exchange (OAI-ORE) ontology. Map map -> ore:ResourceMap, aggregation -> ore:Aggregation.\n\nTriples:\n<resourceMapUrl> a ore:ResourceMap ; ore:describes <aggregationUri> .\n<aggregationUri> a ore:Aggregation ; ore:aggregates <resourceUri> ."
@@ -366,9 +370,10 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "PROV-O: The PROV Ontology W3C Recommendation",
     provenance: "W3C Semantic Web Working Group",
     location: "Resource",
-    extraction: "Direct",
+    extraction: "Reasoned",
     specLink: "https://www.w3.org/TR/prov-o/",
-    extraInfo: "W3C vocabulary for describing data origin, attribution, derivation, and processing history, critical for tracking metadata trust."
+    extraInfo: "W3C vocabulary for describing data origin, attribution, derivation, and processing history, critical for tracking metadata trust.",
+    proposedRdfRetrieval: "1. Match lineage: Extract prov:wasDerivedFrom and prov:wasGeneratedBy properties.\n2. Path analysis: Trace parent nodes to verify data provenance origin.\n3. Trust reasoning: Validate signature references and source reliability through historical path lengths."
   },
   {
     id: DiscoveryStrategy.COLLECTION_MEMBERSHIP,
@@ -379,9 +384,10 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "schema.org Vocabulary / OAI-ORE",
     provenance: "Schema.org / W3C Semantic Web",
     location: "Resource",
-    extraction: "Direct",
+    extraction: "Reasoned",
     specLink: "https://schema.org/hasPart",
-    extraInfo: "Uses schema.org and ORE structural relations (hasPart, contains) in RDF datasets to represent logical hierarchies and membership."
+    extraInfo: "Uses schema.org and ORE structural relations (hasPart, contains) in RDF datasets to represent logical hierarchies and membership.",
+    proposedRdfRetrieval: "1. Hierarchy parsing: Locate structural links (schema:hasPart, schema:isPartOf, ore:aggregates).\n2. Transitivity: Infer container inclusion of all sub-members (if A isPartOf B, and B isPartOf C, then A isPartOf C).\n3. Indexing: Build collection nodes from the membership assertions."
   },
   {
     id: DiscoveryStrategy.REVERSE_LINKS,
@@ -392,7 +398,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "Graph Structure / Linked Data Web Design Pattern",
     provenance: "Tim Berners-Lee Linked Data Principles",
     location: "Resource",
-    extraction: "Inferenced",
+    extraction: "Reasoned",
     specLink: "https://www.w3.org/DesignIssues/LinkedData.html",
     extraInfo: "Verifies the presence of reciprocal backlinks to confirm cyclic integrity and crawler navigation robustness across page references.",
     proposedRdfRetrieval: "1. Verify Crawl: Detect bidirectional links between nodes (A -> B and B -> A).\n2. Map: Assert reciprocal link relationship in crawl metrics.\n\nTriples:\n<a> schema:relatedLink <b> .\n<b> schema:relatedLink <a> .\n<a> lod:hasBacklinkVerified <b> ."
@@ -406,7 +412,7 @@ export const STRATEGIES_META: StrategyMeta[] = [
     standard: "Graph Structure / Linked Data Web Design Pattern",
     provenance: "Tim Berners-Lee Linked Data Principles",
     location: "Resource",
-    extraction: "Inferenced",
+    extraction: "Reasoned",
     specLink: "https://www.w3.org/DesignIssues/LinkedData.html",
     extraInfo: "Validates cycle-detection algorithms in the crawler, ensuring it doesn't enter infinite loops when crawling mutually referenced resource pages.",
     proposedRdfRetrieval: "1. Verify Crawl: Identify topological cycles in hyperlink paths (A -> B -> C -> A).\n2. Map: Assert cycle membership properties to verify navigation capability.\n\nTriples:\n<nodeA> lod:inCycleWith <nodeB>, <nodeC> ."
@@ -427,16 +433,16 @@ export const STRATEGIES_META: StrategyMeta[] = [
   }
 ];
 
-export function getStrategyMetadataTags(strategy: DiscoveryStrategy, page: PageConfig, baseUri: string): string {
+export function getStrategyMetadataTags(strategy: DiscoveryStrategy, page: PageConfig, baseUri: string, pages?: PageConfig[]): string {
   const resourceId = page.resourceId;
   const pageUrl = `${baseUri}/pages/${page.id}.html`;
   
   switch (strategy) {
     case DiscoveryStrategy.CANONICAL: {
-      if (resourceId) {
+      if (resourceId && pages) {
         const resIndex = RESOURCES.findIndex(r => r.id === resourceId);
-        if (resIndex !== -1) {
-          return `<link rel="canonical" href="${baseUri}/pages/page-${resIndex}.html">`;
+        if (resIndex !== -1 && pages[resIndex]) {
+          return `<link rel="canonical" href="${baseUri}/pages/${pages[resIndex].id}.html">`;
         }
       }
       return `<link rel="canonical" href="${pageUrl}">`;
@@ -590,7 +596,7 @@ export function getStrategyBodyMarkup(
   }
 }
 
-export function getStrategyHeaders(strategy: DiscoveryStrategy, page: PageConfig, baseUri: string): Record<string, string> {
+export function getStrategyHeaders(strategy: DiscoveryStrategy, page: PageConfig, baseUri: string, pages?: PageConfig[]): Record<string, string> {
   const resourceId = page.resourceId;
   const headers: Record<string, string> = {};
 
@@ -603,11 +609,76 @@ export function getStrategyHeaders(strategy: DiscoveryStrategy, page: PageConfig
       
     case DiscoveryStrategy.HTTP_LINK_RELATIONS:
       // Expose collection, up, etc relations
-      headers["Link"] = `</pages/page-0.html>; rel="collection", </>; rel="up"`;
+      const collectionPageId = pages && pages[0] ? pages[0].id : "page-0";
+      headers["Link"] = `</pages/${collectionPageId}.html>; rel="collection", </>; rel="up"`;
       break;
   }
 
   return headers;
+}
+
+function generatePageId(
+  resourceId: string | null,
+  strategies: DiscoveryStrategy[],
+  existingIds: Set<string>
+): string {
+  if (!resourceId) {
+    return "page";
+  }
+  const resourceName = resourceId.replace(/^resource-/, "");
+
+  const abbrevMap: Record<DiscoveryStrategy, string> = {
+    [DiscoveryStrategy.HTML_LINKS]: "html",
+    [DiscoveryStrategy.LINK_HEADERS]: "hdr",
+    [DiscoveryStrategy.JSON_LD_SCRIPT]: "jsonld",
+    [DiscoveryStrategy.RDFA]: "rdfa",
+    [DiscoveryStrategy.MICRODATA]: "microdata",
+    [DiscoveryStrategy.OPEN_GRAPH]: "og",
+    [DiscoveryStrategy.DUBLIN_CORE]: "dc",
+    [DiscoveryStrategy.CANONICAL]: "canonical",
+    [DiscoveryStrategy.ALTERNATE]: "alternate",
+    [DiscoveryStrategy.DESCRIBED_BY_LINK]: "desc_lnk",
+    [DiscoveryStrategy.FOAF]: "foaf",
+    [DiscoveryStrategy.SAME_AS]: "sameas",
+    [DiscoveryStrategy.SKOS]: "skos",
+    [DiscoveryStrategy.RDF_COLLECTIONS]: "coll",
+    [DiscoveryStrategy.RSS_FEED]: "rss",
+    [DiscoveryStrategy.ATOM_FEED]: "atom",
+    [DiscoveryStrategy.SITEMAP]: "sitemap",
+    [DiscoveryStrategy.ROBOTS]: "robots",
+    [DiscoveryStrategy.MANIFEST]: "manifest",
+    [DiscoveryStrategy.WELL_KNOWN]: "wellknown",
+    [DiscoveryStrategy.API_DISCOVERY]: "api_disc",
+    [DiscoveryStrategy.HTTP_LINK_RELATIONS]: "link_rel",
+    [DiscoveryStrategy.PAGINATION]: "pagination",
+    [DiscoveryStrategy.EMBEDDED_TURTLE]: "turtle",
+    [DiscoveryStrategy.EMBEDDED_JSON_LD_GRAPH]: "jsonld_graph",
+    [DiscoveryStrategy.RESOURCE_MAP]: "resmap",
+    [DiscoveryStrategy.PROVENANCE]: "prov",
+    [DiscoveryStrategy.COLLECTION_MEMBERSHIP]: "membership",
+    [DiscoveryStrategy.REVERSE_LINKS]: "rev_links",
+    [DiscoveryStrategy.CIRCULAR_GRAPHS]: "circular",
+    [DiscoveryStrategy.CONTENT_NEGOTIATION]: "coneg"
+  };
+
+  const activeAbbrevs = strategies
+    .map(s => abbrevMap[s] || s.toLowerCase())
+    .sort();
+
+  let baseId = resourceName;
+  if (activeAbbrevs.length > 0) {
+    baseId += "-" + activeAbbrevs.join("-");
+  } else {
+    baseId += "-none";
+  }
+
+  let finalId = baseId;
+  let counter = 2;
+  while (existingIds.has(finalId)) {
+    finalId = `${baseId}-${counter}`;
+    counter++;
+  }
+  return finalId;
 }
 
 /**
@@ -616,6 +687,7 @@ export function getStrategyHeaders(strategy: DiscoveryStrategy, page: PageConfig
 export function generateMatrix(limit: number): PageConfig[] {
   const matrix: PageConfig[] = [];
   const totalResources = RESOURCES.length;
+  const existingIds = new Set<string>();
 
   // 1. Single strategy pages (page-0 to page-30)
   const singleStrategies = STRATEGIES_META.map(s => s.id);
@@ -630,8 +702,11 @@ export function generateMatrix(limit: number): PageConfig[] {
       resource = RESOURCES.find(r => r.id === "resource-arms-mbon") || resource;
     }
     
+    const pageId = generatePageId(resource.id, [strat], existingIds);
+    existingIds.add(pageId);
+    
     matrix.push({
-      id: `page-${i}`,
+      id: pageId,
       title: `Single Strategy: ${STRATEGIES_META[i].name}`,
       resourceId: resource.id,
       strategies: [strat],
@@ -647,11 +722,15 @@ export function generateMatrix(limit: number): PageConfig[] {
     const stratB = singleStrategies[(i + 1) % singleStrategies.length];
     const resource = RESOURCES[(i + 5) % totalResources];
 
+    const strats = [stratA, stratB];
+    const pageId = generatePageId(resource.id, strats, existingIds);
+    existingIds.add(pageId);
+
     matrix.push({
-      id: `page-${31 + i}`,
+      id: pageId,
       title: `Pairwise: HTML Links + ${STRATEGIES_META[(i + 1) % STRATEGIES_META.length].name}`,
       resourceId: resource.id,
-      strategies: [stratA, stratB],
+      strategies: strats,
       linkedPages: [],
       linkedResources: []
     });
@@ -664,11 +743,15 @@ export function generateMatrix(limit: number): PageConfig[] {
     const stratC = singleStrategies[(i + 2) % singleStrategies.length];
     const resource = RESOURCES[(i + 8) % totalResources];
 
+    const strats = [stratA, stratB, stratC];
+    const pageId = generatePageId(resource.id, strats, existingIds);
+    existingIds.add(pageId);
+
     matrix.push({
-      id: `page-${61 + i}`,
+      id: pageId,
       title: `Triple Combo: HTML + JSON-LD + ${STRATEGIES_META[(i + 2) % STRATEGIES_META.length].name}`,
       resourceId: resource.id,
-      strategies: [stratA, stratB, stratC],
+      strategies: strats,
       linkedPages: [],
       linkedResources: []
     });
@@ -678,22 +761,26 @@ export function generateMatrix(limit: number): PageConfig[] {
   // These exercise a large bunch of tags simultaneously
   for (let i = 0; i < 19; i++) {
     const resource = RESOURCES[i % totalResources];
+    const strats = [
+      DiscoveryStrategy.HTML_LINKS,
+      DiscoveryStrategy.LINK_HEADERS,
+      DiscoveryStrategy.JSON_LD_SCRIPT,
+      DiscoveryStrategy.RDFA,
+      DiscoveryStrategy.MICRODATA,
+      DiscoveryStrategy.OPEN_GRAPH,
+      DiscoveryStrategy.DUBLIN_CORE,
+      DiscoveryStrategy.CANONICAL,
+      DiscoveryStrategy.ALTERNATE,
+      DiscoveryStrategy.DESCRIBED_BY_LINK
+    ];
+    const pageId = generatePageId(resource.id, strats, existingIds);
+    existingIds.add(pageId);
+
     matrix.push({
-      id: `page-${91 + i}`,
+      id: pageId,
       title: `Full Stack Compliance Suite Node ${i}`,
       resourceId: resource.id,
-      strategies: [
-        DiscoveryStrategy.HTML_LINKS,
-        DiscoveryStrategy.LINK_HEADERS,
-        DiscoveryStrategy.JSON_LD_SCRIPT,
-        DiscoveryStrategy.RDFA,
-        DiscoveryStrategy.MICRODATA,
-        DiscoveryStrategy.OPEN_GRAPH,
-        DiscoveryStrategy.DUBLIN_CORE,
-        DiscoveryStrategy.CANONICAL,
-        DiscoveryStrategy.ALTERNATE,
-        DiscoveryStrategy.DESCRIBED_BY_LINK
-      ],
+      strategies: strats,
       linkedPages: [],
       linkedResources: []
     });
@@ -703,8 +790,10 @@ export function generateMatrix(limit: number): PageConfig[] {
   // These represent nodes not linked directly from normal HTML index
   
   // Page 110: Only in robots.txt
+  const page110Id = generatePageId(RESOURCES[0].id, [DiscoveryStrategy.ROBOTS], existingIds);
+  existingIds.add(page110Id);
   matrix.push({
-    id: `page-110`,
+    id: page110Id,
     title: `Hidden: Robots.txt Reference Only`,
     resourceId: RESOURCES[0].id,
     strategies: [DiscoveryStrategy.ROBOTS],
@@ -714,8 +803,10 @@ export function generateMatrix(limit: number): PageConfig[] {
   });
 
   // Page 111: Only in sitemap.xml
+  const page111Id = generatePageId(RESOURCES[1].id, [DiscoveryStrategy.SITEMAP], existingIds);
+  existingIds.add(page111Id);
   matrix.push({
-    id: `page-111`,
+    id: page111Id,
     title: `Hidden: Sitemap.xml Reference Only`,
     resourceId: RESOURCES[1].id,
     strategies: [DiscoveryStrategy.SITEMAP],
@@ -725,8 +816,10 @@ export function generateMatrix(limit: number): PageConfig[] {
   });
 
   // Page 112: Only via Link HTTP Header from another page
+  const page112Id = generatePageId(RESOURCES[2].id, [], existingIds);
+  existingIds.add(page112Id);
   matrix.push({
-    id: `page-112`,
+    id: page112Id,
     title: `Hidden: Link Redirect Only`,
     resourceId: RESOURCES[2].id,
     strategies: [],
@@ -736,8 +829,10 @@ export function generateMatrix(limit: number): PageConfig[] {
   });
 
   // Page 113: Only in JSON-LD RDF @id linkage
+  const page113Id = generatePageId(RESOURCES[3].id, [], existingIds);
+  existingIds.add(page113Id);
   matrix.push({
-    id: `page-113`,
+    id: page113Id,
     title: `Hidden: JSON-LD Graph Reference Only`,
     resourceId: RESOURCES[3].id,
     strategies: [],
@@ -747,8 +842,10 @@ export function generateMatrix(limit: number): PageConfig[] {
   });
 
   // Page 114: Only in resource map
+  const page114Id = generatePageId(RESOURCES[4].id, [DiscoveryStrategy.RESOURCE_MAP], existingIds);
+  existingIds.add(page114Id);
   matrix.push({
-    id: `page-114`,
+    id: page114Id,
     title: `Hidden: Resource Map Listing Only`,
     resourceId: RESOURCES[4].id,
     strategies: [DiscoveryStrategy.RESOURCE_MAP],
@@ -760,11 +857,14 @@ export function generateMatrix(limit: number): PageConfig[] {
   // Rest of hidden pages (page-115 to page-129)
   for (let i = 5; i < 20; i++) {
     const resource = RESOURCES[i % totalResources];
+    const strats = [DiscoveryStrategy.CANONICAL];
+    const pageId = generatePageId(resource.id, strats, existingIds);
+    existingIds.add(pageId);
     matrix.push({
-      id: `page-${110 + i}`,
+      id: pageId,
       title: `Hidden Page Instance ${i}`,
       resourceId: resource.id,
-      strategies: [DiscoveryStrategy.CANONICAL],
+      strategies: strats,
       linkedPages: [],
       linkedResources: [],
       isHidden: true
@@ -774,7 +874,6 @@ export function generateMatrix(limit: number): PageConfig[] {
   // 6. Stress Testing Section (page-130 to page-149, or more up to limit)
   const stressCount = Math.max(20, limit - 130);
   for (let i = 0; i < stressCount; i++) {
-    const pageIdx = 130 + i;
     const resource = RESOURCES[i % totalResources];
     
     // Assign topology features
@@ -782,9 +881,12 @@ export function generateMatrix(limit: number): PageConfig[] {
     if (i % 5 === 0) strats.push(DiscoveryStrategy.CIRCULAR_GRAPHS);
     if (i % 5 === 1) strats.push(DiscoveryStrategy.REVERSE_LINKS);
 
+    const pageId = generatePageId(resource.id, strats, existingIds);
+    existingIds.add(pageId);
+
     matrix.push({
-      id: `page-${pageIdx}`,
-      title: `Stress Node ${i} (${pageIdx})`,
+      id: pageId,
+      title: `Stress Node ${i} (${130 + i})`,
       resourceId: resource.id,
       strategies: strats,
       linkedPages: [],
@@ -808,22 +910,22 @@ export function generateMatrix(limit: number): PageConfig[] {
   
   // Circular Graph: 130 -> 131 -> 132 -> 130
   if (matrix.length > 132) {
-    matrix[130].linkedPages = ["page-131"];
-    matrix[131].linkedPages = ["page-132"];
-    matrix[132].linkedPages = ["page-130"];
+    matrix[130].linkedPages = [matrix[131].id];
+    matrix[131].linkedPages = [matrix[132].id];
+    matrix[132].linkedPages = [matrix[130].id];
   }
 
   // Reverse Links: 133 <-> 134
   if (matrix.length > 134) {
-    matrix[133].linkedPages = ["page-134"];
-    matrix[134].linkedPages = ["page-133"];
+    matrix[133].linkedPages = [matrix[134].id];
+    matrix[134].linkedPages = [matrix[133].id];
   }
 
   // Link page-1 to page-112 via HTTP Link header mapping
   if (matrix.length > 112) {
     // Add custom header to page-1 pointing to page-112
     matrix[1].customHeaders = {
-      "Link": `</pages/page-112.html>; rel="next", </rdf/${RESOURCES[1].id}.ttl>; rel="describedby"`
+      "Link": `</pages/${matrix[112].id}.html>; rel="next", </rdf/${RESOURCES[1].id}.ttl>; rel="describedby"`
     };
   }
 

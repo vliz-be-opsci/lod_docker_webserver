@@ -503,7 +503,7 @@ footer {
 /* Classification matrix styles */
 .classification-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 1.5rem;
   margin-top: 1.5rem;
 }
@@ -596,6 +596,42 @@ footer {
   background: var(--vliz-blue);
   color: #ffffff;
   border-color: var(--vliz-blue);
+}
+
+/* Network Connection Graph styling */
+.network-container {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+@media (max-width: 992px) {
+  .network-container {
+    flex-direction: column !important;
+  }
+  #resource-network, #network-details-card {
+    flex: none !important;
+    width: 100% !important;
+    height: 400px !important;
+    max-height: 400px !important;
+  }
+}
+
+#resource-network {
+  box-shadow: inset 0 2px 6px rgba(53, 77, 155, 0.05);
+  transition: border-color 0.2s ease;
+}
+
+#resource-network:hover {
+  border-color: var(--vliz-blue) !important;
+}
+
+#network-details-card {
+  transition: all 0.3s ease;
+}
+
+#network-details-card:hover {
+  box-shadow: var(--glow-shadow);
 }
 `;
 }

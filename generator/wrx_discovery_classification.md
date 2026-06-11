@@ -1,10 +1,10 @@
 # Taxonomy and Analysis of Web Resource Discovery Methods in the LOD Discovery Framework
 
-This document divides the web resource discovery methods used in the Linked Open Data (LOD) discovery framework into a 2x2 taxonomy and provides a detailed guide on how this taxonomy can be implemented to optimize resource discovery cascades.
+This document divides the web resource discovery methods used in the Linked Open Data (LOD) discovery framework into a 2x3 taxonomy and provides a detailed guide on how this taxonomy can be implemented to optimize resource discovery cascades.
 
 ---
 
-## 1. The 2x2 Classification Taxonomy
+## 1. The 2x3 Classification Taxonomy
 
 The discovery methods are categorized along two primary dimensions:
 
@@ -12,47 +12,49 @@ The discovery methods are categorized along two primary dimensions:
 *   **Resource Level**: The discovery signals are found directly on or within the response from the initial resource URI itself (the "You Are Here" marker).
 *   **Domain Level**: The discovery signals are found by traversing to host-wide, domain-wide, or catalog-wide endpoints that are separate from the initial resource URI.
 
-### Dimension 2: Extraction Type (Interpretation Mechanism)
+### Dimension 2: Interpretation Type (Extraction Mechanism)
 *   **Direct RDF**: The payload retrieved is natively serialized in an RDF format (e.g., Turtle, JSON-LD, RDF/XML) requiring no semantic property mapping or custom translation logic.
-*   **Inferenced RDF**: The payload retrieved is a non-RDF format (e.g., HTML, XML, Web Manifest, plain JSON) that contains metadata or link structures. The client must parse, map, and translate these properties to construct RDF triples.
+*   **Uplifted / Linked RDF**: The payload contains metadata, embedded script tags, or link structures that connect the page to an RDF model, or requires parsing non-RDF properties (Microdata, RDFa, Open Graph) and mapping them to a template to "uplift" these triples.
+*   **Reasoned RDF**: Client-side logic, ontological entailment, or rules are applied to the set of retrieved triples to infer new, enriched, or consolidated properties (e.g. OWL equivalence, SKOS hierarchy, transitivities).
 
-### The Four Quadrants
-Combining these two dimensions yields four distinct discovery categories:
+### The Six Quadrants / Grid Slots
+Combining these two dimensions yields six distinct discovery categories:
 
 ```
-                  +--------------------------------+--------------------------------+
-                  |           DIRECT RDF           |         INFERENCED RDF         |
-+-----------------+--------------------------------+--------------------------------+
-|                 |  Quadrant 1: Resource-Direct   | Quadrant 2: Resource-Inferenced|
-|  RESOURCE LEVEL |  (Direct payload on resource)  |  (Inferred from resource HTML) |
-|                 |  Example: Content Negotiation  |  Example: Microdata, RDFa      |
-+-----------------+--------------------------------+--------------------------------+
-|                 |   Quadrant 3: Domain-Direct    |  Quadrant 4: Domain-Inferenced |
-|   DOMAIN LEVEL  |  (Direct RDF at host-level)    |  (Inferred from host-wide XML) |
-|                 |  Example: DCAT catalog in TTL  |  Example: robots.txt, sitemaps |
-+-----------------+--------------------------------+--------------------------------+
+                  +--------------------------------+--------------------------------+--------------------------------+
+                  |           DIRECT RDF           |     UPLIFTED / LINKED RDF      |          REASONED RDF          |
++-----------------+--------------------------------+--------------------------------+--------------------------------+
+|                 |  Resource-Direct               |  Resource-Uplifted             |  Resource-Reasoned             |
+|  RESOURCE LEVEL |  (Direct content negotiation)  |  (Embedded JSON-LD, Microdata) |  (Equivalence owl:sameAs,      |
+|                 |  Example: Content Negotiation  |  Example: RDFa, Dublin Core    |   FOAF social relationships)   |
++-----------------+--------------------------------+--------------------------------+--------------------------------+
+|                 |  Domain-Direct                 |  Domain-Uplifted               |  Domain-Reasoned               |
+|   DOMAIN LEVEL  |  (N/A - Directly dereferenced) |  (Sitemaps, robots.txt feeds)  |  (Reasoning on aggregated      |
+|                 |                                |  Example: Sitemaps, Linksets   |   domain metrics/properties)   |
++-----------------+--------------------------------+--------------------------------+--------------------------------+
 ```
 
 ### LOD Discovery Overview Diagram
 ![LOD Discovery Overview](images/LOD_discovery_overview_horizontal.png)
 
-### Quadrant Diagrams
+### Category Diagrams
 
-For a detailed breakdown of discovery methods in each quadrant, refer to the diagrams below:
+For a detailed breakdown of discovery methods in each category, refer to the diagrams below:
 
-#### Quadrant 1: Resource-Level Direct RDF
-![Quadrant 1: Resource-Direct Methods](images/12_Resource-Direct_Discovery_Methods_vertical.png)
+#### Category 1: Resource-Level Direct RDF
+![Category 1: Resource-Direct Methods](images/12_Resource-Direct_Discovery_Methods_vertical.png)
 
-#### Quadrant 2: Resource-Level Inferenced RDF
-![Quadrant 2: Resource-Inferred Methods](images/Resource-Inferred_Linked_Data_Discovery_Methods.png)
+#### Category 2: Resource-Level Uplifted RDF
+![Category 2: Resource-Uplifted Methods](images/Resource-Inferred_Linked_Data_Discovery_Methods.png)
 
-#### Quadrant 3: Domain-Level Direct RDF
-![Quadrant 3: Domain-Direct Methods](images/Domain-Direct_Linked_Data_Discovery_vertical.png)
+#### Category 3: Domain-Level Direct RDF
+![Category 3: Domain-Direct Methods](images/Domain-Direct_Linked_Data_Discovery_vertical.png)
 
-#### Quadrant 4: Domain-Level Inferenced RDF
-![Quadrant 4: Domain-Inferred Methods](images/LOD_Discovery_Quadrant_4_Methods.png)
+#### Category 4: Domain-Level Uplifted RDF
+![Category 4: Domain-Uplifted Methods](images/LOD_Discovery_Quadrant_4_Methods.png)
 
 ---
+
 
 ## 2. Analysis of the 31 Discovery Methods
 
@@ -645,19 +647,21 @@ Below is a detailed analysis of all 31 discovery strategies. For each method, we
 
 ## 3. Implementing the Taxonomy in the LOD Discovery Framework
 
-Structuring discovery strategies into this 2x2 taxonomy allows the LOD discovery framework to transition from a single flat cascade into a **multi-phase, highly configurable discovery engine**.
+Structuring discovery strategies into this 2x3 taxonomy allows the LOD discovery framework to transition from a single flat cascade into a **multi-phase, highly configurable discovery engine**.
 
 ### 1. Architectural Strategy Modules
-Instead of a single sequential array, we can group the strategy modules under a directory structure representing their location and extraction nature:
+Instead of a single sequential array, we can group the strategy modules under a directory structure representing their location and interpretation nature:
 
 ```
 src/strategies/
 ├── resource/
-│   ├── direct/         # (Content Negotiation, Link Headers, Embedded JSON-LD, etc.)
-│   └── inferenced/     # (Microdata, RDFa, Open Graph, Dublin Core, etc.)
+│   ├── direct/         # (Content Negotiation)
+│   ├── uplifted/       # (Link Headers, Embedded JSON-LD, Microdata, RDFa, Open Graph)
+│   └── reasoned/       # (SameAs, FOAF knows, SKOS concept hierarchies)
 └── domain/
-    ├── direct/         # (DCAT catalog, RDF Well-Known, RDF Resource Map)
-    └── inferenced/     # (Robots.txt, Sitemaps, RSS/Atom feeds, custom API catalogs)
+    ├── direct/         # (N/A - Direct domain queries)
+    ├── uplifted/       # (Sitemaps, robots.txt, Atom/RSS feeds, JSON API catalogs)
+    └── reasoned/       # (Domain-wide transitivity or containment rules)
 ```
 
 ### 2. Implementation Interface
@@ -668,7 +672,7 @@ export interface DiscoveryStrategy {
   id: string;
   name: string;
   location: "Resource" | "Domain" | "Both";
-  extraction: "Direct" | "Inferenced" | "Both";
+  extraction: "Direct" | "Uplifted" | "Reasoned" | "Both";
   specLink: string;
   standard: string;
   provenance: string;
@@ -682,7 +686,7 @@ export interface DiscoveryStrategy {
 ```
 
 ### 3. Cascading Strategy Controller (The Orchestrator)
-The core orchestrator can run discovery in configurable phases. This lets clients choose between speed (low latency) and completeness (deep harvesting):
+The core orchestrator can run discovery in configurable phases. This lets clients choose between speed (low latency), completeness (deep harvesting), and reasoning depth (logical inference):
 
 ```typescript
 export class LodOrchestrator {
@@ -692,23 +696,25 @@ export class LodOrchestrator {
     this.strategies = loadStrategies();
   }
 
-  async discover(uri: string, mode: "fast" | "resource" | "complete"): Promise<DiscoveryTrace> {
+  async discover(uri: string, mode: "fast" | "resource" | "complete" | "reasoned"): Promise<DiscoveryTrace> {
     const trace = new DiscoveryTrace(uri);
 
     // Phase 1: Resource-Direct (RD) - Lowest latency, highest confidence
     let result = await this.executePhase(uri, "Resource", "Direct", trace);
     if (result.success && mode === "fast") return trace;
 
-    // Phase 2: Resource-Inferenced (RI) - Extracts embedded markup on the page
-    result = await this.executePhase(uri, "Resource", "Inferenced", trace);
+    // Phase 2: Resource-Uplifted (RU) - Extracts embedded markup & headers on the page
+    result = await this.executePhase(uri, "Resource", "Uplifted", trace);
     if (result.success && mode === "resource") return trace;
 
-    // Phase 3: Domain-Direct (DD) - Looks for official domain catalogs/maps
-    result = await this.executePhase(uri, "Domain", "Direct", trace);
+    // Phase 3: Domain-Uplifted (DU) - Deep crawl of sitemaps/robots/feeds
+    if (mode === "complete" || mode === "reasoned") {
+      result = await this.executePhase(uri, "Domain", "Uplifted", trace);
+    }
 
-    // Phase 4: Domain-Inferenced (DI) - Deep crawl of sitemaps/robots/feeds
-    if (mode === "complete") {
-      result = await this.executePhase(uri, "Domain", "Inferenced", trace);
+    // Phase 4: Reasoned RDF (RR) - Run client rules/equivalence reasoning on the collected graph
+    if (mode === "reasoned") {
+      result = await this.applyReasoningRules(trace);
     }
 
     return trace;
@@ -717,8 +723,8 @@ export class LodOrchestrator {
 ```
 
 ### 4. Scoring & Confidence Model Integration
-The 2x2 taxonomy directly influences the confidence scoring of the discovered RDF:
-*   **Resource-Direct (RD) [Rank: 1]**: Direct publisher statements for the specific resource.
-*   **Resource-Inferenced (RI) [Rank: 3]**: Parsed properties on the page (requires translation mapping, which might lose precision).
-*   **Domain-Direct (DD) [Rank: 2]**: High confidence catalog metadata but retrieved from a domain registry, which might have sync delays.
-*   **Domain-Inferenced (DI) [Rank: 4]**: Crawled site index entries (lowest confidence, lacks direct formatting structure).
+The 2x3 taxonomy directly influences the confidence scoring and logical validity of the discovered RDF:
+*   **Resource-Direct (RD) [Rank: 1]**: High-confidence direct publisher statements for the specific resource.
+*   **Resource-Uplifted (RU) / Domain-Uplifted (DU) [Rank: 2]**: Parsed/mapped properties on the page or domain indices (requires mapping schema, which might have sync delays).
+*   **Reasoned RDF (RR) [Rank: 3]**: Triples generated via logical rules (high semantic value, but depends on the source graph validity and reasoning complexity).
+

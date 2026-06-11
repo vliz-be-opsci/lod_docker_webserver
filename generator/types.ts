@@ -49,7 +49,7 @@ export interface StrategyMeta {
   standard: string;
   provenance: string;
   location: "Resource" | "Domain" | "Both";
-  extraction: "Direct" | "Inferenced" | "Both";
+  extraction: "Direct" | "Uplifted" | "Reasoned" | "Both";
   specLink: string;
   extraInfo: string;
   proposedRdfRetrieval?: string;
