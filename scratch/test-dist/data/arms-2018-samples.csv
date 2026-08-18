@@ -1,0 +1,10 @@
+sample_id,date,station,plate_layer,fraction_size,biomass_dry_weight_g,motile_sessile,dominant_taxon
+ARMS-18-001,2018-05-15,BE-NRT-01,Plate 1 (Top),>2mm (Motile),4.82,Motile,Carcinus maenas
+ARMS-18-002,2018-05-15,BE-NRT-01,Plate 2 (Mid),Sessile Scrape,14.15,Sessile,Semibalanus balanoides
+ARMS-18-003,2018-05-15,BE-NRT-01,Plate 3 (Mid),500um-2mm,2.94,Motile,Gammarus oceanicus
+ARMS-18-004,2018-05-15,BE-NRT-01,Plate 4 (Bot),>100um (Micro),1.85,Motile,Nematoda sp.
+ARMS-18-005,2018-08-20,BE-NRT-02,Plate 1 (Top),>2mm (Motile),6.20,Motile,Palaemon serratus
+ARMS-18-006,2018-08-20,BE-NRT-02,Plate 2 (Mid),Sessile Scrape,19.80,Sessile,Mytilus edulis
+ARMS-18-007,2018-08-20,BE-NRT-02,Plate 4 (Bot),>100um (Micro),2.10,Motile,Nematoda sp.
+ARMS-18-008,2018-11-12,BE-NRT-03,Plate 1 (Top),>2mm (Motile),8.90,Motile,Asterias rubens
+ARMS-18-009,2018-11-12,BE-NRT-03,Plate 2 (Mid),Sessile Scrape,22.40,Sessile,Tubularia indivisa

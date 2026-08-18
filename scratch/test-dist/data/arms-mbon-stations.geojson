@@ -1,0 +1,97 @@
+{
+  "type": "FeatureCollection",
+  "name": "ARMS-MBON Belgian North Sea Stations",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "station_id": "BE-NRT-01",
+        "name": "Ostend Port Wall",
+        "depth_m": 6.5,
+        "substrate": "Artificial Granite",
+        "active_since": "2018-05-01"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.921,
+          51.235
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station_id": "BE-NRT-02",
+        "name": "Zeebrugge Breakwater",
+        "depth_m": 9,
+        "substrate": "Concrete Blocks",
+        "active_since": "2018-05-01"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.19,
+          51.355
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station_id": "BE-NRT-03",
+        "name": "Thorntonbank Offshore Wind Farm",
+        "depth_m": 18.2,
+        "substrate": "Turbine Steel Jacket",
+        "active_since": "2019-04-15"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.954,
+          51.542
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station_id": "BE-NRT-04",
+        "name": "Westhinder Sandbank Station",
+        "depth_m": 21,
+        "substrate": "Autonomous Reef Unit",
+        "active_since": "2020-09-01"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.438,
+          51.383
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station_id": "BE-NRT-05",
+        "name": "C-Power Offshore Wind Station",
+        "depth_m": 24.5,
+        "substrate": "Gravity Base Foundation",
+        "active_since": "2020-09-01"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.783,
+          51.583
+        ]
+      }
+    }
+  ]
+}

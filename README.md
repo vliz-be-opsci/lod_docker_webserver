@@ -1,8 +1,8 @@
-# LOD Discovery & Compliance Testbed
+# VLIZ Marine Linked Data Portal & Radical Transparency Reference Webserver
 
-An interactive, high-fidelity Linked Open Data (LOD) Discovery and Compliance Testbed. This server provides a multi-quadrant static testbed matrix containing 150 generated pages to demonstrate, document, and test 30 different web resource discovery methods.
+A production-grade, static Linked Open Data (LOD) Marine Science Data Portal and reference implementation of **Radical Transparency (RT)** as designed by Marc Portier (VLIZ Open Science) and the 10 Linkset Usage Patterns (LSUP).
 
-The testbed categorizes these methods using a 2x2 taxonomy (Resource vs. Domain level, Direct RDF vs. Inferenced RDF) and provides technical specifications, documentation, and proposed RDF extraction designs for each.
+This webserver demonstrates how scientific publishers can provide rich, human-friendly data catalogue browsing alongside standards-compliant machine-actionable web linking (RFC 8288), profile declarations (RFC 6906), linksets (RFC 9264), API catalogs (RFC 9727), DCAT-3 metadata, FAIR Signposting, and robust content negotiation.
 
 ---
 
@@ -13,118 +13,118 @@ The testbed categorizes these methods using a 2x2 taxonomy (Resource vs. Domain 
 * [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/)
 
 ### 1. Build and Generate Assets
-The HTML pages, RSS/Atom feeds, site map, and well-known catalog files are dynamically generated from TypeScript configurations.
+Generate the complete static portal assets, physical data payloads, DCAT catalogue, OpenAPI explorer, and RFC 9264 linksets:
 ```bash
 # Install dependencies
-npm install
+bun install
 
-# Generate the static testbed assets (creates /dist directory)
-npm run generate
+# Run static generator (populates /dist and /docs/compliance)
+bun run generate
 ```
 
-### 2. Run the Server
-Spin up the Dockerized Nginx container to serve the generated assets locally:
+### 2. Run the Dockerized Server
+Spin up the Dockerized Nginx webserver:
 ```bash
 docker compose up --build -d
 ```
-The testbed web UI will be accessible at:
-👉 **[http://localhost:8080](http://localhost:8080)**
 
-To stop the server:
-```bash
-docker compose down
-```
+The portal will be accessible at:
+👉 **[http://localhost:8080](http://localhost:8080)**
 
 ---
 
-## 📂 Project Architecture & Contents
+## 📦 Hosted Marine Resources & Data Payloads
 
-The project is structured to generate a realistic site topology demonstrating various metadata delivery methods:
+The webserver takes over real-world marine entities from Flanders Marine Institute (VLIZ), LifeWatch, EurOBIS, and Pensoft, elevating them into 100% compliant Radical Transparency resources with real downloadable data payloads:
+
+| Resource | Category | Formats & Payloads | Upstream URI |
+| :--- | :--- | :--- | :--- |
+| **ARMS-MBON Metagenomic 18S Observations** | Dataset | CSV, GeoJSON, RO-Crate ZIP, Turtle, JSON-LD | [marineinfo.org/id/dataset/8617](https://marineinfo.org/id/dataset/8617) |
+| **ARMS 2018 Ecological Baseline** | Dataset | CSV (Sampling Matrix), Turtle, JSON-LD | [marineinfo.org/id/dataset/6405](https://marineinfo.org/id/dataset/6405) |
+| **Belgian North Sea Sensor & Buoy Series** | Dataset | CSV, Streaming JSON telemetry, Turtle | [lifewatch.be/data/north-sea-buoys](https://lifewatch.be/data/north-sea-buoys) |
+| **EurOBIS Species Occurrences** | Dataset | GeoJSON (Points), DwC-A ZIP, Turtle | [eurobis.org](https://www.eurobis.org/) |
+| **Flanders Marine Institute (VLIZ)** | Institute | Organization profile, Turtle, JSON-LD, RDF/XML | [marineinfo.org/id/institute/36](https://marineinfo.org/id/institute/36) |
+| **RO-Crate Biodiversity Publishing Paper** | Publication | PDF Full Text, DOI, Turtle, JSON-LD | [doi.org/10.3897/biss.6.94630](https://doi.org/10.3897/biss.6.94630) |
+| **MAREGRAPH Research Initiative** | Project | Project roadmap, Dataset parts, Turtle | [marineinfo.org/id/project/5484](https://marineinfo.org/id/project/5484) |
+| **MarineInfo Subsetting API** | API | OpenAPI 3.0, Swagger UI, JSON responses | [marineinfo.org/api](https://marineinfo.org/api) |
+| **Research Staff (Marc, Katrina, Cedric, Laurian, Joanna)** | People | Researcher profiles, ORCIDs, Turtle, Linksets | [orcid.org/0000-0002-9648-6484](https://orcid.org/0000-0002-9648-6484) |
+
+---
+
+## 🌐 Radical Transparency & Web Architecture
+
+### 1. HTTP Link Headers (RFC 8288 & FAIR Signposting)
+Every HTTP response carries typed link headers:
+```http
+Link: <https://schema.org/Dataset>; rel="profile"
+Link: <https://www.w3.org/TR/vocab-dcat/>; rel="profile"
+Link: <http://localhost:8080/rdf/resource-arms-mbon.ttl>; rel="describedby"; type="text/turtle"
+Link: <http://localhost:8080/rdf/resource-arms-mbon.jsonld>; rel="describedby"; type="application/ld+json"
+Link: <http://localhost:8080/linksets/resource-arms-mbon.linkset.json>; rel="linkset"; type="application/linkset+json"
+Link: <http://localhost:8080/data/arms-mbon-18s.csv>; rel="item"; type="text/csv"
+Link: <http://localhost:8080/catalog/>; rel="collection"
+```
+
+### 2. Standalone Linksets (RFC 9264 `application/linkset+json`)
+Machine-readable JSON linkset documents are served at `/linksets/:id.linkset.json` detailing anchors, profiles, descriptions, distributions, and citations.
+
+### 3. Subsetting API & API Catalog (RFC 9727)
+- **`/.well-known/api-catalog`**: Declares API anchors, OpenAPI 3.0 schema (`service-desc`), and documentation (`service-doc`).
+- **Interactive Swagger UI**: Hosted at `/api/docs/` with live query testing against `/api/v1/observations`.
+
+### 4. W3C DCAT-3 Catalogue
+- **HTML Catalogue**: `/catalog/`
+- **Turtle Serialization**: `/catalog/dcat.ttl`
+- **JSON-LD Serialization**: `/catalog/dcat.jsonld`
+
+### 5. Content Negotiation (RFC 9110 / HTTP 303)
+Persistent resource URIs (`/resource/:id`) negotiate representations dynamically:
+- `Accept: text/turtle` ➔ `303 See Other` to `/rdf/:id.ttl`
+- `Accept: application/ld+json` ➔ `303 See Other` to `/rdf/:id.jsonld`
+- `Accept: text/html` ➔ `303 See Other` to corresponding HTML page (`/datasets/:id.html`, `/institutes/:id.html`, etc.)
+
+---
+
+## 📂 Site Topology & Project Structure
 
 ```
 ├── dist/                          # Generated static assets served by Nginx
-│   ├── .well-known/
-│   │   ├── lod-catalog            # The root LOD crawler landing endpoint (JSON)
-│   │   └── resource-map.json      # OAI-ORE resource map detailing all page formats
-│   ├── pages/                     # 150 simulated resource pages (HTML, alternate TTL, etc.)
-│   ├── index.html                 # Main Dashboard Web UI
-│   ├── feed.rss / feed.atom       # Syndication feeds containing discovery links
-│   └── sitemap.xml / robots.txt   # Search engine crawler instructions
-├── generator/                     # Node/Bun source generator
-│   ├── htmlTemplates.ts           # Premium UI templates and design system styles
-│   ├── index.ts                   # Main build pipeline orchestrating page generation
-│   ├── resources.ts               # Core vocabulary, agency, and tool definitions (e.g. VLIZ/MAREGRAPH)
-│   ├── strategies.ts              # Data definition for the 30 discovery strategies
-│   └── wrx_discovery_classification.md # Taxonomy documentation and RDF extraction specifications
-├── docker-compose.yml             # Docker service definitions
-├── Nginx.conf                      # Nginx configurations (routing, caching, content negotiation headers)
-└── package.json                   # Build scripts & dependencies
+│   ├── .well-known/               # RFC 9727 api-catalog & resource maps
+│   ├── api/                       # OpenAPI 3.0 schema, mock responses, Swagger UI
+│   ├── catalog/                   # DCAT-3 catalog (HTML, TTL, JSON-LD)
+│   ├── data/                      # Physical CSV, GeoJSON, RO-Crate ZIP, PDF files
+│   ├── datasets/                  # Dataset detail pages with live previews
+│   ├── institutes/                # Organization profiles
+│   ├── publications/              # Scholarly article pages with PDF downloads
+│   ├── projects/                  # Research project pages
+│   ├── people/                    # Researcher profiles with ORCID badges
+│   ├── rdf/                       # Direct RDF serializations (TTL, JSON-LD, RDF/XML)
+│   ├── linksets/                  # RFC 9264 JSON Linkset files
+│   ├── index.html                 # Data Portal homepage with search & filters
+│   ├── sitemap.xml / robots.txt   # Sitemap protocol with ResourceSync rs:ln
+│   ├── nginx-coneg.conf           # Dynamic Nginx content negotiation maps
+│   └── nginx-headers.conf         # Dynamic Nginx RFC 8288 Link headers
+├── docs/
+│   ├── compliance/                # Audit & gap analysis notes for each taken-over entity
+│   └── superpowers/               # Design specs and implementation plans
+├── generator/                     # TypeScript build generator
+├── Dockerfile                     # Multi-stage Bun build + Nginx static serving
+├── docker-compose.yml             # Docker service definition
+└── nginx.conf                     # Nginx server configuration with CORS & conneg
 ```
 
 ---
 
-## 📊 The 2x2 Taxonomy
+## 📋 Compliance & Gap Analysis Reports
 
-Discovery methods are classified along two primary dimensions:
-1. **Location of Discovery**:
-   * **Resource Level**: Signals found directly on or within the response from the initial resource URI.
-   * **Domain Level**: Signals found on host-wide, domain-wide, or catalog-wide endpoints separate from the resource.
-2. **Extraction Type**:
-   * **Direct RDF**: Native RDF serialization (e.g., Turtle, JSON-LD) requiring no custom property translation.
-   * **Inferenced RDF**: Non-RDF payloads (e.g., HTML, XML, JSON) containing metadata that must be translated into RDF graphs.
+Detailed audit documents are generated under [`docs/compliance/`](docs/compliance/) analyzing what was originally present at the real upstream sources versus the Radical Transparency enhancements delivered in this webserver:
 
-### LOD Discovery Overview
-![LOD Discovery Overview](generator/images/LOD_discovery_overview_horizontal.png)
-
-### Quadrant Diagrams
-
-For a detailed breakdown of discovery methods in each quadrant, refer to the diagrams below:
-
-#### Quadrant 1: Resource-Level Direct RDF
-![Quadrant 1: Resource-Direct Methods](generator/images/12_Resource-Direct_Discovery_Methods_vertical.png)
-
-#### Quadrant 2: Resource-Level Inferenced RDF
-![Quadrant 2: Resource-Inferred Methods](generator/images/Resource-Inferred_Linked_Data_Discovery_Methods.png)
-
-#### Quadrant 3: Domain-Level Direct RDF
-![Quadrant 3: Domain-Direct Methods](generator/images/Domain-Direct_Linked_Data_Discovery_vertical.png)
-
-#### Quadrant 4: Domain-Level Inferenced RDF
-![Quadrant 4: Domain-Inferred Methods](generator/images/LOD_Discovery_Quadrant_4_Methods.png)
-
----
-
-## ⚠️ Implementation Status Note
-
-> [!IMPORTANT]
-> While this testbed generates valid static payloads demonstrating all 30 discovery channels (including RDF representations, sitemaps, headers, and metadata), **many of the listed discovery methods are not yet fully implemented in the automated harvester/crawler logic itself**. 
->
-> The detailed technical specifications, links to official standards, taxonomy mappings, and proposed RDF retrieval designs are **fully present** and documented in the strategy configurations and [wrx_discovery_classification.md](file:///c:/Users/cedricd/Documents/Github/lod_docker_webserver/generator/wrx_discovery_classification.md). They serve as the implementation blueprint for the crawler ecosystem.
-
----
-
-## 🤝 Contributing
-
-Contributions to expand the LOD Discovery Testbed are welcome!
-
-### How to Add or Modify Discovery Strategies
-1. Open [strategies.ts](file:///c:/Users/cedricd/Documents/Github/lod_docker_webserver/generator/strategies.ts).
-2. Locate the strategy definition array. Add or edit a strategy object following this structure:
-   ```typescript
-   {
-     id: "YOUR_STRATEGY_ID",
-     name: "Human Readable Name",
-     // recommended classification:
-     location: "Resource", // "Resource" | "Domain" | "Both"
-     extraction: "Inferenced", // "Direct" | "Inferenced" | "Both"
-     specLink: "https://url.to/specification",
-     standard: "W3C / RFC XXXX",
-     provenance: "Organization name",
-     extraInfo: "Extra technical context regarding usage."
-   }
-   ```
-3. Run `npm run generate` to rebuild the testbed site.
-4. Verify changes in your browser at `http://localhost:8080`.
-
-### Improving the Dashboard Web UI
-Styles and templates are managed centrally in `generator/htmlTemplates.ts`. The UI uses a modern, responsive CSS design system with custom HSL color tokens and micro-interactions.
+1. [ARMS-MBON Metagenomic 18S Dataset (8617)](docs/compliance/arms-mbon-8617.md)
+2. [Raw ARMS 2018 Ecological Baseline (6405)](docs/compliance/arms-2018-6405.md)
+3. [LifeWatch North Sea Sensor Buoy Series](docs/compliance/north-sea-sensors.md)
+4. [EurOBIS Marine Species Occurrences](docs/compliance/eurobis-occurrences.md)
+5. [Flanders Marine Institute (VLIZ)](docs/compliance/vliz-institute-36.md)
+6. [RO-Crate Biodiversity Publishing Article](docs/compliance/ro-crate-paper.md)
+7. [MAREGRAPH Initiative](docs/compliance/maregraph-project-5484.md)
+8. [MarineInfo Subsetting API](docs/compliance/marineinfo-api.md)
+9. [Research Staff & ORCID Profiles](docs/compliance/orcid-researchers.md)

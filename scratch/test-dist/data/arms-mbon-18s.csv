@@ -1,0 +1,12 @@
+event_id,event_date,station,latitude,longitude,depth_m,phylum,class,order,family,genus,species,read_count,sequence_run
+EVT-2018-01,2018-06-14,BE-NRT-01,51.235,2.921,6.5,Mollusca,Bivalvia,Mytilida,Mytilidae,Mytilus,Mytilus edulis,1420,RUN-2018-ILLUMINA-01
+EVT-2018-02,2018-06-14,BE-NRT-01,51.235,2.921,6.5,Arthropoda,Malacostraca,Sessilia,Balanidae,Balanus,Balanus crenatus,3840,RUN-2018-ILLUMINA-01
+EVT-2018-03,2018-09-22,BE-NRT-02,51.355,3.190,9.0,Bryozoa,Gymnolaemata,Cheilostomatida,Electridae,Electra,Electra pilosa,980,RUN-2018-ILLUMINA-02
+EVT-2018-04,2018-09-22,BE-NRT-02,51.355,3.190,9.0,Annelida,Polychaeta,Sabellida,Serpulidae,Spirobranchus,Spirobranchus triqueter,1890,RUN-2018-ILLUMINA-02
+EVT-2019-01,2019-05-18,BE-NRT-03,51.542,2.954,18.2,Cnidaria,Hydrozoa,Anthoathecata,Tubulariidae,Tubularia,Tubularia indivisa,2450,RUN-2019-ILLUMINA-01
+EVT-2019-02,2019-05-18,BE-NRT-03,51.542,2.954,18.2,Chordata,Ascidiacea,Stolidobranchia,Styelidae,Botryllus,Botryllus schlosseri,3120,RUN-2019-ILLUMINA-01
+EVT-2019-03,2019-08-30,BE-NRT-03,51.542,2.954,18.2,Echinodermata,Asteroidea,Forcipulatida,Asteriidae,Asterias,Asterias rubens,760,RUN-2019-ILLUMINA-02
+EVT-2020-01,2020-10-05,BE-NRT-04,51.383,2.438,21.0,Annelida,Polychaeta,Sabellida,Sabellariidae,Sabellaria,Sabellaria spinulosa,1610,RUN-2020-ILLUMINA-01
+EVT-2020-02,2020-10-05,BE-NRT-04,51.383,2.438,21.0,Porifera,Demospongiae,Suberitida,Suberitidae,Suberites,Suberites ficus,1150,RUN-2020-ILLUMINA-01
+EVT-2020-03,2020-10-05,BE-NRT-04,51.383,2.438,21.0,Arthropoda,Malacostraca,Decapoda,Portunidae,Necora,Necora puber,840,RUN-2020-ILLUMINA-01
+EVT-2020-04,2020-10-12,BE-NRT-05,51.583,2.783,24.5,Cnidaria,Anthozoa,Actiniaria,Actiniidae,Actinia,Actinia equina,1980,RUN-2020-ILLUMINA-02

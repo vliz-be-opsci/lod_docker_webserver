@@ -1,0 +1,101 @@
+{
+  "type": "FeatureCollection",
+  "name": "EurOBIS European Marine Species Occurrences Sample",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "occurrence_id": "OBIS:BE:09211",
+        "scientific_name": "Crangon crangon",
+        "vernacular_name": "Brown Shrimp",
+        "aphia_id": 107575,
+        "event_date": "2024-04-12",
+        "individual_count": 85,
+        "basis_of_record": "HumanObservation"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.89,
+          51.24
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "occurrence_id": "OBIS:BE:09212",
+        "scientific_name": "Gadus morhua",
+        "vernacular_name": "Atlantic Cod",
+        "aphia_id": 126436,
+        "event_date": "2024-04-12",
+        "individual_count": 12,
+        "basis_of_record": "TrawlSample"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.78,
+          51.45
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "occurrence_id": "OBIS:BE:09213",
+        "scientific_name": "Phocoena phocoena",
+        "vernacular_name": "Harbour Porpoise",
+        "aphia_id": 137117,
+        "event_date": "2024-06-03",
+        "individual_count": 3,
+        "basis_of_record": "VisualSighting"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.05,
+          51.31
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "occurrence_id": "OBIS:BE:09214",
+        "scientific_name": "Ensis directus",
+        "vernacular_name": "American Jackknife Clam",
+        "aphia_id": 140733,
+        "event_date": "2024-07-19",
+        "individual_count": 24,
+        "basis_of_record": "BenthicCore"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.72,
+          51.19
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "occurrence_id": "OBIS:BE:09215",
+        "scientific_name": "Asterias rubens",
+        "vernacular_name": "Common Starfish",
+        "aphia_id": 123775,
+        "event_date": "2024-08-01",
+        "individual_count": 50,
+        "basis_of_record": "DredgeSample"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.95,
+          51.52
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "total": 24,
+  "limit": 20,
+  "dataset": "arms-mbon",
+  "data": [
+    {
+      "id": "EVT-2018-01",
+      "station": "BE-NRT-01",
+      "date": "2018-06-14",
+      "taxon": "Mytilus edulis",
+      "value": 1420,
+      "unit": "reads"
+    },
+    {
+      "id": "EVT-2018-02",
+      "station": "BE-NRT-01",
+      "date": "2018-06-14",
+      "taxon": "Balanus crenatus",
+      "value": 3840,
+      "unit": "reads"
+    },
+    {
+      "id": "EVT-2018-03",
+      "station": "BE-NRT-02",
+      "date": "2018-09-22",
+      "taxon": "Electra pilosa",
+      "value": 980,
+      "unit": "reads"
+    },
+    {
+      "id": "EVT-2018-04",
+      "station": "BE-NRT-02",
+      "date": "2018-09-22",
+      "taxon": "Spirobranchus triqueter",
+      "value": 1890,
+      "unit": "reads"
+    },
+    {
+      "id": "EVT-2019-01",
+      "station": "BE-NRT-03",
+      "date": "2019-05-18",
+      "taxon": "Tubularia indivisa",
+      "value": 2450,
+      "unit": "reads"
+    },
+    {
+      "id": "EVT-2019-02",
+      "station": "BE-NRT-03",
+      "date": "2019-05-18",
+      "taxon": "Botryllus schlosseri",
+      "value": 3120,
+      "unit": "reads"
+    },
+    {
+      "id": "EVT-2019-03",
+      "station": "BE-NRT-03",
+      "date": "2019-08-30",
+      "taxon": "Asterias rubens",
+      "value": 760,
+      "unit": "reads"
+    },
+    {
+      "id": "EVT-2020-01",
+      "station": "BE-NRT-04",
+      "date": "2020-10-05",
+      "taxon": "Sabellaria spinulosa",
+      "value": 1610,
+      "unit": "reads"
+    },
+    {
+      "id": "EVT-2020-02",
+      "station": "BE-NRT-04",
+      "date": "2020-10-05",
+      "taxon": "Suberites ficus",
+      "value": 1150,
+      "unit": "reads"
+    },
+    {
+      "id": "EVT-2020-03",
+      "station": "BE-NRT-04",
+      "date": "2020-10-05",
+      "taxon": "Necora puber",
+      "value": 840,
+      "unit": "reads"
+    }
+  ]
+}

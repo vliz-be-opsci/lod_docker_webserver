@@ -1,0 +1,41 @@
+{
+  "count": 4,
+  "datasets": [
+    {
+      "id": "resource-arms-mbon",
+      "title": "ARMS-MBON data on long-term monitoring of hard-bottom communities: 18S results from 2018-2020",
+      "category": "dataset",
+      "distributions": [
+        "/data/arms-mbon-18s.csv",
+        "/data/arms-mbon-stations.geojson",
+        "/data/arms-mbon-rocrate.zip"
+      ]
+    },
+    {
+      "id": "resource-arms-2018",
+      "title": "ARMS 2018 dataset on long-term monitoring and biodiversity assessment of invasive and indigenous hard-bottom communities",
+      "category": "dataset",
+      "distributions": [
+        "/data/arms-2018-samples.csv"
+      ]
+    },
+    {
+      "id": "resource-north-sea-sensors",
+      "title": "Belgian North Sea Sensor & Buoy Time-Series (LifeWatch/VLIZ)",
+      "category": "dataset",
+      "distributions": [
+        "/data/north-sea-sensors-latest.csv",
+        "/data/north-sea-sensors-stream.json"
+      ]
+    },
+    {
+      "id": "resource-eurobis-occurrences",
+      "title": "EurOBIS European Marine Species Taxon Occurrences Sample",
+      "category": "dataset",
+      "distributions": [
+        "/data/eurobis-occurrences.geojson",
+        "/data/eurobis-dwca-sample.zip"
+      ]
+    }
+  ]
+}

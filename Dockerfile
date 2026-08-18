@@ -9,8 +9,9 @@ WORKDIR /app
 COPY package.json tsconfig.json ./
 RUN bun install --frozen-lockfile
 
-# Copy generator files
+# Copy generator files and assets
 COPY generator/ ./generator/
+COPY wrx.pdf ./wrx.pdf
 
 # Set environment variables for build time
 ENV BASE_URL=http://localhost:8080
