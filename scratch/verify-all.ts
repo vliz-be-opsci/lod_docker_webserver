@@ -11,6 +11,7 @@ function verify() {
   // 1. Root & Core files
   const coreFiles = [
     "index.html",
+    "map.html",
     "style.css",
     "sitemap.xml",
     "robots.txt",

@@ -731,6 +731,7 @@ function renderHeader(activeNav: string): string {
       <a href="/catalog/" class="${activeNav === 'catalog' ? 'active' : ''}">DCAT Catalog</a>
       <a href="/api/docs/" class="${activeNav === 'api' ? 'active' : ''}">Subsetting API</a>
       <a href="/publications/ro-crate-paper.html" class="${activeNav === 'publications' ? 'active' : ''}">Publications</a>
+      <a href="/map.html" class="${activeNav === 'map' ? 'active' : ''}">Metro Map</a>
       <a href="/institutes/vliz.html" class="${activeNav === 'institutes' ? 'active' : ''}">Institute</a>
     </nav>
   </header>`;
@@ -748,6 +749,7 @@ function renderRtBox(resourceId: string, isDataset = false): string {
             <li>📜 <a href="/rdf/${resourceId}.jsonld">Download JSON-LD</a></li>
             <li>🔗 <a href="/linksets/${resourceId}.linkset.json">RFC 9264 Linkset JSON</a></li>
             ${isDataset ? `<li>⚡ <a href="/api/docs/">Subsetting API Explorer</a></li>` : ''}
+            <li>🗺️ <a href="/map.html"><strong>Interactive Protocol Metro Map</strong></a></li>
             <li style="border-top: 1px dashed #99f6e4; margin-top: 0.75rem; padding-top: 0.75rem;">📄 <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank">RT Position Paper (PDF)</a></li>
             <li>📊 <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank">Presentation Slides (Google Docs)</a></li>
             <li>🐙 <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank">EOSC Proposals Repo (GitHub)</a></li>
@@ -764,6 +766,7 @@ function renderFooter(): string {
         <strong>VLIZ Marine Linked Data Portal</strong> — Reference Implementation of <em>Radical Transparency</em> (RFC 8288, RFC 9264, RFC 9727).
       </div>
       <div class="footer-links">
+        <a href="/map.html">🗺️ Metro Map</a>
         <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" title="Radical Transparency Position Paper">📄 Position Paper</a>
         <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank" title="Presentation Slides">📊 Slides</a>
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" title="EOSC Semantic Interoperability Proposals Repo">🐙 EOSC Repo</a>
@@ -864,6 +867,9 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
           <p>Practical interoperability via RFC 8288 web linking, RFC 9264 linksets, and bootstrap conventions.</p>
         </div>
         <div class="rt-proposal-buttons">
+          <a href="/map.html" class="rt-btn" style="background: rgba(13, 148, 136, 0.5); border-color: #0d9488;">
+            🗺️ RT Metro Map
+          </a>
           <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" class="rt-btn primary">
             📄 Position Paper (PDF)
           </a>

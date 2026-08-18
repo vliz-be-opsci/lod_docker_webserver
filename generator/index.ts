@@ -16,6 +16,7 @@ import {
   renderPersonPageHtml,
   renderDcatHtml
 } from "./htmlTemplates";
+import { generateMetroMapHtml } from "./metroMapGenerator";
 import { generateComplianceDocs } from "./complianceDocs";
 
 const BASE_URL = process.env.BASE_URL || "http://localhost:8080";
@@ -124,6 +125,9 @@ async function main() {
   // Homepage
   fs.writeFileSync(path.join(DIST_DIR, "index.html"), renderCatalogHomeHtml(RESOURCES, BASE_URL));
 
+  // Radical Transparency Metro Transit Map Page
+  fs.writeFileSync(path.join(DIST_DIR, "map.html"), generateMetroMapHtml(BASE_URL));
+
   // Entity Detail Pages
   for (const res of RESOURCES) {
     const slug = res.id.replace("resource-", "");
@@ -153,6 +157,12 @@ async function main() {
   sitemapXml += `    <rs:ln rel="dcat-catalog" href="${BASE_URL}/catalog/dcat.ttl" />\n`;
   sitemapXml += `    <xhtml:link rel="api-catalog" href="${BASE_URL}/.well-known/api-catalog" />\n`;
   sitemapXml += `    <xhtml:link rel="dcat-catalog" href="${BASE_URL}/catalog/dcat.ttl" />\n`;
+  sitemapXml += `  </url>\n`;
+
+  // Metro Map URL
+  sitemapXml += `  <url>\n    <loc>${BASE_URL}/map.html</loc>\n`;
+  sitemapXml += `    <rs:ln rel="profile" href="https://schema.org/Thing" />\n`;
+  sitemapXml += `    <xhtml:link rel="profile" href="https://schema.org/Thing" />\n`;
   sitemapXml += `  </url>\n`;
 
   // Catalog URL
