@@ -1,10 +1,50 @@
+export interface ResourceDistribution {
+  id: string;
+  title: string;
+  description: string;
+  mediaType: string;
+  format: string;
+  downloadUrl: string;
+  byteSize?: number;
+  profile?: string;
+}
+
+export interface SampleData {
+  columns: string[];
+  rows: Record<string, string | number>[];
+}
+
 export interface Resource {
   id: string;
-  type: string; // e.g. "Person", "Dataset", "Organization", "Software", etc.
+  type: string; // e.g. "Person", "Dataset", "Organization", "Software", "ScholarlyArticle", "Project", "DataService"
   title: string;
   description: string;
   properties: Record<string, string | string[]>;
+  category?: "dataset" | "institute" | "publication" | "project" | "person" | "api";
+  distributions?: ResourceDistribution[];
+  sampleData?: SampleData;
+  sourceUri?: string;
+  doi?: string;
+  license?: string;
+  licenseUrl?: string;
+  temporalCoverage?: string;
+  spatialCoverage?: string;
+  spatialBoundingBox?: {
+    minLat: number;
+    maxLat: number;
+    minLon: number;
+    maxLon: number;
+  };
+  publisher?: string; // Resource ID
+  creators?: string[]; // Resource IDs
+  alternateProfiles?: string[];
+  relatedResources?: {
+    id: string;
+    relationship: string;
+  }[];
 }
+
+export type MarineEntity = Resource;
 
 export enum DiscoveryStrategy {
   HTML_LINKS = "HTML_LINKS",
@@ -56,27 +96,27 @@ export interface StrategyMeta {
 }
 
 export interface PageConfig {
-  id: string; // e.g., "page-a", "page-1"
+  id: string; // e.g., "arms-mbon", "vliz"
   title: string;
-  resourceId: string | null; // Associated semantic resource (if any)
-  strategies: DiscoveryStrategy[]; // Strategies active on this page
-  linkedPages: string[]; // List of page IDs this page links to
-  linkedResources: string[]; // List of resource IDs this page links to
-  isApiRoute?: boolean; // True if this is served as an API json response instead of HTML
-  isHidden?: boolean; // True if it has no incoming HTML links and is only discoverable via special means (sitemap, robots, link headers, etc.)
-  customHeaders?: Record<string, string>; // Extra headers beyond standard discovery
+  resourceId: string | null;
+  strategies: DiscoveryStrategy[];
+  linkedPages: string[];
+  linkedResources: string[];
+  isApiRoute?: boolean;
+  isHidden?: boolean;
+  customHeaders?: Record<string, string>;
 }
 
 export interface GraphNode {
   id: string;
-  type: string; // e.g. "page", "resource", "sitemap", "feed", "manifest"
+  type: string;
   label: string;
 }
 
 export interface GraphEdge {
   source: string;
   target: string;
-  type: string; // relationship / predicate description
+  type: string;
 }
 
 export interface ExpectedGraph {
