@@ -186,6 +186,7 @@ export function generateApiDocsHtml(baseUrl: string): string {
         <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" title="Radical Transparency Position Paper">📄 Position Paper</a>
         <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank" title="Presentation Slides">📊 Slides</a>
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" title="EOSC Semantic Interoperability Proposals Repo">🐙 EOSC Repo</a>
+        <a href="https://www.iana.org/assignments/link-relations" target="_blank" title="IANA Link Relations Registry">🌐 IANA Link Relations</a>
         <a href="/catalog/dcat.ttl">DCAT Turtle</a>
         <a href="/.well-known/api-catalog">API Catalog</a>
         <a href="/sitemap.xml">Sitemap (rs:ln)</a>

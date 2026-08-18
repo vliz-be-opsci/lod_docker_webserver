@@ -751,6 +751,7 @@ function renderRtBox(resourceId: string, isDataset = false): string {
             <li style="border-top: 1px dashed #99f6e4; margin-top: 0.75rem; padding-top: 0.75rem;">📄 <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank">RT Position Paper (PDF)</a></li>
             <li>📊 <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank">Presentation Slides (Google Docs)</a></li>
             <li>🐙 <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank">EOSC Proposals Repo (GitHub)</a></li>
+            <li>🌐 <a href="https://www.iana.org/assignments/link-relations" target="_blank">IANA Link Relations Registry</a></li>
           </ul>
         </div>`;
 }
@@ -766,6 +767,7 @@ function renderFooter(): string {
         <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" title="Radical Transparency Position Paper">📄 Position Paper</a>
         <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank" title="Presentation Slides">📊 Slides</a>
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" title="EOSC Semantic Interoperability Proposals Repo">🐙 EOSC Repo</a>
+        <a href="https://www.iana.org/assignments/link-relations" target="_blank" title="IANA Link Relations Registry">🌐 IANA Link Relations</a>
         <a href="/catalog/dcat.ttl">DCAT Turtle</a>
         <a href="/.well-known/api-catalog">API Catalog</a>
         <a href="/sitemap.xml">Sitemap (rs:ln)</a>
@@ -870,6 +872,9 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
           </a>
           <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" class="rt-btn">
             🐙 EOSC Proposals Repo
+          </a>
+          <a href="https://www.iana.org/assignments/link-relations" target="_blank" class="rt-btn">
+            🌐 IANA Link Relations
           </a>
         </div>
       </div>

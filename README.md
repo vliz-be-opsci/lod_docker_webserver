@@ -128,3 +128,16 @@ Detailed audit documents are generated under [`docs/compliance/`](docs/complianc
 7. [MAREGRAPH Initiative](docs/compliance/maregraph-project-5484.md)
 8. [MarineInfo Subsetting API](docs/compliance/marineinfo-api.md)
 9. [Research Staff & ORCID Profiles](docs/compliance/orcid-researchers.md)
+
+---
+
+## 📚 References & Standards
+
+* **IANA Link Relations Registry**: [https://www.iana.org/assignments/link-relations](https://www.iana.org/assignments/link-relations)
+* **Radical Transparency Position Paper**: [https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf](https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf)
+* **Radical Transparency Slides**: [Google Slides Presentation](https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit)
+* **EOSC Semantic Interoperability Proposals**: [GitHub Repository](https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency)
+* **RFC 8288** — Web Linking
+* **RFC 9264** — Linkset: Media Types and a Link Relation Type for Link Sets
+* **RFC 9727** — The API Catalog Link Relation Type
+* **RFC 6906** — The 'profile' Link Relation Type
