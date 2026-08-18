@@ -140,8 +140,8 @@ async function main() {
     }
   }
 
-  // 9. Generate Sitemap with ResourceSync rs:ln / Signmap
-  console.log(`Generating sitemap.xml and robots.txt...`);
+  // 9. Generate Sitemap with ResourceSync rs:ln and xhtml:link (Signmap)
+  console.log(`Generating sitemap.xml with rs:ln and xhtml:link extensions...`);
   let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   sitemapXml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n`;
   sitemapXml += `        xmlns:rs="http://www.openarchives.org/rs/terms/"\n`;
@@ -151,22 +151,36 @@ async function main() {
   sitemapXml += `  <url>\n    <loc>${BASE_URL}/</loc>\n`;
   sitemapXml += `    <rs:ln rel="api-catalog" href="${BASE_URL}/.well-known/api-catalog" />\n`;
   sitemapXml += `    <rs:ln rel="dcat-catalog" href="${BASE_URL}/catalog/dcat.ttl" />\n`;
+  sitemapXml += `    <xhtml:link rel="api-catalog" href="${BASE_URL}/.well-known/api-catalog" />\n`;
+  sitemapXml += `    <xhtml:link rel="dcat-catalog" href="${BASE_URL}/catalog/dcat.ttl" />\n`;
   sitemapXml += `  </url>\n`;
 
   // Catalog URL
   sitemapXml += `  <url>\n    <loc>${BASE_URL}/catalog/</loc>\n`;
   sitemapXml += `    <rs:ln rel="profile" href="https://www.w3.org/TR/vocab-dcat/" />\n`;
   sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}/catalog/dcat.ttl" type="text/turtle" />\n`;
+  sitemapXml += `    <xhtml:link rel="profile" href="https://www.w3.org/TR/vocab-dcat/" />\n`;
+  sitemapXml += `    <xhtml:link rel="alternate" href="${BASE_URL}/catalog/dcat.ttl" type="text/turtle" />\n`;
+  sitemapXml += `    <xhtml:link rel="alternate" href="${BASE_URL}/catalog/dcat.jsonld" type="application/ld+json" />\n`;
   sitemapXml += `  </url>\n`;
 
   // Each entity URL
   for (const res of RESOURCES) {
     const htmlPath = getHtmlPathForEntity(res);
-    const profileUri = res.alternateProfiles?.[0] || (res.type === "Dataset" ? "https://schema.org/Dataset" : "https://schema.org/Thing");
+    const profileUri = res.alternateProfiles?.[0] || (res.type === "Dataset" ? "https://schema.org/Dataset" : `https://schema.org/${res.type}`);
     sitemapXml += `  <url>\n    <loc>${BASE_URL}${htmlPath}</loc>\n`;
     sitemapXml += `    <rs:ln rel="profile" href="${profileUri}" />\n`;
     sitemapXml += `    <rs:ln rel="linkset" href="${BASE_URL}/linksets/${res.id}.linkset.json" type="application/linkset+json" />\n`;
     sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/rdf/${res.id}.ttl" type="text/turtle" />\n`;
+    sitemapXml += `    <xhtml:link rel="profile" href="${profileUri}" />\n`;
+    sitemapXml += `    <xhtml:link rel="linkset" href="${BASE_URL}/linksets/${res.id}.linkset.json" type="application/linkset+json" />\n`;
+    sitemapXml += `    <xhtml:link rel="describedby" href="${BASE_URL}/rdf/${res.id}.ttl" type="text/turtle" />\n`;
+    sitemapXml += `    <xhtml:link rel="describedby" href="${BASE_URL}/rdf/${res.id}.jsonld" type="application/ld+json" />\n`;
+    if (res.distributions) {
+      for (const d of res.distributions) {
+        sitemapXml += `    <xhtml:link rel="item" href="${BASE_URL}${d.downloadUrl}" type="${d.mediaType}" />\n`;
+      }
+    }
     sitemapXml += `  </url>\n`;
   }
 
