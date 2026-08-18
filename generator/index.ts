@@ -16,6 +16,7 @@ import {
   renderPersonPageHtml,
   renderDcatHtml
 } from "./htmlTemplates";
+import { generateComplianceDocs } from "./complianceDocs";
 
 const BASE_URL = process.env.BASE_URL || "http://localhost:8080";
 const DIST_DIR = path.resolve(process.cwd(), "dist");
@@ -232,6 +233,10 @@ async function main() {
   }
 
   fs.writeFileSync(path.join(DIST_DIR, "nginx-headers.conf"), headersConf);
+
+  // 12. Generate Radical Transparency Compliance & Gap Documentation
+  console.log(`Generating Radical Transparency compliance audit documentation in docs/compliance/...`);
+  generateComplianceDocs();
 
   console.log(`✅ Generation completed successfully! All assets written to /dist.`);
 }
