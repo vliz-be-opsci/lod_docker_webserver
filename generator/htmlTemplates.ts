@@ -1,27 +1,41 @@
-import { PageConfig } from "./types";
+import { MarineEntity } from "./types";
+import { getResourceById, RESOURCES } from "./resources";
 
 export function getCssContent(): string {
-  return `/* LOD Discovery Testbed Design System */
+  return `/* VLIZ Marine Linked Data Portal - Design System */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg-color: #fffbe6; /* Licht zand background */
-  --panel-bg: #ffffff; /* Wit panels */
-  --border-color: rgba(53, 77, 155, 0.12); /* Subtle VLIZ-blauw border */
-  --text-primary: #1e293b; /* Dark Slate */
-  --text-secondary: #475569; /* Slate */
-  --text-muted: #64748b; /* Muted Slate */
-  --vliz-blue: #354d9b; /* VLIZ-blauw */
-  --vliz-blue-glow: rgba(53, 77, 155, 0.06);
-  --sea-blue: #31b7bc; /* Zeeblauw */
-  --sea-blue-glow: rgba(49, 183, 188, 0.08);
-  --sand: #f7c97c; /* Zand */
-  --sand-glow: rgba(247, 201, 124, 0.15);
-  --light-sand: #fff7d0; /* Licht zand */
+  --bg-primary: #f8fafc;
+  --bg-subtle: #f1f5f9;
+  --panel-bg: #ffffff;
+  --panel-border: rgba(15, 23, 42, 0.08);
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  
+  --vliz-blue: #1b3a6b;
+  --vliz-blue-dark: #0f2444;
+  --vliz-blue-light: #255091;
+  --marine-teal: #0d9488;
+  --marine-cyan: #06b6d4;
+  --teal-glow: rgba(13, 148, 136, 0.12);
+  
+  --badge-bg: #e0f2fe;
+  --badge-text: #0369a1;
+  --badge-border: #bae6fd;
+  
+  --accent-gold: #f59e0b;
   --success: #10b981;
-  --card-hover: rgba(53, 77, 155, 0.03);
-  --glass-shadow: 0 4px 20px 0 rgba(53, 77, 155, 0.05);
-  --glow-shadow: 0 4px 14px rgba(53, 77, 155, 0.15);
+  --code-bg: #1e293b;
+  --code-text: #e2e8f0;
+  
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
 }
 
 * {
@@ -31,56 +45,57 @@ export function getCssContent(): string {
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
-  background-color: var(--bg-color);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-image: 
-    radial-gradient(circle at 15% 20%, rgba(49, 183, 188, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 85% 80%, rgba(247, 201, 124, 0.08) 0%, transparent 40%);
-  background-attachment: fixed;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
+/* Header & Nav */
 header {
-  background: var(--vliz-blue);
+  background: linear-gradient(135deg, var(--vliz-blue-dark) 0%, var(--vliz-blue) 100%);
   color: #ffffff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 1.25rem 2rem;
+  padding: 1rem 2rem;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 100;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 .logo-container {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .logo-badge {
-  background: var(--sea-blue);
+  background: var(--marine-teal);
   color: #ffffff;
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
   letter-spacing: 1px;
 }
 
 h1.site-title {
   margin: 0;
   font-family: 'Outfit', sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: #ffffff;
+}
+
+h1.site-title a {
+  color: #ffffff;
+  text-decoration: none;
 }
 
 .nav-links {
@@ -90,606 +105,1328 @@ h1.site-title {
 }
 
 .nav-links a {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 500;
-  padding: 0.25rem 0;
-  transition: color 0.2s ease;
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
 }
 
 .nav-links a:hover {
   color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-links a.active {
-  color: var(--sand);
-  border-bottom: 2px solid var(--sand);
-}
-
-main {
-  flex: 1;
-  max-width: 1600px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 2rem;
-  display: grid;
-  grid-template-columns: 340px 1fr; /* Updated to 2 columns */
-  gap: 2rem;
-}
-
-/* Sidebar and Panel Containers */
-.panel {
-  background: var(--panel-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: var(--glass-shadow);
-  display: flex;
-  flex-direction: column;
-  max-height: calc(100vh - 180px);
-}
-
-.panel h2 {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.2rem;
-  color: var(--vliz-blue);
-  margin-top: 0;
-  margin-bottom: 1.25rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.scrollable {
-  overflow-y: auto;
-  flex: 1;
-  padding-right: 0.5rem;
-}
-
-.scrollable::-webkit-scrollbar {
-  width: 6px;
-}
-
-.scrollable::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollable::-webkit-scrollbar-thumb {
-  background: rgba(53, 77, 155, 0.15);
-  border-radius: 3px;
-}
-
-.scrollable::-webkit-scrollbar-thumb:hover {
-  background: rgba(53, 77, 155, 0.25);
-}
-
-/* List styles */
-.item-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.section-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--vliz-blue);
-  letter-spacing: 0.75px;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-  padding-left: 0.5rem;
-  border-left: 2px solid var(--sea-blue);
-}
-
-.item-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.6rem 0.8rem;
-  border-radius: 6px;
-  color: var(--text-secondary);
-  text-decoration: none;
-  background: rgba(53, 77, 155, 0.02);
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
-  font-size: 0.9rem;
-}
-
-.item-link:hover {
-  background: var(--card-hover);
-  border-color: var(--border-color);
-  color: var(--vliz-blue);
-  transform: translateX(4px);
-}
-
-.item-link.active {
-  background: var(--vliz-blue-glow);
-  border-color: var(--vliz-blue);
-  color: var(--vliz-blue);
-  font-weight: 600;
-}
-
-.item-link.active-on-page {
-  background: var(--sea-blue-glow);
-  border-color: var(--sea-blue);
-  color: var(--vliz-blue);
-  border-left: 3px solid var(--sea-blue);
-}
-
-.item-link .badge {
-  font-size: 0.75rem;
-  padding: 0.15rem 0.4rem;
-  border-radius: 4px;
-  background: rgba(53, 77, 155, 0.08);
-  color: var(--vliz-blue);
-}
-
-.item-link.active .badge {
-  background: var(--vliz-blue);
   color: #ffffff;
+  background: rgba(13, 148, 136, 0.4);
+  font-weight: 600;
 }
 
-/* Details and Cards */
-.resource-header {
-  margin-bottom: 1.5rem;
+/* Hero Section */
+.hero {
+  background: linear-gradient(180deg, #ffffff 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--panel-border);
+  padding: 3.5rem 2rem 2.5rem;
+  text-align: center;
 }
 
-.resource-type-badge {
+.hero-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero-tag {
   display: inline-block;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.8rem;
+  background: var(--teal-glow);
+  color: var(--marine-teal);
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--vliz-blue);
-  background: var(--vliz-blue-glow);
-  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.85rem;
   border-radius: 9999px;
-  border: 1px solid var(--border-color);
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.resource-title {
+.hero h2 {
   font-family: 'Outfit', sans-serif;
-  font-size: 2.2rem;
-  color: var(--vliz-blue);
-  margin: 0.5rem 0;
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 1rem;
+  line-height: 1.2;
 }
 
-.resource-desc {
-  font-size: 1.1rem;
+.hero p {
+  font-size: 1.15rem;
   color: var(--text-secondary);
-  margin-top: 0;
-  margin-bottom: 1.5rem;
+  margin: 0 0 2rem;
 }
 
-.properties-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 2rem;
-  background: #ffffff;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-}
-
-.properties-table th, .properties-table td {
-  padding: 1rem;
-  text-align: left;
-}
-
-.properties-table th {
-  background: var(--vliz-blue-glow);
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.95rem;
-  color: var(--vliz-blue);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.properties-table td {
-  border-bottom: 1px solid var(--border-color);
-  font-size: 0.95rem;
-}
-
-.properties-table tr:last-child td {
-  border-bottom: none;
-}
-
-.property-key {
-  font-family: monospace;
-  color: var(--vliz-blue);
-  font-weight: 600;
-  width: 40%;
-  word-break: break-all;
-}
-
-.property-val {
-  word-break: break-all;
-}
-
-.property-val a {
-  color: var(--sea-blue);
-  text-decoration: none;
-  font-weight: 500;
-  transition: text-decoration 0.2s ease;
-}
-
-.property-val a:hover {
-  text-decoration: underline;
-}
-
-.alt-formats {
+.stats-bar {
   display: flex;
-  gap: 1rem;
+  justify-content: center;
+  gap: 2.5rem;
   margin-top: 1.5rem;
 }
 
-.btn-format {
+.stat-item {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  text-decoration: none;
+}
+
+.stat-num {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--vliz-blue);
+}
+
+.stat-label {
   font-size: 0.85rem;
-  font-weight: 600;
-  border: 1px solid var(--border-color);
-  background: #ffffff;
-  color: var(--text-primary);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Layout */
+.main-container {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2.5rem 2rem;
+  flex: 1;
+}
+
+/* Search & Filters */
+.filter-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.filter-pills {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  color: var(--text-secondary);
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.btn-format:hover {
-  background: var(--card-hover);
+.filter-btn:hover, .filter-btn.active {
+  background: var(--vliz-blue);
+  color: #ffffff;
   border-color: var(--vliz-blue);
+}
+
+/* Cards Grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(27, 58, 107, 0.2);
 }
 
-.btn-format.ttl { border-color: var(--vliz-blue); color: var(--vliz-blue); }
-.btn-format.jsonld { border-color: var(--sea-blue); color: var(--sea-blue); }
-.btn-format.rdf { border-color: var(--sand); color: #b48a3c; }
-
-/* Strategy details (re-styled for inline content blocks) */
-.strategy-card {
-  background: rgba(53, 77, 155, 0.01);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1rem;
-  margin-bottom: 1rem;
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
 }
 
-.strategy-card.active {
-  border-left: 4px solid var(--sea-blue);
-  background: var(--sea-blue-glow);
+.card-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.5px;
 }
 
-.strategy-card-header {
+.card-badge.dataset { background: #dcfce7; color: #166534; }
+.card-badge.institute { background: #e0f2fe; color: #075985; }
+.card-badge.publication { background: #fef3c7; color: #92400e; }
+.card-badge.project { background: #f3e8ff; color: #6b21a8; }
+.card-badge.api { background: #ffedd5; color: #9a3412; }
+.card-badge.person { background: #f1f5f9; color: #334155; }
+
+.card-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+  line-height: 1.35;
+}
+
+.card-title a {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.card-title a:hover {
+  color: var(--vliz-blue);
+}
+
+.card-desc {
+  font-size: 0.925rem;
+  color: var(--text-secondary);
+  margin: 0 0 1.25rem;
+  flex-grow: 1;
+}
+
+.card-tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.tag {
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--panel-border);
+  padding-top: 1rem;
+  font-size: 0.85rem;
+}
+
+.card-link {
+  color: var(--vliz-blue);
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.card-link:hover {
+  text-decoration: underline;
+}
+
+/* Detail Page Layout */
+.detail-header {
+  background: #ffffff;
+  border-bottom: 1px solid var(--panel-border);
+  padding: 2.5rem 2rem;
+  margin-bottom: 2rem;
+}
+
+.detail-header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.detail-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0.5rem 0 1rem;
+  line-height: 1.2;
+}
+
+.meta-badges {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.meta-badge {
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2rem;
+}
+
+.content-section {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.section-heading {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Data Table */
+.data-table-container {
+  overflow-x: auto;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm);
+}
+
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  text-align: left;
+}
+
+table.data-table th {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--panel-border);
+  white-space: nowrap;
+}
+
+table.data-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--panel-border);
+  color: var(--text-secondary);
+}
+
+table.data-table tr:nth-child(even) {
+  background: #fbfdff;
+}
+
+/* Distribution Download Cards */
+.dist-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.dist-card {
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm);
+  padding: 1.25rem;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.dist-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
 }
 
-.strategy-title {
+.dist-format {
   font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  color: var(--marine-teal);
   font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--vliz-blue);
 }
 
-.strategy-status {
-  font-size: 0.75rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 9999px;
-  font-weight: 600;
-}
-
-.strategy-status.active {
-  background: var(--sea-blue);
-  color: #ffffff;
-}
-
-.strategy-status.inactive {
-  background: rgba(0, 0, 0, 0.05);
+.dist-size {
+  font-size: 0.8rem;
   color: var(--text-muted);
 }
 
-.strategy-desc {
+.dist-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 0 0 0.5rem;
+}
+
+.dist-desc {
   font-size: 0.85rem;
   color: var(--text-secondary);
+  margin: 0 0 1rem;
+}
+
+.btn-download {
+  background: var(--vliz-blue);
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  transition: background 0.2s ease;
+}
+
+.btn-download:hover {
+  background: var(--vliz-blue-dark);
+}
+
+/* Sidebar Meta Box */
+.sidebar-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+}
+
+.meta-group {
+  margin-bottom: 1.25rem;
+}
+
+.meta-group:last-child {
+  margin-bottom: 0;
+}
+
+.meta-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 0.35rem;
+}
+
+.meta-value {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.meta-value a {
+  color: var(--vliz-blue);
+  text-decoration: none;
+}
+
+.meta-value a:hover {
+  text-decoration: underline;
+}
+
+.author-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--bg-subtle);
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  margin: 0.2rem 0.2rem 0.2rem 0;
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.author-pill:hover {
+  background: #e2e8f0;
+}
+
+/* RDF & Linkset Links Box */
+.rt-box {
+  background: #f0fdfa;
+  border: 1px solid #99f6e4;
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+}
+
+.rt-box h4 {
+  margin: 0 0 0.75rem;
+  color: #0f766e;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+}
+
+.rt-links-list {
+  list-style: none;
+  padding: 0;
   margin: 0;
 }
 
-.strategy-code {
-  font-family: monospace;
-  font-size: 0.75rem;
-  background: var(--light-sand);
-  padding: 0.6rem;
-  border-radius: 6px;
-  margin-top: 0.5rem;
-  overflow-x: auto;
-  border: 1px solid var(--border-color);
-  color: var(--vliz-blue);
+.rt-links-list li {
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.rt-links-list a {
+  color: #0d9488;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.rt-links-list a:hover {
+  text-decoration: underline;
 }
 
 /* Footer */
 footer {
-  border-top: 1px solid var(--border-color);
-  padding: 1.5rem;
-  text-align: center;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  background: rgba(53, 77, 155, 0.03);
+  background: var(--vliz-blue-dark);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 2.5rem 2rem;
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
 }
 
-/* Dashboard styles */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  margin-top: 1rem;
-}
-
-.dashboard-card {
-  background: #ffffff;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1.5rem;
-}
-
-.dashboard-card h3 {
-  margin-top: 0;
-  font-family: 'Outfit', sans-serif;
-  color: var(--vliz-blue);
-}
-
-.stats-number {
-  font-size: 3rem;
-  font-family: 'Outfit', sans-serif;
-  font-weight: 800;
-  color: var(--vliz-blue);
-  line-height: 1;
-  margin: 0.5rem 0;
-}
-
-.doc-info {
-  background: var(--vliz-blue-glow);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1.25rem;
-  margin-top: 1rem;
-}
-
-.doc-info h3 {
-  margin-top: 0;
-  font-size: 1rem;
-  color: var(--vliz-blue);
-}
-
-/* Badge styles */
-.badge-pill {
-  display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.15rem 0.45rem;
-  border-radius: 9999px;
-  background: var(--vliz-blue-glow);
-  color: var(--vliz-blue);
-  border: 1px solid var(--border-color);
-  margin-right: 0.25rem;
-  margin-bottom: 0.25rem;
-}
-
-/* Custom layout adjustments for dynamic rendering */
-@media (max-width: 1200px) {
-  main {
-    grid-template-columns: 1fr;
-  }
-  .panel {
-    max-height: none;
-  }
-}
-
-/* Classification matrix styles */
-.classification-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 1.5rem;
-  margin-top: 1.5rem;
-}
-
-.quadrant-card {
-  background: var(--vliz-blue-glow);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1.5rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.quadrant-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--glow-shadow);
-  border-color: var(--sea-blue);
-  background: #ffffff;
-}
-
-.quadrant-card.active {
-  border-color: var(--vliz-blue);
-  background: var(--sand-glow);
-  box-shadow: var(--glow-shadow);
-}
-
-.quadrant-header {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--vliz-blue);
-  margin-bottom: 0.5rem;
+.footer-container {
+  max-width: 1400px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.quadrant-badge {
-  font-size: 0.7rem;
-  background: var(--sea-blue-glow);
-  color: var(--sea-blue);
-  border: 1px solid rgba(49, 183, 188, 0.2);
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
-}
-
-.quadrant-desc {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin-bottom: 1rem;
-}
-
-.quadrant-count {
-  font-size: 1.75rem;
-  font-family: 'Outfit', sans-serif;
-  font-weight: 800;
-  color: var(--vliz-blue);
-}
-
-.strategies-list-container {
-  margin-top: 2rem;
-  background: #ffffff;
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 1.5rem;
-}
-
-.classification-tabs {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
   flex-wrap: wrap;
-}
-
-.tab-btn {
-  background: var(--vliz-blue-glow);
-  border: 1px solid var(--border-color);
-  color: var(--vliz-blue);
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.85rem;
-  transition: all 0.2s ease;
-}
-
-.tab-btn:hover, .tab-btn.active {
-  background: var(--vliz-blue);
-  color: #ffffff;
-  border-color: var(--vliz-blue);
-}
-
-/* Network Connection Graph styling */
-.network-container {
-  display: flex;
   gap: 1.5rem;
-  width: 100%;
 }
 
-@media (max-width: 992px) {
-  .network-container {
-    flex-direction: column !important;
+.footer-links a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  margin-left: 1.5rem;
+}
+
+.footer-links a:hover {
+  color: #ffffff;
+}
+
+@media (max-width: 900px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
   }
-  #resource-network, #network-details-card {
-    flex: none !important;
-    width: 100% !important;
-    height: 400px !important;
-    max-height: 400px !important;
+  .cards-grid {
+    grid-template-columns: 1fr;
   }
-}
-
-#resource-network {
-  box-shadow: inset 0 2px 6px rgba(53, 77, 155, 0.05);
-  transition: border-color 0.2s ease;
-}
-
-#resource-network:hover {
-  border-color: var(--vliz-blue) !important;
-}
-
-#network-details-card {
-  transition: all 0.3s ease;
-}
-
-#network-details-card:hover {
-  box-shadow: var(--glow-shadow);
+  header {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }
 `;
 }
 
-export function renderPageHtml(
-  page: PageConfig,
-  activeStrategyMetadataTags: string,
-  activeStrategyBodyMarkup: string,
-  navigationHtml: string,
-  centerContentHtml: string
-): string {
-  const pageTitle = page.title;
+function renderHeader(activeNav: string): string {
+  return `
+  <header>
+    <div class="logo-container">
+      <span class="logo-badge">LOD</span>
+      <h1 class="site-title"><a href="/">VLIZ Marine Data Portal</a></h1>
+    </div>
+    <nav class="nav-links">
+      <a href="/" class="${activeNav === 'datasets' ? 'active' : ''}">Datasets</a>
+      <a href="/catalog/" class="${activeNav === 'catalog' ? 'active' : ''}">DCAT Catalog</a>
+      <a href="/api/docs/" class="${activeNav === 'api' ? 'active' : ''}">Subsetting API</a>
+      <a href="/publications/ro-crate-paper.html" class="${activeNav === 'publications' ? 'active' : ''}">Publications</a>
+      <a href="/institutes/vliz.html" class="${activeNav === 'institutes' ? 'active' : ''}">Institute</a>
+    </nav>
+  </header>`;
+}
+
+function renderFooter(): string {
+  return `
+  <footer>
+    <div class="footer-container">
+      <div>
+        <strong>VLIZ Marine Linked Data Portal</strong> — Reference Implementation of <em>Radical Transparency</em> (RFC 8288, RFC 9264, RFC 9727).
+      </div>
+      <div class="footer-links">
+        <a href="/catalog/dcat.ttl">DCAT Turtle</a>
+        <a href="/.well-known/api-catalog">API Catalog</a>
+        <a href="/sitemap.xml">Sitemap (rs:ln)</a>
+        <a href="https://github.com/vliz-be-opsci/lod_docker_webserver">GitHub</a>
+      </div>
+    </div>
+  </footer>`;
+}
+
+export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string): string {
+  const datasets = resources.filter(r => r.category === "dataset");
+  const pubs = resources.filter(r => r.category === "publication");
+  const apis = resources.filter(r => r.category === "api");
+  const institutes = resources.filter(r => r.category === "institute");
+  const people = resources.filter(r => r.category === "person");
+
+  let cardsHtml = "";
+  for (const res of resources) {
+    const slug = res.id.replace("resource-", "");
+    const href = 
+      res.category === "dataset" ? `/datasets/${slug}.html` :
+      res.category === "institute" ? `/institutes/${slug}.html` :
+      res.category === "publication" ? `/publications/${slug}.html` :
+      res.category === "project" ? `/projects/${slug}.html` :
+      res.category === "person" ? `/people/${slug}.html` :
+      res.category === "api" ? `/api/docs/` : `/pages/${slug}.html`;
+
+    const tagFormats = res.distributions ? res.distributions.map(d => `<span class="tag">${d.format}</span>`).join(" ") : `<span class="tag">RDF / HTML</span>`;
+
+    cardsHtml += `
+      <div class="card" data-category="${res.category || 'other'}">
+        <div class="card-header">
+          <span class="card-badge ${res.category || 'other'}">${res.category || res.type}</span>
+          ${res.doi ? `<span class="tag">DOI</span>` : ''}
+        </div>
+        <h3 class="card-title"><a href="${href}">${res.title}</a></h3>
+        <p class="card-desc">${res.description}</p>
+        <div class="card-tags">
+          ${tagFormats}
+        </div>
+        <div class="card-footer">
+          <span style="color: var(--text-muted); font-size: 0.8rem;">URI: /resource/${res.id}</span>
+          <a href="${href}" class="card-link">Explore Resource &rarr;</a>
+        </div>
+      </div>`;
+  }
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${pageTitle} | LOD Testbed</title>
-  <link rel="stylesheet" href="/style.css?v=2">
-  ${activeStrategyMetadataTags}
+  <title>VLIZ Marine Linked Data Portal & Research Catalogue</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="alternate" type="text/turtle" href="/catalog/dcat.ttl">
+  <link rel="alternate" type="application/ld+json" href="/catalog/dcat.jsonld">
+  <link rel="api-catalog" type="application/linkset+json" href="/.well-known/api-catalog">
 </head>
 <body>
-  <header>
-    <div class="logo-container">
-      <div class="logo-badge">LOD</div>
-      <h1 class="site-title">Discovery Compliance Testbed</h1>
-    </div>
-    <nav class="nav-links">
-      <a href="/" class="${page.id === 'index' ? 'active' : ''}">Overview</a>
-      <a href="/pages/matrix.html" class="${page.id === 'matrix' ? 'active' : ''}">Total Pages Test</a>
-      <a href="/pages/classification.html" class="${page.id === 'classification' ? 'active' : ''}">Classification Matrix</a>
-      <a href="/graph/expected.json" target="_blank">Expected Graph</a>
-      <a href="/.well-known/resource-map.json" target="_blank">Resource Map</a>
-    </nav>
-  </header>
-  
-  <main>
-    <!-- Left Navigation Bar -->
-    <aside class="panel">
-      <h2>Explorer</h2>
-      <div class="scrollable">
-        <ul class="item-list">
-          ${navigationHtml}
-        </ul>
-      </div>
-    </aside>
+  ${renderHeader('datasets')}
 
-    <!-- Center content (Right sidebar has been removed) -->
-    <section class="panel" style="max-height: none;">
-      ${centerContentHtml}
-      ${activeStrategyBodyMarkup}
-    </section>
+  <section class="hero">
+    <div class="hero-container">
+      <span class="hero-tag">Radical Transparency &bull; Linked Open Data</span>
+      <h2>VLIZ Marine Research Data Portal</h2>
+      <p>Discover, explore, and programmatically access high-fidelity marine genomic datasets, continuous sensor telemetry, species occurrences, and scientific publications.</p>
+      
+      <div class="stats-bar">
+        <div class="stat-item">
+          <span class="stat-num">${datasets.length}</span>
+          <span class="stat-label">Datasets</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">${pubs.length}</span>
+          <span class="stat-label">Publications</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">${apis.length}</span>
+          <span class="stat-label">Data APIs</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">${institutes.length}</span>
+          <span class="stat-label">Institutes</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">${people.length}</span>
+          <span class="stat-label">Researchers</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="main-container">
+    <div class="filter-bar">
+      <div class="filter-pills">
+        <button class="filter-btn active" onclick="filterCards('all')">All Resources (${resources.length})</button>
+        <button class="filter-btn" onclick="filterCards('dataset')">Datasets (${datasets.length})</button>
+        <button class="filter-btn" onclick="filterCards('publication')">Publications (${pubs.length})</button>
+        <button class="filter-btn" onclick="filterCards('api')">APIs (${apis.length})</button>
+        <button class="filter-btn" onclick="filterCards('institute')">Institutes (${institutes.length})</button>
+        <button class="filter-btn" onclick="filterCards('person')">People (${people.length})</button>
+      </div>
+      <div>
+        <input type="text" id="searchInput" placeholder="Search datasets, taxa, keywords..." onkeyup="searchCards()" style="padding: 0.5rem 1rem; border: 1px solid var(--panel-border); border-radius: var(--radius-sm); font-size: 0.9rem; width: 280px;">
+      </div>
+    </div>
+
+    <div class="cards-grid" id="cardsGrid">
+      ${cardsHtml}
+    </div>
   </main>
 
-  <footer>
-    <div>LOD Compliance Discovery Testbed &bull; Configured with Base URL: <code style="color: var(--vliz-blue);">http://localhost:8080</code></div>
-    <div style="margin-top: 0.5rem; font-size: 0.75rem;">Reproducible Static Generation via Bun + TypeScript. Served by Nginx in Docker.</div>
-  </footer>
+  ${renderFooter()}
+
+  <script>
+    function filterCards(cat) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(c => {
+        if (cat === 'all' || c.getAttribute('data-category') === cat) {
+          c.style.display = 'flex';
+        } else {
+          c.style.display = 'none';
+        }
+      });
+    }
+
+    function searchCards() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(c => {
+        const text = c.innerText.toLowerCase();
+        if (text.includes(q)) {
+          c.style.display = 'flex';
+        } else {
+          c.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>`;
+}
+
+export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): string {
+  const publisher = dataset.publisher ? getResourceById(dataset.publisher) : undefined;
+  const creators = (dataset.creators || []).map(c => getResourceById(c)).filter(Boolean) as MarineEntity[];
+
+  // Table Preview Markup
+  let tableHtml = "";
+  if (dataset.sampleData && dataset.sampleData.rows.length > 0) {
+    const cols = dataset.sampleData.columns;
+    tableHtml = `
+      <div class="content-section">
+        <h3 class="section-heading">📊 Live Data Preview (${dataset.sampleData.rows.length} Sample Records)</h3>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+          Representative observation sample from the underlying dataset distribution.
+        </p>
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>${cols.map(c => `<th>${c}</th>`).join('')}</tr>
+            </thead>
+            <tbody>
+              ${dataset.sampleData.rows.map(row => `
+                <tr>${cols.map(c => `<td>${row[c] !== undefined ? row[c] : ''}</td>`).join('')}</tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+  }
+
+  // Distribution Cards Markup
+  let distsHtml = "";
+  if (dataset.distributions && dataset.distributions.length > 0) {
+    distsHtml = `
+      <div class="content-section">
+        <h3 class="section-heading">📥 Download Center & Available Distributions</h3>
+        <div class="dist-cards">
+          ${dataset.distributions.map(d => `
+            <div class="dist-card">
+              <div>
+                <div class="dist-card-header">
+                  <span class="dist-format">${d.format}</span>
+                  <span class="dist-size">${d.byteSize ? (d.byteSize / 1024).toFixed(1) + ' KB' : 'Standard'}</span>
+                </div>
+                <h4 class="dist-title">${d.title}</h4>
+                <p class="dist-desc">${d.description}</p>
+              </div>
+              <a href="${d.downloadUrl}" class="btn-download" download>Download ${d.format}</a>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  }
+
+  const creatorsPills = creators.map(c => `
+    <a href="/people/${c.id.replace('resource-', '')}.html" class="author-pill">👤 ${c.title}</a>
+  `).join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${dataset.title} - VLIZ Marine Data Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="profile" href="https://schema.org/Dataset">
+  <link rel="profile" href="https://www.w3.org/TR/vocab-dcat/">
+  <link rel="describedby" type="text/turtle" href="/rdf/${dataset.id}.ttl">
+  <link rel="describedby" type="application/ld+json" href="/rdf/${dataset.id}.jsonld">
+  <link rel="linkset" type="application/linkset+json" href="/linksets/${dataset.id}.linkset.json">
+  ${(dataset.distributions || []).map(d => `<link rel="item" type="${d.mediaType}" href="${d.downloadUrl}">`).join('\n  ')}
+</head>
+<body>
+  ${renderHeader('datasets')}
+
+  <div class="detail-header">
+    <div class="detail-header-inner">
+      <a href="/" style="color: var(--vliz-blue); text-decoration: none; font-weight: 600; font-size: 0.9rem;">&larr; Back to Catalogue</a>
+      <h2 class="detail-title">${dataset.title}</h2>
+      <div class="meta-badges">
+        <span class="card-badge dataset">Dataset</span>
+        ${dataset.doi ? `<span class="meta-badge">🔗 DOI: <a href="${dataset.doi}" target="_blank" style="color: inherit;">${dataset.doi.replace('https://doi.org/', '')}</a></span>` : ''}
+        ${dataset.license ? `<span class="meta-badge">⚖️ ${dataset.license}</span>` : ''}
+        ${dataset.temporalCoverage ? `<span class="meta-badge">📅 ${dataset.temporalCoverage}</span>` : ''}
+        ${dataset.spatialCoverage ? `<span class="meta-badge">📍 ${dataset.spatialCoverage}</span>` : ''}
+      </div>
+    </div>
+  </div>
+
+  <main class="main-container">
+    <div class="detail-grid">
+      <div>
+        <div class="content-section">
+          <h3 class="section-heading">📝 Abstract & Description</h3>
+          <p style="font-size: 1.05rem; line-height: 1.7; color: var(--text-secondary); margin: 0;">
+            ${dataset.description}
+          </p>
+        </div>
+
+        ${tableHtml}
+        ${distsHtml}
+      </div>
+
+      <aside>
+        <div class="sidebar-panel">
+          <div class="meta-group">
+            <div class="meta-label">Publisher</div>
+            <div class="meta-value">
+              ${publisher ? `<a href="/institutes/${publisher.id.replace('resource-', '')}.html">🏛️ ${publisher.title}</a>` : 'VLIZ'}
+            </div>
+          </div>
+
+          <div class="meta-group">
+            <div class="meta-label">Creators / Authors</div>
+            <div class="meta-value">
+              ${creatorsPills || 'VLIZ Science Team'}
+            </div>
+          </div>
+
+          <div class="meta-group">
+            <div class="meta-label">Permanent Persistent Identifier</div>
+            <div class="meta-value" style="word-break: break-all;">
+              <code>${baseUrl}/resource/${dataset.id}</code>
+            </div>
+          </div>
+
+          ${dataset.sourceUri ? `
+          <div class="meta-group">
+            <div class="meta-label">Upstream Provenance Source</div>
+            <div class="meta-value">
+              <a href="${dataset.sourceUri}" target="_blank">${dataset.sourceUri}</a>
+            </div>
+          </div>` : ''}
+        </div>
+
+        <div class="rt-box">
+          <h4>🌐 Radical Transparency Links</h4>
+          <p style="font-size: 0.85rem; color: #134e4a; margin: 0 0 1rem;">
+            This resource implements RFC 8288 web linking, RFC 9264 JSON linksets, and content negotiation.
+          </p>
+          <ul class="rt-links-list">
+            <li>🐢 <a href="/rdf/${dataset.id}.ttl">Download Turtle (RDF)</a></li>
+            <li>📜 <a href="/rdf/${dataset.id}.jsonld">Download JSON-LD</a></li>
+            <li>🔗 <a href="/linksets/${dataset.id}.linkset.json">RFC 9264 Linkset JSON</a></li>
+            <li>⚡ <a href="/api/docs/">Subsetting API Explorer</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  ${renderFooter()}
+</body>
+</html>`;
+}
+
+export function renderInstitutePageHtml(institute: MarineEntity, baseUrl: string): string {
+  const members = (RESOURCES.filter(r => r.category === "person" && (r.properties["schema:worksFor"] === institute.id || (institute.properties["schema:member"] as string[] || []).includes(r.id))));
+  const datasets = RESOURCES.filter(r => r.category === "dataset" && r.publisher === institute.id);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${institute.title} - VLIZ Marine Data Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="profile" href="https://schema.org/Organization">
+  <link rel="describedby" type="text/turtle" href="/rdf/${institute.id}.ttl">
+  <link rel="describedby" type="application/ld+json" href="/rdf/${institute.id}.jsonld">
+  <link rel="linkset" type="application/linkset+json" href="/linksets/${institute.id}.linkset.json">
+</head>
+<body>
+  ${renderHeader('institutes')}
+
+  <div class="detail-header">
+    <div class="detail-header-inner">
+      <a href="/" style="color: var(--vliz-blue); text-decoration: none; font-weight: 600; font-size: 0.9rem;">&larr; Back to Catalogue</a>
+      <h2 class="detail-title">${institute.title}</h2>
+      <div class="meta-badges">
+        <span class="card-badge institute">Research Organization</span>
+        ${institute.doi ? `<span class="meta-badge">🏛️ ROR ID: <a href="${institute.doi}" target="_blank" style="color: inherit;">${institute.doi}</a></span>` : ''}
+        <span class="meta-badge">📍 Oostende, Belgium</span>
+      </div>
+    </div>
+  </div>
+
+  <main class="main-container">
+    <div class="detail-grid">
+      <div>
+        <div class="content-section">
+          <h3 class="section-heading">🏛️ About the Organization</h3>
+          <p style="font-size: 1.05rem; line-height: 1.7; color: var(--text-secondary); margin: 0;">
+            ${institute.description}
+          </p>
+        </div>
+
+        <div class="content-section">
+          <h3 class="section-heading">📦 Published Datasets (${datasets.length})</h3>
+          <div class="dist-cards">
+            ${datasets.map(ds => `
+              <div class="dist-card">
+                <div>
+                  <span class="dist-format">Dataset</span>
+                  <h4 class="dist-title">${ds.title}</h4>
+                  <p class="dist-desc">${ds.description.substring(0, 120)}...</p>
+                </div>
+                <a href="/datasets/${ds.id.replace('resource-', '')}.html" class="btn-download">View Dataset &rarr;</a>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="content-section">
+          <h3 class="section-heading">👥 Research Staff & Data Officers (${members.length})</h3>
+          <div class="meta-badges">
+            ${members.map(m => `
+              <a href="/people/${m.id.replace('resource-', '')}.html" class="author-pill" style="padding: 0.4rem 0.8rem;">
+                👤 <strong>${m.title}</strong> &bull; ${m.properties["schema:jobTitle"] || 'Scientist'}
+              </a>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="sidebar-panel">
+          <div class="meta-group">
+            <div class="meta-label">Location</div>
+            <div class="meta-value">${institute.properties["schema:location"] || 'Oostende, Belgium'}</div>
+          </div>
+          <div class="meta-group">
+            <div class="meta-label">Official Website</div>
+            <div class="meta-value"><a href="https://www.vliz.be" target="_blank">www.vliz.be</a></div>
+          </div>
+          <div class="meta-group">
+            <div class="meta-label">Persistent Identifier</div>
+            <div class="meta-value"><code>${baseUrl}/resource/${institute.id}</code></div>
+          </div>
+        </div>
+
+        <div class="rt-box">
+          <h4>🌐 Linked Data & Linksets</h4>
+          <ul class="rt-links-list">
+            <li>🐢 <a href="/rdf/${institute.id}.ttl">Download Turtle (RDF)</a></li>
+            <li>📜 <a href="/rdf/${institute.id}.jsonld">Download JSON-LD</a></li>
+            <li>🔗 <a href="/linksets/${institute.id}.linkset.json">RFC 9264 Linkset JSON</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  ${renderFooter()}
+</body>
+</html>`;
+}
+
+export function renderPublicationPageHtml(pub: MarineEntity, baseUrl: string): string {
+  const authors = (pub.properties["schema:author"] as string[] || []).map(a => getResourceById(a)).filter(Boolean) as MarineEntity[];
+  const aboutDataset = pub.properties["schema:about"] ? getResourceById(pub.properties["schema:about"] as string) : undefined;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${pub.title} - VLIZ Marine Data Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="profile" href="https://schema.org/ScholarlyArticle">
+  <link rel="describedby" type="text/turtle" href="/rdf/${pub.id}.ttl">
+  <link rel="describedby" type="application/ld+json" href="/rdf/${pub.id}.jsonld">
+  <link rel="linkset" type="application/linkset+json" href="/linksets/${pub.id}.linkset.json">
+  <link rel="alternate" type="application/pdf" href="/data/ro-crate-paper.pdf">
+</head>
+<body>
+  ${renderHeader('publications')}
+
+  <div class="detail-header">
+    <div class="detail-header-inner">
+      <a href="/" style="color: var(--vliz-blue); text-decoration: none; font-weight: 600; font-size: 0.9rem;">&larr; Back to Catalogue</a>
+      <h2 class="detail-title">${pub.title}</h2>
+      <div class="meta-badges">
+        <span class="card-badge publication">Scientific Publication</span>
+        ${pub.doi ? `<span class="meta-badge">📄 DOI: <a href="${pub.doi}" target="_blank" style="color: inherit;">${pub.doi.replace('https://doi.org/', '')}</a></span>` : ''}
+        <span class="meta-badge">📅 Published: ${pub.properties["schema:datePublished"] || '2022-10-12'}</span>
+        <span class="meta-badge">📖 Pensoft Publishers &bull; BISS</span>
+      </div>
+    </div>
+  </div>
+
+  <main class="main-container">
+    <div class="detail-grid">
+      <div>
+        <div class="content-section">
+          <h3 class="section-heading">📝 Abstract</h3>
+          <p style="font-size: 1.05rem; line-height: 1.7; color: var(--text-secondary); margin: 0;">
+            ${pub.description}
+          </p>
+        </div>
+
+        <div class="content-section">
+          <h3 class="section-heading">📥 Full Article Download</h3>
+          <div class="dist-cards">
+            <div class="dist-card">
+              <div>
+                <span class="dist-format">PDF Article</span>
+                <h4 class="dist-title">Peer-Reviewed Publication (Open Access)</h4>
+                <p class="dist-desc">Official PDF document detailing RO-Crate and GitHub Actions data pipelines.</p>
+              </div>
+              <a href="/data/ro-crate-paper.pdf" class="btn-download" download>Download Article PDF (210 KB)</a>
+            </div>
+          </div>
+        </div>
+
+        ${aboutDataset ? `
+        <div class="content-section">
+          <h3 class="section-heading">🔗 Linked Underlying Dataset</h3>
+          <div class="dist-card">
+            <div>
+              <span class="dist-format">Dataset</span>
+              <h4 class="dist-title">${aboutDataset.title}</h4>
+              <p class="dist-desc">${aboutDataset.description}</p>
+            </div>
+            <a href="/datasets/${aboutDataset.id.replace('resource-', '')}.html" class="btn-download">Explore ARMS-MBON Dataset &rarr;</a>
+          </div>
+        </div>` : ''}
+      </div>
+
+      <aside>
+        <div class="sidebar-panel">
+          <div class="meta-group">
+            <div class="meta-label">Authors</div>
+            <div class="meta-value">
+              ${authors.map(a => `<a href="/people/${a.id.replace('resource-', '')}.html" class="author-pill">👤 ${a.title}</a>`).join('')}
+            </div>
+          </div>
+
+          <div class="meta-group">
+            <div class="meta-label">Citation (BibTeX)</div>
+            <pre style="background: var(--bg-subtle); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.75rem; overflow-x: auto;">@article{portier2022rocrate,
+  title={Contemporary data management for biodiversity observation networks},
+  author={Portier, Marc and Decruw, Cedric and Exter, Katrina and Van Maldeghem, Laurian},
+  journal={Biodiversity Information Science and Standards},
+  volume={6},
+  pages={e94630},
+  year={2022},
+  publisher={Pensoft Publishers}
+}</pre>
+          </div>
+        </div>
+
+        <div class="rt-box">
+          <h4>🌐 Linked Data & Linksets</h4>
+          <ul class="rt-links-list">
+            <li>🐢 <a href="/rdf/${pub.id}.ttl">Download Turtle (RDF)</a></li>
+            <li>📜 <a href="/rdf/${pub.id}.jsonld">Download JSON-LD</a></li>
+            <li>🔗 <a href="/linksets/${pub.id}.linkset.json">RFC 9264 Linkset JSON</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  ${renderFooter()}
+</body>
+</html>`;
+}
+
+export function renderProjectPageHtml(proj: MarineEntity, baseUrl: string): string {
+  const parts = (proj.properties["schema:hasPart"] as string[] || []).map(p => getResourceById(p)).filter(Boolean) as MarineEntity[];
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${proj.title} - VLIZ Marine Data Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="profile" href="https://schema.org/Project">
+  <link rel="describedby" type="text/turtle" href="/rdf/${proj.id}.ttl">
+  <link rel="describedby" type="application/ld+json" href="/rdf/${proj.id}.jsonld">
+  <link rel="linkset" type="application/linkset+json" href="/linksets/${proj.id}.linkset.json">
+</head>
+<body>
+  ${renderHeader('datasets')}
+
+  <div class="detail-header">
+    <div class="detail-header-inner">
+      <a href="/" style="color: var(--vliz-blue); text-decoration: none; font-weight: 600; font-size: 0.9rem;">&larr; Back to Catalogue</a>
+      <h2 class="detail-title">${proj.title}</h2>
+      <div class="meta-badges">
+        <span class="card-badge project">Research Initiative</span>
+        <span class="meta-badge">🏛️ Sponsor: Flanders Marine Institute (VLIZ)</span>
+      </div>
+    </div>
+  </div>
+
+  <main class="main-container">
+    <div class="detail-grid">
+      <div>
+        <div class="content-section">
+          <h3 class="section-heading">🎯 Project Objective</h3>
+          <p style="font-size: 1.05rem; line-height: 1.7; color: var(--text-secondary); margin: 0;">
+            ${proj.description}
+          </p>
+        </div>
+
+        <div class="content-section">
+          <h3 class="section-heading">📦 Associated Datasets (${parts.length})</h3>
+          <div class="dist-cards">
+            ${parts.map(p => `
+              <div class="dist-card">
+                <div>
+                  <span class="dist-format">Dataset</span>
+                  <h4 class="dist-title">${p.title}</h4>
+                  <p class="dist-desc">${p.description.substring(0, 100)}...</p>
+                </div>
+                <a href="/datasets/${p.id.replace('resource-', '')}.html" class="btn-download">Explore Dataset &rarr;</a>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="rt-box">
+          <h4>🌐 Linked Data & Linksets</h4>
+          <ul class="rt-links-list">
+            <li>🐢 <a href="/rdf/${proj.id}.ttl">Download Turtle (RDF)</a></li>
+            <li>📜 <a href="/rdf/${proj.id}.jsonld">Download JSON-LD</a></li>
+            <li>🔗 <a href="/linksets/${proj.id}.linkset.json">RFC 9264 Linkset JSON</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  ${renderFooter()}
+</body>
+</html>`;
+}
+
+export function renderPersonPageHtml(person: MarineEntity, baseUrl: string): string {
+  const orcid = person.properties["owl:sameAs"] as string;
+  const authoredDatasets = RESOURCES.filter(r => r.category === "dataset" && (r.creators || []).includes(person.id));
+  const authoredPubs = RESOURCES.filter(r => r.category === "publication" && ((r.properties["schema:author"] as string[] || []).includes(person.id)));
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${person.title} - VLIZ Marine Data Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="profile" href="https://schema.org/Person">
+  <link rel="describedby" type="text/turtle" href="/rdf/${person.id}.ttl">
+  <link rel="describedby" type="application/ld+json" href="/rdf/${person.id}.jsonld">
+  <link rel="linkset" type="application/linkset+json" href="/linksets/${person.id}.linkset.json">
+</head>
+<body>
+  ${renderHeader('datasets')}
+
+  <div class="detail-header">
+    <div class="detail-header-inner">
+      <a href="/" style="color: var(--vliz-blue); text-decoration: none; font-weight: 600; font-size: 0.9rem;">&larr; Back to Catalogue</a>
+      <h2 class="detail-title">👤 ${person.title}</h2>
+      <div class="meta-badges">
+        <span class="card-badge person">${person.properties["schema:jobTitle"] || 'Researcher'}</span>
+        ${orcid ? `<span class="meta-badge">🟢 ORCID: <a href="${orcid}" target="_blank" style="color: inherit;">${orcid.replace('https://orcid.org/', '')}</a></span>` : ''}
+        <span class="meta-badge"><a href="/institutes/vliz.html" style="color: inherit; text-decoration: none;">🏛️ Flanders Marine Institute</a></span>
+      </div>
+    </div>
+  </div>
+
+  <main class="main-container">
+    <div class="detail-grid">
+      <div>
+        <div class="content-section">
+          <h3 class="section-heading">📋 Biography</h3>
+          <p style="font-size: 1.05rem; line-height: 1.7; color: var(--text-secondary); margin: 0;">
+            ${person.description}
+          </p>
+        </div>
+
+        ${authoredDatasets.length > 0 ? `
+        <div class="content-section">
+          <h3 class="section-heading">📦 Authored & Curated Datasets (${authoredDatasets.length})</h3>
+          <div class="dist-cards">
+            ${authoredDatasets.map(d => `
+              <div class="dist-card">
+                <div>
+                  <span class="dist-format">Dataset</span>
+                  <h4 class="dist-title">${d.title}</h4>
+                </div>
+                <a href="/datasets/${d.id.replace('resource-', '')}.html" class="btn-download">View Dataset &rarr;</a>
+              </div>
+            `).join('')}
+          </div>
+        </div>` : ''}
+
+        ${authoredPubs.length > 0 ? `
+        <div class="content-section">
+          <h3 class="section-heading">📄 Publications (${authoredPubs.length})</h3>
+          <div class="dist-cards">
+            ${authoredPubs.map(p => `
+              <div class="dist-card">
+                <div>
+                  <span class="dist-format">Publication</span>
+                  <h4 class="dist-title">${p.title}</h4>
+                </div>
+                <a href="/publications/${p.id.replace('resource-', '')}.html" class="btn-download">View Publication &rarr;</a>
+              </div>
+            `).join('')}
+          </div>
+        </div>` : ''}
+      </div>
+
+      <aside>
+        <div class="rt-box">
+          <h4>🌐 Linked Data & Linksets</h4>
+          <ul class="rt-links-list">
+            <li>🐢 <a href="/rdf/${person.id}.ttl">Download Turtle (RDF)</a></li>
+            <li>📜 <a href="/rdf/${person.id}.jsonld">Download JSON-LD</a></li>
+            <li>🔗 <a href="/linksets/${person.id}.linkset.json">RFC 9264 Linkset JSON</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  ${renderFooter()}
+</body>
+</html>`;
+}
+
+export function renderDcatHtml(resources: MarineEntity[], baseUrl: string): string {
+  const datasets = resources.filter(r => r.category === "dataset");
+  const apis = resources.filter(r => r.category === "api");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DCAT Data Catalogue - VLIZ Marine Linked Data Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="profile" href="https://www.w3.org/TR/vocab-dcat/">
+  <link rel="alternate" type="text/turtle" href="/catalog/dcat.ttl">
+  <link rel="alternate" type="application/ld+json" href="/catalog/dcat.jsonld">
+</head>
+<body>
+  ${renderHeader('catalog')}
+
+  <div class="detail-header">
+    <div class="detail-header-inner">
+      <h2 class="detail-title">📚 W3C DCAT-3 Data Catalogue</h2>
+      <p style="color: var(--text-secondary); font-size: 1.1rem; margin: 0 0 1rem;">
+        Standardized DCAT-AP v2 / DCAT-3 catalogue describing marine data assets, distributions, and APIs published by Flanders Marine Institute (VLIZ).
+      </p>
+      <div class="meta-badges">
+        <a href="/catalog/dcat.ttl" class="meta-badge" download>🐢 Download dcat.ttl (Turtle)</a>
+        <a href="/catalog/dcat.jsonld" class="meta-badge" download>📜 Download dcat.jsonld (JSON-LD)</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main-container">
+    <div class="content-section">
+      <h3 class="section-heading">📦 Catalogue Datasets (${datasets.length})</h3>
+      <div class="cards-grid">
+        ${datasets.map(ds => `
+          <div class="card">
+            <h3 class="card-title"><a href="/datasets/${ds.id.replace('resource-', '')}.html">${ds.title}</a></h3>
+            <p class="card-desc">${ds.description}</p>
+            <div class="card-tags">
+              ${(ds.distributions || []).map(d => `<span class="tag">${d.format}</span>`).join(' ')}
+            </div>
+            <div class="card-footer">
+              <a href="/datasets/${ds.id.replace('resource-', '')}.html" class="card-link">View Dataset Details &rarr;</a>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="content-section">
+      <h3 class="section-heading">⚡ Data Services / APIs (${apis.length})</h3>
+      <div class="cards-grid">
+        ${apis.map(api => `
+          <div class="card">
+            <h3 class="card-title"><a href="/api/docs/">${api.title}</a></h3>
+            <p class="card-desc">${api.description}</p>
+            <div class="card-tags">
+              <span class="tag">OpenAPI 3.0</span>
+              <span class="tag">JSON Subsetting</span>
+            </div>
+            <div class="card-footer">
+              <a href="/api/docs/" class="card-link">Explore Swagger UI &rarr;</a>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </main>
+
+  ${renderFooter()}
 </body>
 </html>`;
 }
