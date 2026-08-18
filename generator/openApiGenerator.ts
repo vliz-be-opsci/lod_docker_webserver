@@ -167,6 +167,7 @@ export function generateApiDocsHtml(baseUrl: string): string {
       <a href="/catalog/">DCAT Catalog</a>
       <a href="/api/docs/" class="active">Subsetting API</a>
       <a href="/publications/ro-crate-paper.html">Publications</a>
+      <a href="/institutes/vliz.html">Institute</a>
     </nav>
   </header>
 
@@ -175,6 +176,23 @@ export function generateApiDocsHtml(baseUrl: string): string {
       <div id="swagger-ui"></div>
     </div>
   </main>
+
+  <footer>
+    <div class="footer-container">
+      <div>
+        <strong>VLIZ Marine Linked Data Portal</strong> — Reference Implementation of <em>Radical Transparency</em> (RFC 8288, RFC 9264, RFC 9727).
+      </div>
+      <div class="footer-links">
+        <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" title="Radical Transparency Position Paper">📄 Position Paper</a>
+        <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank" title="Presentation Slides">📊 Slides</a>
+        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" title="EOSC Semantic Interoperability Proposals Repo">🐙 EOSC Repo</a>
+        <a href="/catalog/dcat.ttl">DCAT Turtle</a>
+        <a href="/.well-known/api-catalog">API Catalog</a>
+        <a href="/sitemap.xml">Sitemap (rs:ln)</a>
+        <a href="https://github.com/vliz-be-opsci/lod_docker_webserver">GitHub</a>
+      </div>
+    </div>
+  </footer>
 
   <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js"></script>
   <script>

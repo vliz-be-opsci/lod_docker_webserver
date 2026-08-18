@@ -243,6 +243,34 @@ export const RESOURCES: MarineEntity[] = [
   // 3. PUBLICATIONS
   // ==========================================
   {
+    id: "resource-rt-position-paper",
+    type: "ScholarlyArticle",
+    category: "publication",
+    title: "Radical Transparency: Practical Interoperability in a Diverse World",
+    description: "The foundational position paper by Marc Portier (VLIZ) defining the Radical Transparency web architecture, bootstrap-interoperability principles, and the 10 Linkset Usage Patterns (LSUP) for FAIR data and services.",
+    sourceUri: "https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf",
+    doi: "https://open-science.vliz.be/papers/2026-radical-transparency-position/",
+    properties: {
+      "schema:headline": "Radical Transparency: Practical Interoperability in a Diverse World",
+      "schema:author": ["resource-marc"],
+      "schema:datePublished": "2026-08-12",
+      "schema:publisher": "resource-vliz",
+      "schema:citation": "https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf",
+      "owl:sameAs": "https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf"
+    },
+    distributions: [
+      {
+        id: "dist-rt-paper-pdf",
+        title: "Official Position Paper (PDF)",
+        description: "Official PDF publication defining Radical Transparency and Linkset Usage Patterns.",
+        mediaType: "application/pdf",
+        format: "PDF",
+        downloadUrl: "https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf",
+        byteSize: 350000
+      }
+    ]
+  },
+  {
     id: "resource-ro-crate-paper",
     type: "ScholarlyArticle",
     category: "publication",

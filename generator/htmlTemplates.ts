@@ -192,6 +192,74 @@ h1.site-title a {
   font-weight: 500;
 }
 
+/* Radical Transparency Proposal Bar */
+.rt-proposal-bar {
+  background: linear-gradient(135deg, #0f2444 0%, #1b3a6b 100%);
+  color: #ffffff;
+  border-radius: var(--radius-md);
+  padding: 1.5rem 2rem;
+  margin: 2.25rem auto 0;
+  max-width: 950px;
+  text-align: left;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rt-proposal-info h4 {
+  margin: 0 0 0.35rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
+  color: #ffffff;
+}
+
+.rt-proposal-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.rt-proposal-buttons {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.rt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.rt-btn:hover {
+  background: #ffffff;
+  color: var(--vliz-blue);
+  border-color: #ffffff;
+}
+
+.rt-btn.primary {
+  background: var(--marine-teal);
+  border-color: var(--marine-teal);
+}
+
+.rt-btn.primary:hover {
+  background: #0f766e;
+  color: #ffffff;
+}
+
 /* Layout */
 .main-container {
   max-width: 1400px;
@@ -668,6 +736,25 @@ function renderHeader(activeNav: string): string {
   </header>`;
 }
 
+function renderRtBox(resourceId: string, isDataset = false): string {
+  return `
+        <div class="rt-box">
+          <h4>🌐 Radical Transparency Links</h4>
+          <p style="font-size: 0.85rem; color: #134e4a; margin: 0 0 0.85rem;">
+            This resource implements RFC 8288 web linking, RFC 9264 JSON linksets, and content negotiation.
+          </p>
+          <ul class="rt-links-list">
+            <li>🐢 <a href="/rdf/${resourceId}.ttl">Download Turtle (RDF)</a></li>
+            <li>📜 <a href="/rdf/${resourceId}.jsonld">Download JSON-LD</a></li>
+            <li>🔗 <a href="/linksets/${resourceId}.linkset.json">RFC 9264 Linkset JSON</a></li>
+            ${isDataset ? `<li>⚡ <a href="/api/docs/">Subsetting API Explorer</a></li>` : ''}
+            <li style="border-top: 1px dashed #99f6e4; margin-top: 0.75rem; padding-top: 0.75rem;">📄 <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank">RT Position Paper (PDF)</a></li>
+            <li>📊 <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank">Presentation Slides (Google Docs)</a></li>
+            <li>🐙 <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank">EOSC Proposals Repo (GitHub)</a></li>
+          </ul>
+        </div>`;
+}
+
 function renderFooter(): string {
   return `
   <footer>
@@ -676,6 +763,9 @@ function renderFooter(): string {
         <strong>VLIZ Marine Linked Data Portal</strong> — Reference Implementation of <em>Radical Transparency</em> (RFC 8288, RFC 9264, RFC 9727).
       </div>
       <div class="footer-links">
+        <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" title="Radical Transparency Position Paper">📄 Position Paper</a>
+        <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank" title="Presentation Slides">📊 Slides</a>
+        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" title="EOSC Semantic Interoperability Proposals Repo">🐙 EOSC Repo</a>
         <a href="/catalog/dcat.ttl">DCAT Turtle</a>
         <a href="/.well-known/api-catalog">API Catalog</a>
         <a href="/sitemap.xml">Sitemap (rs:ln)</a>
@@ -763,6 +853,24 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
         <div class="stat-item">
           <span class="stat-num">${people.length}</span>
           <span class="stat-label">Researchers</span>
+        </div>
+      </div>
+
+      <div class="rt-proposal-bar">
+        <div class="rt-proposal-info">
+          <h4>Radical Transparency Specifications & Proposals</h4>
+          <p>Practical interoperability via RFC 8288 web linking, RFC 9264 linksets, and bootstrap conventions.</p>
+        </div>
+        <div class="rt-proposal-buttons">
+          <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" class="rt-btn primary">
+            📄 Position Paper (PDF)
+          </a>
+          <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank" class="rt-btn">
+            📊 Slides (Google Docs)
+          </a>
+          <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" class="rt-btn">
+            🐙 EOSC Proposals Repo
+          </a>
         </div>
       </div>
     </div>
@@ -955,18 +1063,7 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
           </div>` : ''}
         </div>
 
-        <div class="rt-box">
-          <h4>🌐 Radical Transparency Links</h4>
-          <p style="font-size: 0.85rem; color: #134e4a; margin: 0 0 1rem;">
-            This resource implements RFC 8288 web linking, RFC 9264 JSON linksets, and content negotiation.
-          </p>
-          <ul class="rt-links-list">
-            <li>🐢 <a href="/rdf/${dataset.id}.ttl">Download Turtle (RDF)</a></li>
-            <li>📜 <a href="/rdf/${dataset.id}.jsonld">Download JSON-LD</a></li>
-            <li>🔗 <a href="/linksets/${dataset.id}.linkset.json">RFC 9264 Linkset JSON</a></li>
-            <li>⚡ <a href="/api/docs/">Subsetting API Explorer</a></li>
-          </ul>
-        </div>
+        ${renderRtBox(dataset.id, true)}
       </aside>
     </div>
   </main>
@@ -1061,14 +1158,7 @@ export function renderInstitutePageHtml(institute: MarineEntity, baseUrl: string
           </div>
         </div>
 
-        <div class="rt-box">
-          <h4>🌐 Linked Data & Linksets</h4>
-          <ul class="rt-links-list">
-            <li>🐢 <a href="/rdf/${institute.id}.ttl">Download Turtle (RDF)</a></li>
-            <li>📜 <a href="/rdf/${institute.id}.jsonld">Download JSON-LD</a></li>
-            <li>🔗 <a href="/linksets/${institute.id}.linkset.json">RFC 9264 Linkset JSON</a></li>
-          </ul>
-        </div>
+        ${renderRtBox(institute.id, false)}
       </aside>
     </div>
   </main>
@@ -1172,14 +1262,7 @@ export function renderPublicationPageHtml(pub: MarineEntity, baseUrl: string): s
           </div>
         </div>
 
-        <div class="rt-box">
-          <h4>🌐 Linked Data & Linksets</h4>
-          <ul class="rt-links-list">
-            <li>🐢 <a href="/rdf/${pub.id}.ttl">Download Turtle (RDF)</a></li>
-            <li>📜 <a href="/rdf/${pub.id}.jsonld">Download JSON-LD</a></li>
-            <li>🔗 <a href="/linksets/${pub.id}.linkset.json">RFC 9264 Linkset JSON</a></li>
-          </ul>
-        </div>
+        ${renderRtBox(pub.id, false)}
       </aside>
     </div>
   </main>
@@ -1246,14 +1329,7 @@ export function renderProjectPageHtml(proj: MarineEntity, baseUrl: string): stri
       </div>
 
       <aside>
-        <div class="rt-box">
-          <h4>🌐 Linked Data & Linksets</h4>
-          <ul class="rt-links-list">
-            <li>🐢 <a href="/rdf/${proj.id}.ttl">Download Turtle (RDF)</a></li>
-            <li>📜 <a href="/rdf/${proj.id}.jsonld">Download JSON-LD</a></li>
-            <li>🔗 <a href="/linksets/${proj.id}.linkset.json">RFC 9264 Linkset JSON</a></li>
-          </ul>
-        </div>
+        ${renderRtBox(proj.id, false)}
       </aside>
     </div>
   </main>
@@ -1339,14 +1415,7 @@ export function renderPersonPageHtml(person: MarineEntity, baseUrl: string): str
       </div>
 
       <aside>
-        <div class="rt-box">
-          <h4>🌐 Linked Data & Linksets</h4>
-          <ul class="rt-links-list">
-            <li>🐢 <a href="/rdf/${person.id}.ttl">Download Turtle (RDF)</a></li>
-            <li>📜 <a href="/rdf/${person.id}.jsonld">Download JSON-LD</a></li>
-            <li>🔗 <a href="/linksets/${person.id}.linkset.json">RFC 9264 Linkset JSON</a></li>
-          </ul>
-        </div>
+        ${renderRtBox(person.id, false)}
       </aside>
     </div>
   </main>
