@@ -260,7 +260,15 @@ async function main() {
 
   // Headers for Profiles Catalog
   headersConf += `location = /id/profiles {\n`;
+  headersConf += `    default_type text/html;\n`;
   headersConf += `    add_header Link '<https://www.w3.org/TR/dx-prof/>; rel="profile"' always;\n`;
+  headersConf += `    try_files /id/profiles/index.html =404;\n`;
+  headersConf += `}\n\n`;
+
+  headersConf += `location = /id/profiles/ {\n`;
+  headersConf += `    default_type text/html;\n`;
+  headersConf += `    add_header Link '<https://www.w3.org/TR/dx-prof/>; rel="profile"' always;\n`;
+  headersConf += `    try_files /id/profiles/index.html =404;\n`;
   headersConf += `}\n\n`;
 
   // Headers for Profiles
