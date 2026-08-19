@@ -3,6 +3,7 @@ import { Specification } from "./Specification";
 export type NodeCategory =
   | "domain"
   | "dataset"
+  | "profile"
   | "linkset"
   | "distribution"
   | "api"

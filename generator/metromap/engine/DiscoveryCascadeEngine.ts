@@ -1,5 +1,6 @@
 import { Resource } from "../../types";
 import { NodeCategory } from "../models/MetroNode";
+import { PROFILES, getProfileById } from "../../profiles";
 
 export interface DiscoveredSignal {
   sourceUri: string;
@@ -23,7 +24,8 @@ export class DiscoveryCascadeEngine {
       { sourceUri: "/", targetUri: "/robots.txt", relation: "directive", category: "domain", label: "Domain Root", sublabel: "Robots Directive", specIds: ["RFC_8288"] },
       { sourceUri: "/robots.txt", targetUri: "/sitemap.xml", relation: "Sitemap:", category: "domain", label: "/robots.txt", sublabel: "Sitemap Bootstrap", specIds: ["RFC_8288"] },
       { sourceUri: "/sitemap.xml", targetUri: "/.well-known/api-catalog", relation: "rs:ln (api-catalog)", category: "domain", label: "/sitemap.xml", sublabel: "Signmap Index", specIds: ["RESOURCESYNC", "RFC_9727"] },
-      { sourceUri: "/sitemap.xml", targetUri: "/catalog/dcat.ttl", relation: "rs:ln (dcat-catalog)", category: "domain", label: "/sitemap.xml", sublabel: "Signmap Index", specIds: ["RESOURCESYNC", "DCAT_3"] }
+      { sourceUri: "/sitemap.xml", targetUri: "/catalog/dcat.ttl", relation: "rs:ln (dcat-catalog)", category: "domain", label: "/sitemap.xml", sublabel: "Signmap Index", specIds: ["RESOURCESYNC", "DCAT_3"] },
+      { sourceUri: "/sitemap.xml", targetUri: "/profiles/", relation: "rs:ln (profiles)", category: "profile", label: "/profiles/", sublabel: "Semantic Profiles Registry", specIds: ["RESOURCESYNC", "RFC_6906"] }
     );
 
     // 2. Primary Featured Entities Corridor (Clean, non-cluttered topology)
@@ -67,6 +69,36 @@ export class DiscoveryCascadeEngine {
         sublabel: "Landing Page & Profiles",
         specIds: ["RFC_9110", "RFC_8288", "RFC_6906"]
       });
+
+      // Profile Declaration (RT-P01) & Composition (RT-P02)
+      if (res.profileId) {
+        const profileUri = `/profiles/${res.profileId}.html`;
+        const profileObj = getProfileById(res.profileId);
+        signals.push({
+          sourceUri: htmlPath,
+          targetUri: profileUri,
+          relation: 'rel="profile"',
+          category: "profile",
+          label: profileObj?.title || res.profileId,
+          sublabel: "Composite Profile (RT-P01)",
+          specIds: ["RFC_6906", "RFC_8288"]
+        });
+
+        if (profileObj && profileObj.composedProfiles) {
+          for (const subId of profileObj.composedProfiles) {
+            const subProfile = getProfileById(subId);
+            signals.push({
+              sourceUri: profileUri,
+              targetUri: `/profiles/${subId}.html`,
+              relation: 'rel="item" (RT-P02)',
+              category: "profile",
+              label: subProfile?.title || subId,
+              sublabel: "Composed Sub-Profile",
+              specIds: ["RFC_6906", "RFC_6573"]
+            });
+          }
+        }
+      }
 
       // Decoupled Linkset
       signals.push({

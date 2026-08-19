@@ -82,6 +82,7 @@ export class HtmlPageRenderer {
     .track { fill: none; stroke-width: 4.5px; stroke-linecap: round; stroke-linejoin: round; transition: stroke-opacity 0.3s, stroke-width 0.2s; }
     .track-domain { stroke: #0284c7; }
     .track-dataset { stroke: #ea580c; }
+    .track-profile { stroke: #6366f1; }
     .track-linkset { stroke: #eab308; }
     .track-distribution { stroke: #16a34a; }
     .track-api { stroke: #0d9488; }
@@ -112,6 +113,7 @@ export class HtmlPageRenderer {
     <nav class="nav-links">
       <a href="/">Datasets</a>
       <a href="/catalog/">DCAT Catalog</a>
+      <a href="/profiles/">Semantic Profiles</a>
       <a href="/api/docs/">Subsetting API</a>
       <a href="/publications/ro-crate-paper.html">Publications</a>
       <a href="/map.html" class="active">Metro Map</a>
@@ -143,6 +145,7 @@ export class HtmlPageRenderer {
             <option value="/resource/resource-arms-2018">🟠 ARMS 2018 (PID 6405)</option>
             <option value="/resource/resource-north-sea-sensors">🟠 North Sea Sensors</option>
             <option value="/resource/resource-vliz">🟣 VLIZ Institute</option>
+            <option value="/profiles/">📑 Profiles Registry</option>
             <option value="/.well-known/api-catalog">🟢 RFC 9727 API Catalog</option>
           </select>
           <button class="btn-download" onclick="traceUri()" style="padding: 0.35rem 0.8rem; font-size: 0.85rem;">Trace &rarr;</button>
@@ -159,6 +162,7 @@ export class HtmlPageRenderer {
           <span style="font-weight: 700; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Filter Pattern:</span>
           <div class="toggle-pill active" id="pill-all" onclick="filterPattern('all')">All</div>
           <div class="toggle-pill" id="pill-RT_P01" onclick="filterPattern('RT_P01')">RT-P01 Profile</div>
+          <div class="toggle-pill" id="pill-RT_P02" onclick="filterPattern('RT_P02')">RT-P02 Composition</div>
           <div class="toggle-pill" id="pill-RT_P03" onclick="filterPattern('RT_P03')">RT-P03 Conneg</div>
           <div class="toggle-pill" id="pill-RT_P04" onclick="filterPattern('RT_P04')">RT-P04 Direct Payloads</div>
           <div class="toggle-pill" id="pill-RT_P05" onclick="filterPattern('RT_P05')">RT-P05 Subsetting API</div>

@@ -24,6 +24,7 @@ export const RESOURCES: MarineEntity[] = [
     },
     publisher: "resource-vliz",
     creators: ["resource-katrina", "resource-marc", "resource-cedric", "resource-laurian"],
+    profileId: "marine-genomic-dataset-profile",
     alternateProfiles: ["https://schema.org/Dataset", "https://www.w3.org/TR/vocab-dcat/"],
     properties: {
       "schema:name": "ARMS-MBON Metagenomic 18S Dataset",
@@ -89,6 +90,7 @@ export const RESOURCES: MarineEntity[] = [
     spatialCoverage: "Belgian Coastal Waters",
     publisher: "resource-vliz",
     creators: ["resource-katrina", "resource-marc"],
+    profileId: "marine-ecological-baseline-profile",
     alternateProfiles: ["https://schema.org/Dataset", "https://www.w3.org/TR/vocab-dcat/"],
     properties: {
       "schema:name": "Raw ARMS 2018 Ecological Baseline",
@@ -131,6 +133,7 @@ export const RESOURCES: MarineEntity[] = [
     spatialCoverage: "Belgian Continental Shelf (Thorntonbank, Westhinder)",
     publisher: "resource-vliz",
     creators: ["resource-cedric", "resource-marc"],
+    profileId: "marine-buoy-telemetry-profile",
     alternateProfiles: ["https://schema.org/Dataset", "https://www.w3.org/TR/vocab-dcat/"],
     properties: {
       "schema:name": "LifeWatch North Sea In-Situ Oceanographic Telemetry",
@@ -181,6 +184,7 @@ export const RESOURCES: MarineEntity[] = [
     spatialCoverage: "Southern North Sea and English Channel",
     publisher: "resource-vliz",
     creators: ["resource-laurian", "resource-joanna"],
+    profileId: "darwin-core-occurrence-profile",
     alternateProfiles: ["https://schema.org/Dataset", "https://www.w3.org/TR/vocab-dcat/"],
     properties: {
       "schema:name": "EurOBIS Marine Species Occurrence Dataset",

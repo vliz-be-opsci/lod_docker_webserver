@@ -37,6 +37,7 @@ export interface Resource {
   };
   publisher?: string; // Resource ID
   creators?: string[]; // Resource IDs
+  profileId?: string;
   alternateProfiles?: string[];
   relatedResources?: {
     id: string;

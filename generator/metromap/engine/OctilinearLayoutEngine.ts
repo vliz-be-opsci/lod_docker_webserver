@@ -12,11 +12,11 @@ export interface PatternBoundingBox {
 }
 
 export class OctilinearLayoutEngine {
-  private laneXCoordinates = [120, 440, 740, 1040, 1320];
+  private laneXCoordinates = [120, 420, 720, 1000, 1280, 1560];
 
   public computeLayout(graph: MetroGraph): void {
     // 1. Assign semantic lanes
-    const laneCounters = [0, 0, 0, 0, 0];
+    const laneCounters = [0, 0, 0, 0, 0, 0];
     const ySpacing = 85;
     const yOffset = 140;
 
@@ -28,10 +28,12 @@ export class OctilinearLayoutEngine {
         laneIndex = 1;
       } else if (node.uri.includes("/datasets/") || node.uri.includes("/institutes/") || node.uri.includes("/publications/") || node.uri.includes("/projects/")) {
         laneIndex = 2;
-      } else if (node.category === "linkset" || node.uri.includes("/linksets/")) {
+      } else if (node.category === "profile" || node.uri.includes("/profiles/")) {
         laneIndex = 3;
-      } else if (node.category === "distribution" || node.category === "api" || node.uri.includes("/data/") || node.uri.includes("/api/")) {
+      } else if (node.category === "linkset" || node.uri.includes("/linksets/")) {
         laneIndex = 4;
+      } else if (node.category === "distribution" || node.category === "api" || node.uri.includes("/data/") || node.uri.includes("/api/")) {
+        laneIndex = 5;
       }
 
       node.lane = laneIndex;

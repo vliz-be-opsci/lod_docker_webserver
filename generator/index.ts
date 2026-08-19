@@ -1,11 +1,19 @@
 import fs from "fs";
 import path from "path";
 import { RESOURCES, getResourceById } from "./resources";
+import { PROFILES, getProfileById } from "./profiles";
 import { serializeJsonLd, serializeTurtle, serializeRDFXML, expandUri } from "./rdfSerializer";
 import { generateDcatCatalog } from "./dcatGenerator";
 import { generateLinkset, generateApiCatalog } from "./linksetGenerator";
 import { generateDataPayloads } from "./dataPayloads";
 import { generateOpenApiSpec, generateApiDocsHtml, generateApiSampleResponses } from "./openApiGenerator";
+import {
+  generateProfileHtml,
+  generateProfileCatalogHtml,
+  generateProfileTurtle,
+  generateProfileJsonLd,
+  generateProfileLinkset
+} from "./profileGenerator";
 import {
   getCssContent,
   renderCatalogHomeHtml,
@@ -37,6 +45,7 @@ function ensureDirs() {
     path.join(DIST_DIR, "projects"),
     path.join(DIST_DIR, "people"),
     path.join(DIST_DIR, "catalog"),
+    path.join(DIST_DIR, "profiles"),
     path.join(DIST_DIR, "data"),
     path.join(DIST_DIR, "rdf"),
     path.join(DIST_DIR, "linksets"),
@@ -74,7 +83,7 @@ async function main() {
   // 1. Write Shared CSS
   fs.writeFileSync(path.join(DIST_DIR, "style.css"), getCssContent());
 
-  // 2. Generate Physical Downloadable Data Payloads (CSV, GeoJSON, RO-Crate ZIP, PDF)
+  // 2. Generate Physical Download Payloads (CSV, GeoJSON, RO-Crate ZIP)
   console.log(`Generating downloadable data payloads in /data/...`);
   await generateDataPayloads(DIST_DIR);
 
@@ -107,20 +116,30 @@ async function main() {
   fs.writeFileSync(path.join(DIST_DIR, "catalog", "dcat.jsonld"), dcat.jsonld);
   fs.writeFileSync(path.join(DIST_DIR, "catalog", "index.html"), renderDcatHtml(RESOURCES, BASE_URL));
 
-  // 6. Generate OpenAPI Specification & Subsetting API Explorer
+  // 6. Generate Semantic Profiles (HTML, Turtle, JSON-LD, Linksets)
+  console.log(`Generating Semantic Profiles & Composition Registry in /profiles/...`);
+  fs.writeFileSync(path.join(DIST_DIR, "profiles", "index.html"), generateProfileCatalogHtml(PROFILES, BASE_URL));
+  for (const profile of PROFILES) {
+    fs.writeFileSync(path.join(DIST_DIR, "profiles", `${profile.id}.html`), generateProfileHtml(profile, BASE_URL));
+    fs.writeFileSync(path.join(DIST_DIR, "profiles", `${profile.id}.ttl`), generateProfileTurtle(profile, BASE_URL));
+    fs.writeFileSync(path.join(DIST_DIR, "profiles", `${profile.id}.jsonld`), generateProfileJsonLd(profile, BASE_URL));
+    fs.writeFileSync(path.join(DIST_DIR, "profiles", `${profile.id}.linkset.json`), JSON.stringify(generateProfileLinkset(profile, BASE_URL), null, 2));
+  }
+
+  // 7. Generate OpenAPI Specification & Subsetting API Explorer
   console.log(`Generating OpenAPI specification & Swagger UI in /api/...`);
   const openApiSpec = generateOpenApiSpec(BASE_URL);
   fs.writeFileSync(path.join(DIST_DIR, "api", "openapi.json"), JSON.stringify(openApiSpec, null, 2));
   fs.writeFileSync(path.join(DIST_DIR, "api", "docs", "index.html"), generateApiDocsHtml(BASE_URL));
   generateApiSampleResponses(DIST_DIR);
 
-  // 7. Generate RFC 9727 API Catalog & Resource Map in /.well-known/
+  // 8. Generate RFC 9727 API Catalog & Resource Map in /.well-known/
   console.log(`Generating RFC 9727 API Catalog in /.well-known/...`);
   const apiCatalog = generateApiCatalog(BASE_URL);
   fs.writeFileSync(path.join(DIST_DIR, ".well-known", "api-catalog"), JSON.stringify(apiCatalog, null, 2));
   fs.writeFileSync(path.join(DIST_DIR, ".well-known", "resource-map.json"), JSON.stringify(apiCatalog, null, 2));
 
-  // 8. Generate HTML Views for all entities
+  // 9. Generate HTML Views for all entities
   console.log(`Generating portal HTML views...`);
   // Homepage
   fs.writeFileSync(path.join(DIST_DIR, "index.html"), renderCatalogHomeHtml(RESOURCES, BASE_URL));
@@ -144,7 +163,7 @@ async function main() {
     }
   }
 
-  // 9. Generate Sitemap with ResourceSync rs:ln and xhtml:link (Signmap)
+  // 10. Generate Sitemap with ResourceSync rs:ln and xhtml:link (Signmap)
   console.log(`Generating sitemap.xml with rs:ln and xhtml:link extensions...`);
   let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   sitemapXml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n`;
@@ -165,6 +184,23 @@ async function main() {
   sitemapXml += `    <xhtml:link rel="profile" href="https://schema.org/Thing" />\n`;
   sitemapXml += `  </url>\n`;
 
+  // Profiles Registry & Profiles
+  sitemapXml += `  <url>\n    <loc>${BASE_URL}/profiles/</loc>\n`;
+  sitemapXml += `    <rs:ln rel="profile" href="https://www.w3.org/TR/dx-prof/" />\n`;
+  sitemapXml += `    <xhtml:link rel="profile" href="https://www.w3.org/TR/dx-prof/" />\n`;
+  sitemapXml += `  </url>\n`;
+
+  for (const prof of PROFILES) {
+    sitemapXml += `  <url>\n    <loc>${BASE_URL}/profiles/${prof.id}.html</loc>\n`;
+    sitemapXml += `    <rs:ln rel="profile" href="https://www.w3.org/TR/dx-prof/" />\n`;
+    sitemapXml += `    <rs:ln rel="linkset" href="${BASE_URL}/profiles/${prof.id}.linkset.json" type="application/linkset+json" />\n`;
+    sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/profiles/${prof.id}.ttl" type="text/turtle" />\n`;
+    sitemapXml += `    <xhtml:link rel="profile" href="https://www.w3.org/TR/dx-prof/" />\n`;
+    sitemapXml += `    <xhtml:link rel="linkset" href="${BASE_URL}/profiles/${prof.id}.linkset.json" type="application/linkset+json" />\n`;
+    sitemapXml += `    <xhtml:link rel="describedby" href="${BASE_URL}/profiles/${prof.id}.ttl" type="text/turtle" />\n`;
+    sitemapXml += `  </url>\n`;
+  }
+
   // Catalog URL
   sitemapXml += `  <url>\n    <loc>${BASE_URL}/catalog/</loc>\n`;
   sitemapXml += `    <rs:ln rel="profile" href="https://www.w3.org/TR/vocab-dcat/" />\n`;
@@ -177,7 +213,7 @@ async function main() {
   // Each entity URL
   for (const res of RESOURCES) {
     const htmlPath = getHtmlPathForEntity(res);
-    const profileUri = res.alternateProfiles?.[0] || (res.type === "Dataset" ? "https://schema.org/Dataset" : `https://schema.org/${res.type}`);
+    const profileUri = res.profileId ? `${BASE_URL}/profiles/${res.profileId}.html` : (res.alternateProfiles?.[0] || (res.type === "Dataset" ? "https://schema.org/Dataset" : `https://schema.org/${res.type}`));
     sitemapXml += `  <url>\n    <loc>${BASE_URL}${htmlPath}</loc>\n`;
     sitemapXml += `    <rs:ln rel="profile" href="${profileUri}" />\n`;
     sitemapXml += `    <rs:ln rel="linkset" href="${BASE_URL}/linksets/${res.id}.linkset.json" type="application/linkset+json" />\n`;
@@ -200,7 +236,7 @@ async function main() {
   const robotsTxt = `User-agent: *\nAllow: /\nSitemap: ${BASE_URL}/sitemap.xml\n`;
   fs.writeFileSync(path.join(DIST_DIR, "robots.txt"), robotsTxt);
 
-  // 10. Generate Nginx Content-Negotiation Map (nginx-coneg.conf)
+  // 11. Generate Nginx Content-Negotiation Map (nginx-coneg.conf)
   console.log(`Generating nginx-coneg.conf...`);
   let conegConf = `# Dynamic Content-Negotiation Map\n`;
   conegConf += `map $http_accept $rdf_suffix {\n`;
@@ -220,7 +256,7 @@ async function main() {
 
   fs.writeFileSync(path.join(DIST_DIR, "nginx-coneg.conf"), conegConf);
 
-  // 11. Generate Nginx HTTP Headers (nginx-headers.conf)
+  // 12. Generate Nginx HTTP Headers (nginx-headers.conf)
   console.log(`Generating nginx-headers.conf with RFC 8288 Link headers...`);
   let headersConf = `# Dynamically generated RFC 8288 Link headers\n`;
 
@@ -233,10 +269,31 @@ async function main() {
   headersConf += `    add_header Link '<https://www.w3.org/TR/vocab-dcat/>; rel="profile", <${BASE_URL}/catalog/dcat.ttl>; rel="alternate"; type="text/turtle", <${BASE_URL}/catalog/dcat.jsonld>; rel="alternate"; type="application/ld+json"' always;\n`;
   headersConf += `}\n\n`;
 
+  // Headers for Profiles
+  for (const prof of PROFILES) {
+    const profileLinks = [
+      `<https://www.w3.org/TR/dx-prof/>; rel="profile"`,
+      `<${BASE_URL}/profiles/${prof.id}.ttl>; rel="describedby"; type="text/turtle"`,
+      `<${BASE_URL}/profiles/${prof.id}.jsonld>; rel="describedby"; type="application/ld+json"`,
+      `<${BASE_URL}/profiles/${prof.id}.linkset.json>; rel="linkset"; type="application/linkset+json"`,
+      `<${BASE_URL}/profiles/>; rel="collection"`
+    ];
+
+    if (prof.composedProfiles && prof.composedProfiles.length > 0) {
+      for (const subId of prof.composedProfiles) {
+        profileLinks.push(`<${BASE_URL}/profiles/${subId}.html>; rel="item"`);
+      }
+    }
+
+    headersConf += `location = /profiles/${prof.id}.html {\n`;
+    headersConf += `    add_header Link '${profileLinks.join(", ")}' always;\n`;
+    headersConf += `}\n\n`;
+  }
+
   // Headers for each entity page
   for (const res of RESOURCES) {
     const htmlPath = getHtmlPathForEntity(res);
-    const profile = res.alternateProfiles?.[0] || (res.type === "Dataset" ? "https://schema.org/Dataset" : `https://schema.org/${res.type}`);
+    const profile = res.profileId ? `${BASE_URL}/profiles/${res.profileId}.html` : (res.alternateProfiles?.[0] || (res.type === "Dataset" ? "https://schema.org/Dataset" : `https://schema.org/${res.type}`));
     const linkHeaders: string[] = [
       `<${profile}>; rel="profile"`,
       `<${BASE_URL}/rdf/${res.id}.ttl>; rel="describedby"; type="text/turtle"`,
@@ -258,7 +315,7 @@ async function main() {
 
   fs.writeFileSync(path.join(DIST_DIR, "nginx-headers.conf"), headersConf);
 
-  // 12. Generate Radical Transparency Compliance & Gap Documentation
+  // 13. Generate Radical Transparency Compliance & Gap Documentation
   console.log(`Generating Radical Transparency compliance audit documentation in docs/compliance/...`);
   generateComplianceDocs();
 
