@@ -1,5 +1,6 @@
 import { MarineEntity } from "./types";
 import { getResourceById, RESOURCES } from "./resources";
+import { PROFILES } from "./profiles";
 
 export function getCssContent(): string {
   return `/* VLIZ Marine Linked Data Portal - Design System */
@@ -345,6 +346,7 @@ h1.site-title a {
 }
 
 .card-badge.dataset { background: #dcfce7; color: #166534; }
+.card-badge.profile { background: #e0e7ff; color: #4338ca; }
 .card-badge.institute { background: #e0f2fe; color: #075985; }
 .card-badge.publication { background: #fef3c7; color: #92400e; }
 .card-badge.project { background: #f3e8ff; color: #6b21a8; }
@@ -729,6 +731,7 @@ function renderHeader(activeNav: string): string {
     <nav class="nav-links">
       <a href="/" class="${activeNav === 'datasets' ? 'active' : ''}">Datasets</a>
       <a href="/catalog/" class="${activeNav === 'catalog' ? 'active' : ''}">DCAT Catalog</a>
+      <a href="/profiles/" class="${activeNav === 'profiles' ? 'active' : ''}">Semantic Profiles</a>
       <a href="/api/docs/" class="${activeNav === 'api' ? 'active' : ''}">Subsetting API</a>
       <a href="/publications/ro-crate-paper.html" class="${activeNav === 'publications' ? 'active' : ''}">Publications</a>
       <a href="/map.html" class="${activeNav === 'map' ? 'active' : ''}">Metro Map</a>
@@ -767,6 +770,7 @@ function renderFooter(): string {
       </div>
       <div class="footer-links">
         <a href="/map.html">🗺️ Metro Map</a>
+        <a href="/profiles/">📑 Profiles</a>
         <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" title="Radical Transparency Position Paper">📄 Position Paper</a>
         <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank" title="Presentation Slides">📊 Slides</a>
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" title="EOSC Semantic Interoperability Proposals Repo">🐙 EOSC Repo</a>
@@ -818,6 +822,34 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
       </div>`;
   }
 
+  // Add Semantic Profiles to cards
+  for (const prof of PROFILES) {
+    const badgeText = prof.isAtomic ? "Atomic Profile" : "Composite Profile";
+    const subCount = prof.composedProfiles ? prof.composedProfiles.length : 0;
+    const tagsHtml = prof.isAtomic
+      ? `<span class="tag">W3C SHACL</span> <span class="tag">Atomic</span>`
+      : `<span class="tag">RT-P02 Composite (${subCount} sub-profiles)</span> <span class="tag">W3C SHACL</span>`;
+
+    cardsHtml += `
+      <div class="card" data-category="profile">
+        <div class="card-header">
+          <span class="card-badge profile">${badgeText}</span>
+          <span class="tag">${prof.isAtomic ? 'RFC 6906' : 'RT-P02'}</span>
+        </div>
+        <h3 class="card-title"><a href="/profiles/${prof.id}.html">${prof.title}</a></h3>
+        <p class="card-desc">${prof.description}</p>
+        <div class="card-tags">
+          ${tagsHtml}
+        </div>
+        <div class="card-footer">
+          <span style="color: var(--text-muted); font-size: 0.8rem;">URI: /profiles/${prof.id}.html</span>
+          <a href="/profiles/${prof.id}.html" class="card-link">Explore Profile &rarr;</a>
+        </div>
+      </div>`;
+  }
+
+  const totalCount = resources.length + PROFILES.length;
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -836,12 +868,16 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
     <div class="hero-container">
       <span class="hero-tag">Radical Transparency &bull; Linked Open Data</span>
       <h2>VLIZ Marine Research Data Portal</h2>
-      <p>Discover, explore, and programmatically access high-fidelity marine genomic datasets, continuous sensor telemetry, species occurrences, and scientific publications.</p>
+      <p>Discover, explore, and programmatically access high-fidelity marine genomic datasets, continuous sensor telemetry, species occurrences, semantic profiles, and scientific publications.</p>
       
       <div class="stats-bar">
         <div class="stat-item">
           <span class="stat-num">${datasets.length}</span>
           <span class="stat-label">Datasets</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">${PROFILES.length}</span>
+          <span class="stat-label">Profiles</span>
         </div>
         <div class="stat-item">
           <span class="stat-num">${pubs.length}</span>
@@ -870,6 +906,9 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
           <a href="/map.html" class="rt-btn" style="background: rgba(13, 148, 136, 0.5); border-color: #0d9488;">
             🗺️ RT Metro Map
           </a>
+          <a href="/profiles/" class="rt-btn" style="background: rgba(99, 102, 241, 0.4); border-color: #6366f1;">
+            📑 Profiles Registry
+          </a>
           <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" class="rt-btn primary">
             📄 Position Paper (PDF)
           </a>
@@ -890,15 +929,16 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
   <main class="main-container">
     <div class="filter-bar">
       <div class="filter-pills">
-        <button class="filter-btn active" onclick="filterCards('all')">All Resources (${resources.length})</button>
+        <button class="filter-btn active" onclick="filterCards('all')">All Resources (${totalCount})</button>
         <button class="filter-btn" onclick="filterCards('dataset')">Datasets (${datasets.length})</button>
+        <button class="filter-btn" onclick="filterCards('profile')">Profiles (${PROFILES.length})</button>
         <button class="filter-btn" onclick="filterCards('publication')">Publications (${pubs.length})</button>
         <button class="filter-btn" onclick="filterCards('api')">APIs (${apis.length})</button>
         <button class="filter-btn" onclick="filterCards('institute')">Institutes (${institutes.length})</button>
         <button class="filter-btn" onclick="filterCards('person')">People (${people.length})</button>
       </div>
       <div>
-        <input type="text" id="searchInput" placeholder="Search datasets, taxa, keywords..." onkeyup="searchCards()" style="padding: 0.5rem 1rem; border: 1px solid var(--panel-border); border-radius: var(--radius-sm); font-size: 0.9rem; width: 280px;">
+        <input type="text" id="searchInput" placeholder="Search datasets, profiles, taxa, keywords..." onkeyup="searchCards()" style="padding: 0.5rem 1rem; border: 1px solid var(--panel-border); border-radius: var(--radius-sm); font-size: 0.9rem; width: 300px;">
       </div>
     </div>
 
