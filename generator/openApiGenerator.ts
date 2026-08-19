@@ -165,9 +165,10 @@ export function generateApiDocsHtml(baseUrl: string): string {
     <nav class="nav-links">
       <a href="/">Datasets</a>
       <a href="/catalog/">DCAT Catalog</a>
+      <a href="/id/profiles">Semantic Profiles</a>
       <a href="/api/docs/" class="active">Subsetting API</a>
-      <a href="/publications/ro-crate-paper.html">Publications</a>
-      <a href="/institutes/vliz.html">Institute</a>
+      <a href="/id/publication/ro-crate-paper.html">Publications</a>
+      <a href="/id/institute/vliz.html">Institute</a>
     </nav>
   </header>
 
@@ -186,7 +187,7 @@ export function generateApiDocsHtml(baseUrl: string): string {
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" title="EOSC Radical Transparency Proposals on GitHub">🐙 EOSC RT Proposals (GitHub)</a>
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank" title="EOSC Linkset Usage Patterns (RT-P01 to RT-P10)">📋 RT Patterns</a>
         <a href="/map.html">🗺️ Metro Map</a>
-        <a href="/profiles/">📑 Profiles</a>
+        <a href="/id/profiles">📑 Profiles</a>
         <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" title="Radical Transparency Position Paper">📄 Position Paper</a>
         <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank" title="Presentation Slides">📊 Slides</a>
         <a href="https://www.iana.org/assignments/link-relations" target="_blank" title="IANA Link Relations Registry">🌐 IANA Link Relations</a>

@@ -7,7 +7,7 @@ const { namedNode, literal } = DataFactory;
 export function generateDcatCatalog(resources: MarineEntity[], baseUrl: string): { ttl: string; jsonld: string } {
   const catalogUri = `${baseUrl}/catalog`;
   const datasets = resources.filter(r => r.category === "dataset");
-  const apis = resources.filter(r => r.category === "api");
+  const apis = resources.filter(r => r.category === "service" || r.category === "api");
   const publisherUri = expandUri("resource-vliz", baseUrl);
 
   // 1. Generate DCAT Turtle

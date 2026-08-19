@@ -39,21 +39,23 @@ const AUDIT_DOCS: ComplianceDoc[] = [
       headers: [
         "Link: <https://schema.org/Dataset>; rel=\"profile\"",
         "Link: <https://www.w3.org/TR/vocab-dcat/>; rel=\"profile\"",
-        "Link: </rdf/resource-arms-mbon.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
-        "Link: </rdf/resource-arms-mbon.jsonld>; rel=\"describedby\"; type=\"application/ld+json\"",
-        "Link: </linksets/resource-arms-mbon.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\"",
+        "Link: </id/profile/marine-genomic-dataset-profile.html>; rel=\"profile\"",
+        "Link: </id/dataset/arms-mbon.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
+        "Link: </id/dataset/arms-mbon.jsonld>; rel=\"describedby\"; type=\"application/ld+json\"",
+        "Link: </id/dataset/arms-mbon.rdf>; rel=\"describedby\"; type=\"application/rdf+xml\"",
+        "Link: </id/dataset/arms-mbon.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\"",
         "Link: </data/arms-mbon-18s.csv>; rel=\"item\"; type=\"text/csv\"",
         "Link: </data/arms-mbon-stations.geojson>; rel=\"item\"; type=\"application/geo+json\"",
         "Link: </data/arms-mbon-rocrate.zip>; rel=\"item\"; type=\"application/zip\"; profile=\"https://w3id.org/ro/crate\""
       ],
-      linkset: "/linksets/resource-arms-mbon.linkset.json",
+      linkset: "/id/dataset/arms-mbon.linkset.json",
       distributions: [
         "CSV: /data/arms-mbon-18s.csv (Metabarcoding read counts)",
         "GeoJSON: /data/arms-mbon-stations.geojson (North Sea monitoring reef stations)",
         "RO-Crate: /data/arms-mbon-rocrate.zip (Complete RO-Crate metadata + data)"
       ],
-      rdf: ["/rdf/resource-arms-mbon.ttl", "/rdf/resource-arms-mbon.jsonld", "/rdf/resource-arms-mbon.rdf"],
-      conneg: "GET /resource/resource-arms-mbon with Accept: text/turtle returns 303 to /rdf/resource-arms-mbon.ttl; Accept: text/html returns 303 to /datasets/arms-mbon.html."
+      rdf: ["/id/dataset/arms-mbon.ttl", "/id/dataset/arms-mbon.jsonld", "/id/dataset/arms-mbon.rdf"],
+      conneg: "GET /id/dataset/arms-mbon with Accept: text/turtle returns 303 to /id/dataset/arms-mbon.ttl; Accept: text/html returns 303 to /id/dataset/arms-mbon.html."
     }
   },
   {
@@ -72,16 +74,16 @@ const AUDIT_DOCS: ComplianceDoc[] = [
     rtEnhancements: {
       headers: [
         "Link: <https://schema.org/Dataset>; rel=\"profile\"",
-        "Link: </rdf/resource-arms-2018.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
-        "Link: </linksets/resource-arms-2018.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\"",
+        "Link: </id/dataset/arms-2018.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
+        "Link: </id/dataset/arms-2018.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\"",
         "Link: </data/arms-2018-samples.csv>; rel=\"item\"; type=\"text/csv\""
       ],
-      linkset: "/linksets/resource-arms-2018.linkset.json",
+      linkset: "/id/dataset/arms-2018.linkset.json",
       distributions: [
         "CSV: /data/arms-2018-samples.csv (Community ecology sampling matrix)"
       ],
-      rdf: ["/rdf/resource-arms-2018.ttl", "/rdf/resource-arms-2018.jsonld"],
-      conneg: "GET /resource/resource-arms-2018 with Accept: text/turtle returns 303 to /rdf/resource-arms-2018.ttl."
+      rdf: ["/id/dataset/arms-2018.ttl", "/id/dataset/arms-2018.jsonld"],
+      conneg: "GET /id/dataset/arms-2018 with Accept: text/turtle returns 303 to /id/dataset/arms-2018.ttl."
     }
   },
   {
@@ -100,18 +102,18 @@ const AUDIT_DOCS: ComplianceDoc[] = [
     rtEnhancements: {
       headers: [
         "Link: <https://schema.org/Dataset>; rel=\"profile\"",
-        "Link: </rdf/resource-north-sea-sensors.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
-        "Link: </linksets/resource-north-sea-sensors.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\"",
+        "Link: </id/dataset/north-sea-sensors.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
+        "Link: </id/dataset/north-sea-sensors.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\"",
         "Link: </data/north-sea-sensors-latest.csv>; rel=\"item\"; type=\"text/csv\"",
         "Link: </data/north-sea-sensors-stream.json>; rel=\"item\"; type=\"application/json\""
       ],
-      linkset: "/linksets/resource-north-sea-sensors.linkset.json",
+      linkset: "/id/dataset/north-sea-sensors.linkset.json",
       distributions: [
         "CSV: /data/north-sea-sensors-latest.csv (Buoy temperature/salinity/turbidity)",
         "JSON Stream: /data/north-sea-sensors-stream.json (Telemetry feed)"
       ],
-      rdf: ["/rdf/resource-north-sea-sensors.ttl", "/rdf/resource-north-sea-sensors.jsonld"],
-      conneg: "GET /resource/resource-north-sea-sensors with Accept: text/turtle returns 303 to /rdf/resource-north-sea-sensors.ttl."
+      rdf: ["/id/dataset/north-sea-sensors.ttl", "/id/dataset/north-sea-sensors.jsonld"],
+      conneg: "GET /id/dataset/north-sea-sensors with Accept: text/turtle returns 303 to /id/dataset/north-sea-sensors.ttl."
     }
   },
   {
@@ -129,18 +131,18 @@ const AUDIT_DOCS: ComplianceDoc[] = [
     rtEnhancements: {
       headers: [
         "Link: <https://schema.org/Dataset>; rel=\"profile\"",
-        "Link: </rdf/resource-eurobis-occurrences.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
-        "Link: </linksets/resource-eurobis-occurrences.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\"",
+        "Link: </id/dataset/eurobis-occurrences.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
+        "Link: </id/dataset/eurobis-occurrences.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\"",
         "Link: </data/eurobis-occurrences.geojson>; rel=\"item\"; type=\"application/geo+json\"",
         "Link: </data/eurobis-dwca-sample.zip>; rel=\"item\"; type=\"application/zip\""
       ],
-      linkset: "/linksets/resource-eurobis-occurrences.linkset.json",
+      linkset: "/id/dataset/eurobis-occurrences.linkset.json",
       distributions: [
         "GeoJSON: /data/eurobis-occurrences.geojson (Species coordinates)",
         "DwC-A ZIP: /data/eurobis-dwca-sample.zip (Standard Darwin Core Archive)"
       ],
-      rdf: ["/rdf/resource-eurobis-occurrences.ttl", "/rdf/resource-eurobis-occurrences.jsonld"],
-      conneg: "GET /resource/resource-eurobis-occurrences with Accept: text/turtle returns 303."
+      rdf: ["/id/dataset/eurobis-occurrences.ttl", "/id/dataset/eurobis-occurrences.jsonld"],
+      conneg: "GET /id/dataset/eurobis-occurrences with Accept: text/turtle returns 303."
     }
   },
   {
@@ -158,13 +160,13 @@ const AUDIT_DOCS: ComplianceDoc[] = [
     rtEnhancements: {
       headers: [
         "Link: <https://schema.org/Organization>; rel=\"profile\"",
-        "Link: </rdf/resource-vliz.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
-        "Link: </linksets/resource-vliz.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\""
+        "Link: </id/institute/vliz.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
+        "Link: </id/institute/vliz.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\""
       ],
-      linkset: "/linksets/resource-vliz.linkset.json",
+      linkset: "/id/institute/vliz.linkset.json",
       distributions: [],
-      rdf: ["/rdf/resource-vliz.ttl", "/rdf/resource-vliz.jsonld", "/rdf/resource-vliz.rdf"],
-      conneg: "GET /resource/resource-vliz with Accept: text/turtle returns 303 to /rdf/resource-vliz.ttl."
+      rdf: ["/id/institute/vliz.ttl", "/id/institute/vliz.jsonld", "/id/institute/vliz.rdf"],
+      conneg: "GET /id/institute/vliz with Accept: text/turtle returns 303 to /id/institute/vliz.ttl."
     }
   },
   {
@@ -182,16 +184,16 @@ const AUDIT_DOCS: ComplianceDoc[] = [
     rtEnhancements: {
       headers: [
         "Link: <https://schema.org/ScholarlyArticle>; rel=\"profile\"",
-        "Link: </rdf/resource-ro-crate-paper.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
-        "Link: </linksets/resource-ro-crate-paper.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\"",
+        "Link: </id/publication/ro-crate-paper.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
+        "Link: </id/publication/ro-crate-paper.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\"",
         "Link: </data/ro-crate-paper.pdf>; rel=\"alternate\"; type=\"application/pdf\""
       ],
-      linkset: "/linksets/resource-ro-crate-paper.linkset.json",
+      linkset: "/id/publication/ro-crate-paper.linkset.json",
       distributions: [
         "PDF: /data/ro-crate-paper.pdf (Full open access article)"
       ],
-      rdf: ["/rdf/resource-ro-crate-paper.ttl", "/rdf/resource-ro-crate-paper.jsonld"],
-      conneg: "GET /resource/resource-ro-crate-paper returns 303."
+      rdf: ["/id/publication/ro-crate-paper.ttl", "/id/publication/ro-crate-paper.jsonld"],
+      conneg: "GET /id/publication/ro-crate-paper returns 303."
     }
   },
   {
@@ -209,13 +211,13 @@ const AUDIT_DOCS: ComplianceDoc[] = [
     rtEnhancements: {
       headers: [
         "Link: <https://schema.org/Project>; rel=\"profile\"",
-        "Link: </rdf/resource-maregraph.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
-        "Link: </linksets/resource-maregraph.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\""
+        "Link: </id/project/maregraph.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
+        "Link: </id/project/maregraph.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\""
       ],
-      linkset: "/linksets/resource-maregraph.linkset.json",
+      linkset: "/id/project/maregraph.linkset.json",
       distributions: [],
-      rdf: ["/rdf/resource-maregraph.ttl", "/rdf/resource-maregraph.jsonld"],
-      conneg: "GET /resource/resource-maregraph returns 303."
+      rdf: ["/id/project/maregraph.ttl", "/id/project/maregraph.jsonld"],
+      conneg: "GET /id/project/maregraph returns 303."
     }
   },
   {
@@ -240,7 +242,7 @@ const AUDIT_DOCS: ComplianceDoc[] = [
         "OpenAPI: /api/openapi.json (OpenAPI 3.0 specification)",
         "Swagger UI: /api/docs/ (Interactive explorer)"
       ],
-      rdf: ["/rdf/resource-marineinfo-api.ttl", "/rdf/resource-marineinfo-api.jsonld"],
+      rdf: ["/id/service/marineinfo-api.ttl", "/id/service/marineinfo-api.jsonld"],
       conneg: "Endpoint discoverable via RFC 9727 and DCAT-3."
     }
   },
@@ -258,13 +260,13 @@ const AUDIT_DOCS: ComplianceDoc[] = [
     rtEnhancements: {
       headers: [
         "Link: <https://schema.org/Person>; rel=\"profile\"",
-        "Link: </rdf/:id.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
-        "Link: </linksets/:id.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\""
+        "Link: </id/person/:slug.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
+        "Link: </id/person/:slug.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\""
       ],
-      linkset: "/linksets/resource-marc.linkset.json (and for each researcher)",
+      linkset: "/id/person/marc.linkset.json (and for each researcher)",
       distributions: [],
-      rdf: ["/rdf/resource-marc.ttl", "/rdf/resource-katrina.ttl", "/rdf/resource-cedric.ttl", "/rdf/resource-laurian.ttl", "/rdf/resource-joanna.ttl"],
-      conneg: "GET /resource/resource-marc with Accept: text/turtle returns 303 to /rdf/resource-marc.ttl."
+      rdf: ["/id/person/marc.ttl", "/id/person/katrina.ttl", "/id/person/cedric.ttl", "/id/person/laurian.ttl", "/id/person/joanna.ttl"],
+      conneg: "GET /id/person/marc with Accept: text/turtle returns 303 to /id/person/marc.ttl."
     }
   }
 ];
