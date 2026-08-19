@@ -1,0 +1,38 @@
+import { describe, it, expect } from "bun:test";
+import { RESOURCES, getResourceById } from "../generator/resources";
+import { serializeTurtle, serializeJsonLd, expandUri } from "../generator/rdfSerializer";
+import { generateLinkset } from "../generator/linksetGenerator";
+
+describe("RDF Serialization & Linkset Generation", () => {
+  const dataset = getResourceById("resource-arms-mbon")!;
+
+  it("expands resource IDs to /id/{type}/{name}", () => {
+    const uri = expandUri("resource-arms-mbon", "http://localhost:8080");
+    expect(uri).toBe("http://localhost:8080/id/dataset/arms-mbon");
+
+    const personUri = expandUri("resource-katrina", "http://localhost:8080");
+    expect(personUri).toBe("http://localhost:8080/id/person/katrina");
+
+    const instituteUri = expandUri("resource-vliz", "http://localhost:8080");
+    expect(instituteUri).toBe("http://localhost:8080/id/institute/vliz");
+  });
+
+  it("serializes Turtle with canonical /id/ subject and object URIs", () => {
+    const ttl = serializeTurtle(dataset, "http://localhost:8080");
+    expect(ttl).toContain("<http://localhost:8080/id/dataset/arms-mbon>");
+    expect(ttl).toContain("schema:publisher <http://localhost:8080/id/institute/vliz>");
+  });
+
+  it("serializes JSON-LD with @id under /id/{type}/{name}", () => {
+    const jsonldStr = serializeJsonLd(dataset, "http://localhost:8080");
+    const jsonld = JSON.parse(jsonldStr);
+    expect(jsonld["@id"]).toBe("http://localhost:8080/id/dataset/arms-mbon");
+  });
+
+  it("generates RFC 9264 Linkset with co-located siblings in /id/dataset/", () => {
+    const linkset = generateLinkset(dataset, "http://localhost:8080") as any;
+    expect(linkset.linkset[0].anchor).toBe("http://localhost:8080/id/dataset/arms-mbon");
+    expect(linkset.linkset[0].describedby.some((d: any) => d.href === "http://localhost:8080/id/dataset/arms-mbon.ttl")).toBe(true);
+    expect(linkset.linkset[0].alternate.some((a: any) => a.href === "http://localhost:8080/id/dataset/arms-mbon.html")).toBe(true);
+  });
+});

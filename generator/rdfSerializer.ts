@@ -1,5 +1,7 @@
 import { Writer, DataFactory } from "n3";
-import { Resource } from "./types";
+import { Resource, getEntityTypeSlug, getEntityNameSlug } from "./types";
+import { RESOURCES, getResourceById } from "./resources";
+import { getProfileById } from "./profiles";
 
 const { namedNode, literal } = DataFactory;
 
@@ -45,8 +47,22 @@ export function isRelationProperty(prop: string): boolean {
 }
 
 export function expandUri(uriOrId: string, baseUri: string): string {
+  if (uriOrId.startsWith("http://") || uriOrId.startsWith("https://") || uriOrId.startsWith("mailto:")) {
+    return uriOrId;
+  }
   if (uriOrId.startsWith("resource-")) {
-    return `${baseUri}/resource/${uriOrId}`;
+    const res = getResourceById(uriOrId);
+    if (res) {
+      const typeSlug = getEntityTypeSlug(res);
+      const nameSlug = getEntityNameSlug(res);
+      return `${baseUri}/id/${typeSlug}/${nameSlug}`;
+    }
+    const slug = uriOrId.replace(/^resource-/, "");
+    return `${baseUri}/id/dataset/${slug}`;
+  }
+  if (uriOrId.startsWith("profile-") || getProfileById(uriOrId)) {
+    const slug = uriOrId.replace(/^profile-/, "");
+    return `${baseUri}/id/profile/${slug}`;
   }
   return uriOrId;
 }

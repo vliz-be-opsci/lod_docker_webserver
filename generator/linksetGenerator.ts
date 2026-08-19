@@ -1,8 +1,12 @@
-import { MarineEntity } from "./types";
+import { MarineEntity, getEntityTypeSlug, getEntityNameSlug, getEntityHtmlPath } from "./types";
 import { expandUri } from "./rdfSerializer";
 
 export function generateLinkset(resource: MarineEntity, baseUrl: string): object {
   const resourceUri = expandUri(resource.id, baseUrl);
+  const typeSlug = getEntityTypeSlug(resource);
+  const nameSlug = getEntityNameSlug(resource);
+  const htmlPath = getEntityHtmlPath(resource);
+
   const profiles = resource.alternateProfiles || [
     resource.type === "Dataset" ? "https://schema.org/Dataset" :
     resource.type === "Organization" ? "https://schema.org/Organization" :
@@ -12,21 +16,17 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
     "https://schema.org/Thing"
   ];
 
-  const htmlPath = 
-    resource.category === "dataset" ? `/datasets/${resource.id.replace("resource-", "")}.html` :
-    resource.category === "institute" ? `/institutes/${resource.id.replace("resource-", "")}.html` :
-    resource.category === "publication" ? `/publications/${resource.id.replace("resource-", "")}.html` :
-    resource.category === "project" ? `/projects/${resource.id.replace("resource-", "")}.html` :
-    resource.category === "person" ? `/people/${resource.id.replace("resource-", "")}.html` :
-    `/pages/${resource.id}.html`;
+  if (resource.profileId) {
+    profiles.unshift(`${baseUrl}/id/profile/${resource.profileId}.html`);
+  }
 
   const linkObj: any = {
     anchor: resourceUri,
     profile: profiles.map(p => ({ href: p })),
     describedby: [
-      { href: `${baseUrl}/rdf/${resource.id}.ttl`, type: "text/turtle" },
-      { href: `${baseUrl}/rdf/${resource.id}.jsonld`, type: "application/ld+json" },
-      { href: `${baseUrl}/rdf/${resource.id}.rdf`, type: "application/rdf+xml" }
+      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`, type: "text/turtle" },
+      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`, type: "application/ld+json" },
+      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`, type: "application/rdf+xml" }
     ],
     alternate: [
       { href: `${baseUrl}${htmlPath}`, type: "text/html" }
@@ -90,7 +90,7 @@ export function generateApiCatalog(baseUrl: string): object {
         ],
         "service-meta": [
           {
-            href: `${baseUrl}/rdf/resource-marineinfo-api.ttl`,
+            href: `${baseUrl}/id/service/marineinfo-api.ttl`,
             type: "text/turtle"
           }
         ],
