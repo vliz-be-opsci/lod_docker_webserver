@@ -34,7 +34,7 @@ export const RT_PATTERNS_REGISTRY: RTPattern[] = [
     [SPECS_REGISTRY.RFC_9110, SPECS_REGISTRY.RFC_8288, SPECS_REGISTRY.RFC_9264, SPECS_REGISTRY.RFC_6906],
     "#ea580c",
     "#fff7ed",
-    node => node.id.includes("pid") || node.id.includes("html") || node.id.includes("ttl") || node.id.includes("jsonld") || node.id.includes("rdf") || node.uri.includes("/resource/"),
+    node => node.id.includes("pid") || node.id.includes("html") || node.id.includes("ttl") || node.id.includes("jsonld") || node.id.includes("rdf") || node.uri.includes("/id/") || node.uri.includes("/resource/"),
     `${EOSC_BASE_URL}/03-content-negotiation-menu.md`
   ),
   new RTPattern(
@@ -89,7 +89,7 @@ export const RT_PATTERNS_REGISTRY: RTPattern[] = [
     [SPECS_REGISTRY.RFC_6573, SPECS_REGISTRY.RFC_9264],
     "#ca8a04",
     "#fefce8",
-    node => node.category === "linkset" || node.uri.includes("/linksets/"),
+    node => node.category === "linkset" || node.uri.includes(".linkset.json") || node.uri.includes("/linksets/"),
     `${EOSC_BASE_URL}/08-large-linksets.md`
   ),
   new RTPattern(

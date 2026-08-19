@@ -24,13 +24,13 @@ export class OctilinearLayoutEngine {
       let laneIndex = 1;
       if (node.category === "domain" || node.id.includes("root") || node.id.includes("robots") || node.id.includes("sitemap")) {
         laneIndex = 0;
-      } else if (node.id.includes("pid") || node.uri.includes("/resource/")) {
+      } else if (node.id.includes("pid") || (node.uri.startsWith("/id/") && !node.uri.includes(".")) || node.uri.includes("/resource/")) {
         laneIndex = 1;
-      } else if (node.uri.includes("/datasets/") || node.uri.includes("/institutes/") || node.uri.includes("/publications/") || node.uri.includes("/projects/")) {
+      } else if ((node.uri.endsWith(".html") && node.uri.includes("/id/")) || node.uri.includes("/datasets/") || node.uri.includes("/institutes/") || node.uri.includes("/publications/") || node.uri.includes("/projects/")) {
         laneIndex = 2;
-      } else if (node.category === "profile" || node.uri.includes("/profiles/")) {
+      } else if (node.category === "profile" || node.uri.includes("/profiles/") || node.uri.includes("/id/profile")) {
         laneIndex = 3;
-      } else if (node.category === "linkset" || node.uri.includes("/linksets/")) {
+      } else if (node.category === "linkset" || node.uri.includes(".linkset.json") || node.uri.includes("/linksets/")) {
         laneIndex = 4;
       } else if (node.category === "distribution" || node.category === "api" || node.uri.includes("/data/") || node.uri.includes("/api/")) {
         laneIndex = 5;

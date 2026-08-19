@@ -19,21 +19,21 @@ describe("MetroGraphBuilder & Discovery Cascade", () => {
     const sitemapNode = graph.nodes.find(n => n.id === "node-sitemap");
     expect(sitemapNode).toBeDefined();
 
-    const armsPidNode = graph.nodes.find(n => n.id === "node-_resource_resource-arms-mbon");
+    const armsPidNode = graph.nodes.find(n => n.id === "node-_id_dataset_arms-mbon");
     expect(armsPidNode).toBeDefined();
   });
 
   it("builds focused subgraph when specific dataset PID is given as entrypoint", () => {
     const builder = new MetroGraphBuilder(RESOURCES, "http://localhost:8080");
-    const graph = builder.buildGraph("/resource/resource-arms-mbon");
+    const graph = builder.buildGraph("/id/dataset/arms-mbon");
 
-    expect(graph.originUri).toBe("/resource/resource-arms-mbon");
-    const armsPidNode = graph.nodes.find(n => n.uri === "/resource/resource-arms-mbon");
+    expect(graph.originUri).toBe("/id/dataset/arms-mbon");
+    const armsPidNode = graph.nodes.find(n => n.uri === "/id/dataset/arms-mbon");
     expect(armsPidNode).toBeDefined();
     expect(armsPidNode?.isOrigin).toBe(true);
 
     // Should include its distributions, formats, and linkset
-    expect(graph.nodes.some(n => n.uri.includes("resource-arms-mbon.linkset.json"))).toBe(true);
+    expect(graph.nodes.some(n => n.uri.includes("arms-mbon.linkset.json"))).toBe(true);
     expect(graph.nodes.some(n => n.uri.includes("arms-mbon-18s.csv"))).toBe(true);
   });
 });

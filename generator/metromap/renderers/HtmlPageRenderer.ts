@@ -113,11 +113,11 @@ export class HtmlPageRenderer {
     <nav class="nav-links">
       <a href="/">Datasets</a>
       <a href="/catalog/">DCAT Catalog</a>
-      <a href="/profiles/">Semantic Profiles</a>
+      <a href="/id/profiles">Semantic Profiles</a>
       <a href="/api/docs/">Subsetting API</a>
-      <a href="/publications/ro-crate-paper.html">Publications</a>
+      <a href="/id/publication/ro-crate-paper.html">Publications</a>
       <a href="/map.html" class="active">Metro Map</a>
-      <a href="/institutes/vliz.html">Institute</a>
+      <a href="/id/institute/vliz.html">Institute</a>
     </nav>
   </header>
 
@@ -138,14 +138,14 @@ export class HtmlPageRenderer {
         <div class="uri-input-bar">
           <i class="fa-solid fa-compass" style="color: var(--marine-teal);"></i>
           <span style="font-weight: 700; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Origin URI:</span>
-          <input type="text" id="uriInput" value="${graph.originUri}" placeholder="Enter any URI (e.g. / or /resource/resource-arms-mbon)" onkeydown="if(event.key==='Enter') traceUri()">
+          <input type="text" id="uriInput" value="${graph.originUri}" placeholder="Enter any URI (e.g. / or /id/dataset/arms-mbon)" onkeydown="if(event.key==='Enter') traceUri()">
           <select id="uriQuickSelect" onchange="selectPresetUri(this.value)" style="border: 1px solid var(--panel-border); border-radius: var(--radius-sm); padding: 0.2rem 0.5rem; font-size: 0.85rem;">
             <option value="/">🌐 Domain Root (/)</option>
-            <option value="/resource/resource-arms-mbon">🟠 ARMS-MBON (PID 8617)</option>
-            <option value="/resource/resource-arms-2018">🟠 ARMS 2018 (PID 6405)</option>
-            <option value="/resource/resource-north-sea-sensors">🟠 North Sea Sensors</option>
-            <option value="/resource/resource-vliz">🟣 VLIZ Institute</option>
-            <option value="/profiles/">📑 Profiles Registry</option>
+            <option value="/id/dataset/arms-mbon">🟠 ARMS-MBON (PID 8617)</option>
+            <option value="/id/dataset/arms-2018">🟠 ARMS 2018 (PID 6405)</option>
+            <option value="/id/dataset/north-sea-sensors">🟠 North Sea Sensors</option>
+            <option value="/id/institute/vliz">🟣 VLIZ Institute</option>
+            <option value="/id/profiles">📑 Profiles Registry</option>
             <option value="/.well-known/api-catalog">🟢 RFC 9727 API Catalog</option>
           </select>
           <button class="btn-download" onclick="traceUri()" style="padding: 0.35rem 0.8rem; font-size: 0.85rem;">Trace &rarr;</button>
@@ -196,7 +196,7 @@ export class HtmlPageRenderer {
       <div class="footer-links">
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" title="EOSC Radical Transparency Proposals on GitHub">🐙 EOSC RT Proposals (GitHub)</a>
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank" title="EOSC Linkset Usage Patterns (RT-P01 to RT-P10)">📋 RT Patterns</a>
-        <a href="/profiles/">📑 Profiles</a>
+        <a href="/id/profiles">📑 Profiles</a>
         <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" title="Radical Transparency Position Paper">📄 Position Paper</a>
         <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank" title="Presentation Slides">📊 Slides</a>
         <a href="https://www.iana.org/assignments/link-relations" target="_blank" title="IANA Link Relations Registry">🌐 IANA Link Relations</a>
