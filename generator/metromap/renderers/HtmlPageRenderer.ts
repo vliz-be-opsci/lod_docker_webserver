@@ -21,7 +21,7 @@ export class HtmlPageRenderer {
     .map-controls-bar { display: flex; flex-direction: column; gap: 1rem; background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: var(--radius-md); padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); }
     .controls-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
     .controls-group { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
-    .uri-input-bar { display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 320px; background: var(--bg-subtle); padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--panel-border); }
+    .uri-input-bar { display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 340px; background: var(--bg-subtle); padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--panel-border); }
     .uri-input-bar input { flex: 1; background: transparent; border: none; outline: none; font-family: monospace; font-size: 0.9rem; color: var(--text-primary); }
     .toggle-pill { display: inline-flex; align-items: center; gap: 0.35rem; background: var(--bg-subtle); border: 1px solid var(--panel-border); padding: 0.35rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); cursor: pointer; user-select: none; transition: all 0.2s ease; }
     .toggle-pill.active { background: var(--vliz-blue); color: #ffffff; border-color: var(--vliz-blue); }
@@ -29,6 +29,7 @@ export class HtmlPageRenderer {
     .metro-canvas-container { position: relative; background: #f8fafc; border: 1px solid var(--panel-border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); min-height: 850px; }
     svg#metroSvg { width: 100%; height: 880px; cursor: grab; background: radial-gradient(circle, #e2e8f0 1px, transparent 1px); background-size: 24px 24px; background-color: #fafbfc; }
     svg#metroSvg:active { cursor: grabbing; }
+    .track { fill: none; stroke-width: 4.5px; stroke-linecap: round; stroke-linejoin: round; transition: stroke-opacity 0.3s, stroke-width 0.2s; }
     .track-domain { stroke: #0284c7; }
     .track-dataset { stroke: #ea580c; }
     .track-linkset { stroke: #eab308; }
@@ -36,8 +37,9 @@ export class HtmlPageRenderer {
     .track-api { stroke: #0d9488; }
     .track-institute { stroke: #8b5cf6; }
     .track-person { stroke: #10b981; }
-    .station-node { cursor: pointer; }
+    .station-node { cursor: pointer; transition: transform 0.2s; }
     .station-node:hover circle { r: 11px; filter: drop-shadow(0 0 6px rgba(15, 23, 42, 0.4)); }
+    .rt-cluster { transition: opacity 0.3s; }
     .station-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #ffffff; border-radius: var(--radius-lg); padding: 2rem; max-width: 580px; width: 90%; box-shadow: var(--shadow-lg); border: 1px solid var(--panel-border); z-index: 1000; display: none; }
     .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 999; display: none; }
     .modal-close { position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted); }
@@ -88,8 +90,8 @@ export class HtmlPageRenderer {
           <button class="btn-download" onclick="traceUri()" style="padding: 0.35rem 0.8rem; font-size: 0.85rem;">Trace &rarr;</button>
         </div>
         <div class="controls-group">
-          <button class="toggle-pill active teal" onclick="toggleOverlays()"><i class="fa-solid fa-layer-group"></i> RT Patterns</button>
-          <button class="toggle-pill active" onclick="toggleLabels()"><i class="fa-solid fa-tag"></i> Relation Labels</button>
+          <button class="toggle-pill active teal" id="btnToggleClusters" onclick="toggleOverlays()"><i class="fa-solid fa-layer-group"></i> RT Patterns</button>
+          <button class="toggle-pill active" id="btnToggleLabels" onclick="toggleLabels()"><i class="fa-solid fa-tag"></i> Relation Labels</button>
         </div>
       </div>
 
@@ -97,14 +99,14 @@ export class HtmlPageRenderer {
       <div class="controls-row">
         <div class="controls-group">
           <span style="font-weight: 700; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Filter Pattern:</span>
-          <div class="toggle-pill active" onclick="filterPattern('all')">All</div>
-          <div class="toggle-pill" onclick="filterPattern('RT_P01')">RT-P01 Profile</div>
-          <div class="toggle-pill" onclick="filterPattern('RT_P03')">RT-P03 Conneg</div>
-          <div class="toggle-pill" onclick="filterPattern('RT_P04')">RT-P04 Direct Payloads</div>
-          <div class="toggle-pill" onclick="filterPattern('RT_P05')">RT-P05 Subsetting API</div>
-          <div class="toggle-pill" onclick="filterPattern('RT_P06')">RT-P06 Hostwide</div>
-          <div class="toggle-pill" onclick="filterPattern('RT_P07')">RT-P07 Catalog</div>
-          <div class="toggle-pill" onclick="filterPattern('RT_P08')">RT-P08 Linkset</div>
+          <div class="toggle-pill active" id="pill-all" onclick="filterPattern('all')">All</div>
+          <div class="toggle-pill" id="pill-RT_P01" onclick="filterPattern('RT_P01')">RT-P01 Profile</div>
+          <div class="toggle-pill" id="pill-RT_P03" onclick="filterPattern('RT_P03')">RT-P03 Conneg</div>
+          <div class="toggle-pill" id="pill-RT_P04" onclick="filterPattern('RT_P04')">RT-P04 Direct Payloads</div>
+          <div class="toggle-pill" id="pill-RT_P05" onclick="filterPattern('RT_P05')">RT-P05 Subsetting API</div>
+          <div class="toggle-pill" id="pill-RT_P06" onclick="filterPattern('RT_P06')">RT-P06 Hostwide</div>
+          <div class="toggle-pill" id="pill-RT_P07" onclick="filterPattern('RT_P07')">RT-P07 Catalog</div>
+          <div class="toggle-pill" id="pill-RT_P08" onclick="filterPattern('RT_P08')">RT-P08 Linkset</div>
         </div>
         <div class="controls-group">
           <button class="zoom-btn" onclick="zoomIn()" style="width: 32px; height: 32px; border-radius: 4px; border: 1px solid var(--panel-border); cursor: pointer;"><i class="fa-solid fa-plus"></i></button>
@@ -115,7 +117,7 @@ export class HtmlPageRenderer {
     </div>
 
     <!-- Canvas -->
-    <div class="metro-canvas-container">
+    <div class="metro-canvas-container" id="metroCanvasContainer">
       ${svgContent}
     </div>
   </main>
@@ -137,31 +139,48 @@ export class HtmlPageRenderer {
 
   <script>
     let currentZoom = 1, panX = 0, panY = 0, isDragging = false, startX, startY;
-    const viewport = document.getElementById('viewport');
-    const svg = document.getElementById('metroSvg');
+    let viewport = document.getElementById('viewport');
+    let svg = document.getElementById('metroSvg');
 
     function updateTransform() {
-      viewport.setAttribute('transform', \`translate(\${panX}, \${panY}) scale(\${currentZoom})\`);
+      if (viewport) {
+        viewport.setAttribute('transform', \`translate(\${panX}, \${panY}) scale(\${currentZoom})\`);
+      }
     }
     function zoomIn() { currentZoom = Math.min(currentZoom * 1.2, 3); updateTransform(); }
     function zoomOut() { currentZoom = Math.max(currentZoom / 1.2, 0.5); updateTransform(); }
     function resetZoom() { currentZoom = 1; panX = 0; panY = 0; updateTransform(); }
 
-    svg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - panX; startY = e.clientY - panY; });
-    window.addEventListener('mousemove', (e) => { if (!isDragging) return; panX = e.clientX - startX; panY = e.clientY - startY; updateTransform(); });
-    window.addEventListener('mouseup', () => { isDragging = false; });
+    function setupDragEvents() {
+      svg = document.getElementById('metroSvg');
+      viewport = document.getElementById('viewport');
+      if (!svg) return;
+      svg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - panX; startY = e.clientY - panY; });
+      window.addEventListener('mousemove', (e) => { if (!isDragging) return; panX = e.clientX - startX; panY = e.clientY - startY; updateTransform(); });
+      window.addEventListener('mouseup', () => { isDragging = false; });
+    }
+
+    setupDragEvents();
 
     function toggleOverlays() {
       const g = document.getElementById('clusterGroup');
-      g.style.display = g.style.display === 'none' ? 'inline' : 'none';
+      if (g) g.style.display = g.style.display === 'none' ? 'inline' : 'none';
+      document.getElementById('btnToggleClusters').classList.toggle('active', g && g.style.display !== 'none');
     }
     function toggleLabels() {
       const g = document.getElementById('relationLabelsGroup');
-      g.style.display = g.style.display === 'none' ? 'inline' : 'none';
+      if (g) g.style.display = g.style.display === 'none' ? 'inline' : 'none';
+      document.getElementById('btnToggleLabels').classList.toggle('active', g && g.style.display !== 'none');
     }
     function filterPattern(pid) {
+      document.querySelectorAll('.controls-row .toggle-pill').forEach(el => {
+        if (el.id && el.id.startsWith('pill-')) el.classList.remove('active');
+      });
+      const activePill = document.getElementById('pill-' + pid);
+      if (activePill) activePill.classList.add('active');
+
       document.querySelectorAll('.rt-cluster').forEach(c => {
-        c.style.opacity = (pid === 'all' || c.id === 'cluster-' + pid) ? '1' : '0.15';
+        c.style.opacity = (pid === 'all' || c.id === 'cluster-' + pid) ? '1' : '0.12';
       });
     }
     function selectPresetUri(val) {
@@ -169,9 +188,28 @@ export class HtmlPageRenderer {
       traceUri();
     }
     function traceUri() {
-      const uri = document.getElementById('uriInput').value;
-      window.location.href = '/map.html?origin=' + encodeURIComponent(uri);
+      const targetUri = document.getElementById('uriInput').value.trim();
+      if (!targetUri) return;
+      // Re-highlight origin station visually if present
+      document.querySelectorAll('.station-node circle').forEach(c => {
+        c.setAttribute('stroke', '#0284c7');
+        c.setAttribute('fill', '#ffffff');
+        c.setAttribute('r', '7.5');
+      });
+      document.querySelectorAll('.station-node').forEach(node => {
+        const onclickAttr = node.getAttribute('onclick') || '';
+        if (onclickAttr.includes(targetUri)) {
+          const circle = node.querySelector('circle');
+          if (circle) {
+            circle.setAttribute('stroke', '#ef4444');
+            circle.setAttribute('fill', '#fee2e2');
+            circle.setAttribute('r', '10');
+          }
+          node.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+        }
+      });
     }
+
     function openStationModal(title, path, desc, liveUrl, specs) {
       document.getElementById('modalTitle').textContent = title;
       document.getElementById('modalPath').textContent = path;
@@ -184,6 +222,14 @@ export class HtmlPageRenderer {
     function closeStationModal() {
       document.getElementById('modalOverlay').style.display = 'none';
       document.getElementById('stationModal').style.display = 'none';
+    }
+
+    // Auto-focus if origin parameter is passed in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const originParam = urlParams.get('origin');
+    if (originParam) {
+      document.getElementById('uriInput').value = originParam;
+      setTimeout(traceUri, 300);
     }
   </script>
 </body>
