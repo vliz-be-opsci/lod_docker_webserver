@@ -2,10 +2,10 @@ import { MetroGraph } from "../models/MetroGraph";
 import { PatternBoundingBox } from "../engine/OctilinearLayoutEngine";
 
 export class SvgRenderer {
-  public renderSvg(graph: MetroGraph, bounds: PatternBoundingBox[], width: number = 1500, height: number = 1200): string {
+  public renderSvg(graph: MetroGraph, bounds: PatternBoundingBox[], width: number = 1580, height: number = 1350): string {
     const clustersSvg = bounds.map(b => `
       <g class="rt-cluster rt-pattern-${b.pattern.id}" id="cluster-${b.pattern.id}">
-        <rect class="rt-cluster-bg" x="${b.x}" y="${b.y}" width="${b.width}" height="${b.height}" fill="${b.pattern.bgTint}" stroke="${b.pattern.themeColor}" rx="14" ry="14" stroke-dasharray="6 4" stroke-width="1.8" opacity="0.85" />
+        <rect class="rt-cluster-bg" x="${b.x}" y="${b.y}" width="${b.width}" height="${b.height}" fill="${b.pattern.bgTint}" stroke="${b.pattern.themeColor}" rx="14" ry="14" stroke-dasharray="6 4" stroke-width="1.8" opacity="0.8" />
         <text class="rt-cluster-header" x="${b.x + 16}" y="${b.y + 24}" fill="${b.pattern.themeColor}" font-family="'Outfit', sans-serif" font-size="12px" font-weight="700">
           RT-P${b.pattern.number < 10 ? '0' + b.pattern.number : b.pattern.number}: ${b.pattern.name.toUpperCase()}
         </text>
@@ -33,13 +33,37 @@ export class SvgRenderer {
     const nodesSvg = graph.nodes.map(n => {
       const strokeColor = n.isOrigin ? "#ef4444" : "#0284c7";
       const fillColor = n.isOrigin ? "#fee2e2" : "#ffffff";
-      const specCodes = n.specs.map(s => s.code).join(", ");
-      const escapedDesc = n.description.replace(/"/g, "&quot;");
-      const clickHandler = `openStationModal('${n.label.replace(/'/g, "\\'")}', '${n.uri}', '${escapedDesc}', '${n.liveUrl || '#'}', '${specCodes}')`;
+      
+      // Calculate matching RT patterns for this node
+      const matchingPatterns = graph.patterns.filter(p => p.matchesNode(n));
+      const patternsJson = JSON.stringify(matchingPatterns.map(p => ({
+        id: p.id,
+        number: p.number,
+        name: p.name,
+        docUrl: p.docUrl || "https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns",
+        themeColor: p.themeColor
+      }))).replace(/"/g, '&quot;');
+
+      const specsJson = JSON.stringify(n.specs.map(s => ({
+        id: s.id,
+        code: s.code,
+        name: s.name,
+        specUrl: s.specUrl,
+        publisher: s.publisher
+      }))).replace(/"/g, '&quot;');
+
+      const escapedTitle = n.label.replace(/'/g, "\\'");
+      const escapedDesc = n.description.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      const liveUrl = n.liveUrl || "#";
 
       return `
-        <g class="station-node station-${n.category}" onclick="${clickHandler}">
-          <circle class="station-circle" cx="${n.x}" cy="${n.y}" r="${n.isOrigin ? 10 : 7.5}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="${n.isOrigin ? 4 : 3}" />
+        <g class="station-node station-${n.category}" 
+           data-node-id="${n.id}"
+           data-uri="${n.uri}"
+           data-patterns="${patternsJson}"
+           data-specs="${specsJson}"
+           onclick="handleNodeClick(this, '${escapedTitle}', '${n.uri}', '${escapedDesc}', '${liveUrl}')">
+          <circle class="station-circle" cx="${n.x}" cy="${n.y}" r="${n.isOrigin ? 9.5 : 7}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="${n.isOrigin ? 3.5 : 2.8}" />
           <text class="station-label" x="${n.x + 14}" y="${n.y + 4}" font-family="'Inter', sans-serif" font-size="11px" font-weight="600" fill="#1e293b" paint-order="stroke" stroke="#ffffff" stroke-width="3px">${n.label}</text>
           ${n.sublabel ? `<text class="station-sublabel" x="${n.x + 14}" y="${n.y + 16}" font-family="'Inter', sans-serif" font-size="9px" font-weight="500" fill="#64748b" paint-order="stroke" stroke="#ffffff" stroke-width="3px">${n.sublabel}</text>` : ''}
         </g>

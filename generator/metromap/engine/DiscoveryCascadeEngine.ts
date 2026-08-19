@@ -17,7 +17,7 @@ export class DiscoveryCascadeEngine {
   public cascade(entrypointUri: string): DiscoveredSignal[] {
     const signals: DiscoveredSignal[] = [];
 
-    // 1. Domain Discovery Signals
+    // 1. Domain Discovery Corridor
     signals.push(
       { sourceUri: "/", targetUri: "/.well-known/api-catalog", relation: 'rel="api-catalog"', category: "domain", label: "Domain Root", sublabel: "RFC 8288 Link Headers", specIds: ["RFC_8288", "RFC_9727"] },
       { sourceUri: "/", targetUri: "/robots.txt", relation: "directive", category: "domain", label: "Domain Root", sublabel: "Robots Directive", specIds: ["RFC_8288"] },
@@ -26,8 +26,18 @@ export class DiscoveryCascadeEngine {
       { sourceUri: "/sitemap.xml", targetUri: "/catalog/dcat.ttl", relation: "rs:ln (dcat-catalog)", category: "domain", label: "/sitemap.xml", sublabel: "Signmap Index", specIds: ["RESOURCESYNC", "DCAT_3"] }
     );
 
-    // 2. Resource Signals
-    for (const res of this.resources) {
+    // 2. Primary Featured Entities Corridor (Clean, non-cluttered topology)
+    const featuredResources = this.resources.filter(r => 
+      r.id === "resource-arms-mbon" || 
+      r.id === "resource-arms-2018" || 
+      r.id === "resource-north-sea-sensors" || 
+      r.id === "resource-vliz" || 
+      r.id === "resource-ro-crate-paper" ||
+      r.id === "resource-eurobis-occurrences" ||
+      r.category === "api"
+    );
+
+    for (const res of featuredResources) {
       const pidUri = `/resource/${res.id}`;
       const slug = res.id.replace("resource-", "");
       let htmlPath = `/datasets/${slug}.html`;
@@ -43,29 +53,33 @@ export class DiscoveryCascadeEngine {
         relation: "rs:ln (item)",
         category: (res.category as NodeCategory) || "dataset",
         label: res.title,
-        sublabel: `${res.type} PID`,
-        specIds: ["RESOURCESYNC", "RFC_6906"]
+        sublabel: `${res.type} PID (303 Hub)`,
+        specIds: ["RESOURCESYNC", "RFC_6906", "RFC_9110"]
       });
 
-      // Conneg 303 Hub
-      signals.push(
-        { sourceUri: pidUri, targetUri: htmlPath, relation: "303 (Accept: text/html)", category: (res.category as NodeCategory) || "dataset", label: pidUri, sublabel: "HTML Landing Page", specIds: ["RFC_9110", "RFC_8288"] },
-        { sourceUri: pidUri, targetUri: `/rdf/${res.id}.ttl`, relation: "303 (Accept: text/turtle)", category: (res.category as NodeCategory) || "dataset", label: pidUri, sublabel: "Turtle RDF", specIds: ["RFC_9110", "DCAT_3"] },
-        { sourceUri: pidUri, targetUri: `/rdf/${res.id}.jsonld`, relation: "303 (Accept: ld+json)", category: (res.category as NodeCategory) || "dataset", label: pidUri, sublabel: "JSON-LD", specIds: ["RFC_9110", "SCHEMA_ORG"] }
-      );
+      // Conneg 303 Hub to HTML Landing / RDF Variants
+      signals.push({
+        sourceUri: pidUri,
+        targetUri: htmlPath,
+        relation: "303 Conneg [HTML, TTL, JSON-LD]",
+        category: (res.category as NodeCategory) || "dataset",
+        label: htmlPath,
+        sublabel: "Landing Page & Profiles",
+        specIds: ["RFC_9110", "RFC_8288", "RFC_6906"]
+      });
 
-      // Linkset
+      // Decoupled Linkset
       signals.push({
         sourceUri: htmlPath,
         targetUri: `/linksets/${res.id}.linkset.json`,
         relation: 'rel="linkset"',
         category: "linkset",
-        label: htmlPath,
-        sublabel: "RFC 9264 Linkset",
-        specIds: ["RFC_9264", "RFC_8288"]
+        label: `/linksets/${res.id}.linkset.json`,
+        sublabel: "RFC 9264 JSON Linkset",
+        specIds: ["RFC_9264", "RFC_8288", "RFC_6573"]
       });
 
-      // Distributions
+      // Physical Distributions & Payloads
       if (res.distributions) {
         for (const dist of res.distributions) {
           signals.push({
@@ -74,8 +88,8 @@ export class DiscoveryCascadeEngine {
             relation: `rel="item" (${dist.format})`,
             category: "distribution",
             label: dist.title,
-            sublabel: dist.mediaType,
-            specIds: dist.format === "RO-Crate" ? ["RO_CRATE", "RFC_8574"] : ["RFC_8574", "RFC_6573"]
+            sublabel: `${dist.format} (${dist.mediaType})`,
+            specIds: dist.format === "RO-Crate" ? ["RO_CRATE", "RFC_8574", "RFC_6906"] : ["RFC_8574", "RFC_6573"]
           });
         }
       }

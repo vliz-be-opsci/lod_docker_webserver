@@ -12,13 +12,13 @@ export interface PatternBoundingBox {
 }
 
 export class OctilinearLayoutEngine {
-  private laneXCoordinates = [120, 480, 720, 980, 1260];
+  private laneXCoordinates = [120, 440, 740, 1040, 1320];
 
   public computeLayout(graph: MetroGraph): void {
     // 1. Assign semantic lanes
     const laneCounters = [0, 0, 0, 0, 0];
-    const ySpacing = 75;
-    const yOffset = 130;
+    const ySpacing = 85;
+    const yOffset = 140;
 
     for (const node of graph.nodes) {
       let laneIndex = 1;
@@ -26,7 +26,7 @@ export class OctilinearLayoutEngine {
         laneIndex = 0;
       } else if (node.id.includes("pid") || node.uri.includes("/resource/")) {
         laneIndex = 1;
-      } else if (node.uri.includes("/rdf/") || node.uri.includes("/datasets/") || node.uri.includes("/institutes/") || node.uri.includes("/publications/")) {
+      } else if (node.uri.includes("/datasets/") || node.uri.includes("/institutes/") || node.uri.includes("/publications/") || node.uri.includes("/projects/")) {
         laneIndex = 2;
       } else if (node.category === "linkset" || node.uri.includes("/linksets/")) {
         laneIndex = 3;
@@ -55,11 +55,11 @@ export class OctilinearLayoutEngine {
         track.pathPoints = [{ x: sx, y: sy }, { x: tx, y: ty }];
       } else {
         // 45° / 90° metro transition
-        const midX = sx + (tx - sx) * 0.4;
+        const midX = sx + (tx - sx) * 0.45;
         track.pathPoints = [
           { x: sx, y: sy },
           { x: midX, y: sy },
-          { x: midX + 30, y: ty },
+          { x: midX + 35, y: ty },
           { x: tx, y: ty }
         ];
       }
@@ -68,7 +68,7 @@ export class OctilinearLayoutEngine {
 
   public computePatternBounds(graph: MetroGraph): PatternBoundingBox[] {
     const bounds: PatternBoundingBox[] = [];
-    const padding = 30;
+    const padding = 28;
 
     for (const pattern of graph.patterns) {
       const matchingNodes = graph.nodes.filter(n => pattern.matchesNode(n));
@@ -85,9 +85,9 @@ export class OctilinearLayoutEngine {
       bounds.push({
         pattern,
         x: Math.max(minX - padding, 20),
-        y: Math.max(minY - padding - 40, 20),
-        width: Math.max(maxX - minX + padding * 2 + 180, 220),
-        height: Math.max(maxY - minY + padding * 2 + 60, 100),
+        y: Math.max(minY - padding - 36, 20),
+        width: Math.max(maxX - minX + padding * 2 + 190, 220),
+        height: Math.max(maxY - minY + padding * 2 + 50, 90),
         enclosedNodes: matchingNodes
       });
     }

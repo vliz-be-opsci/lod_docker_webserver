@@ -6,7 +6,7 @@ export class HtmlPageRenderer {
   private svgRenderer = new SvgRenderer();
 
   public renderPage(graph: MetroGraph, bounds: PatternBoundingBox[], baseUrl: string): string {
-    const svgContent = this.svgRenderer.renderSvg(graph, bounds, 1500, 1300);
+    const svgContent = this.svgRenderer.renderSvg(graph, bounds, 1580, 1350);
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -17,7 +17,7 @@ export class HtmlPageRenderer {
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    .map-wrapper { max-width: 1550px; margin: 1.5rem auto 3rem; padding: 0 1.5rem; }
+    .map-wrapper { max-width: 1580px; margin: 1.5rem auto 3rem; padding: 0 1.5rem; }
     .map-controls-bar { display: flex; flex-direction: column; gap: 1rem; background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: var(--radius-md); padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); }
     .controls-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
     .controls-group { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
@@ -38,11 +38,19 @@ export class HtmlPageRenderer {
     .track-institute { stroke: #8b5cf6; }
     .track-person { stroke: #10b981; }
     .station-node { cursor: pointer; transition: transform 0.2s; }
-    .station-node:hover circle { r: 11px; filter: drop-shadow(0 0 6px rgba(15, 23, 42, 0.4)); }
+    .station-node:hover circle { r: 10.5px; filter: drop-shadow(0 0 6px rgba(15, 23, 42, 0.4)); }
     .rt-cluster { transition: opacity 0.3s; }
-    .station-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #ffffff; border-radius: var(--radius-lg); padding: 2rem; max-width: 580px; width: 90%; box-shadow: var(--shadow-lg); border: 1px solid var(--panel-border); z-index: 1000; display: none; }
+    
+    /* Enhanced Modal Styling */
+    .station-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #ffffff; border-radius: var(--radius-lg); padding: 2rem; max-width: 620px; width: 92%; box-shadow: var(--shadow-lg); border: 1px solid var(--panel-border); z-index: 1000; display: none; max-height: 85vh; overflow-y: auto; }
     .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 999; display: none; }
     .modal-close { position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted); }
+    .modal-section { margin-bottom: 1.25rem; }
+    .modal-section-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem; }
+    .spec-badge-link { display: inline-flex; align-items: center; gap: 0.35rem; background: #f1f5f9; color: var(--vliz-blue); text-decoration: none; padding: 0.3rem 0.6rem; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 600; border: 1px solid #cbd5e1; transition: all 0.2s; margin-right: 0.4rem; margin-bottom: 0.4rem; }
+    .spec-badge-link:hover { background: var(--vliz-blue); color: #ffffff; border-color: var(--vliz-blue); }
+    .pattern-card-link { display: flex; align-items: center; justify-content: space-between; background: var(--bg-subtle); border: 1px solid var(--panel-border); padding: 0.6rem 0.8rem; border-radius: var(--radius-sm); text-decoration: none; color: var(--text-primary); margin-bottom: 0.5rem; transition: all 0.2s; }
+    .pattern-card-link:hover { border-color: var(--marine-teal); background: #f0fdfa; transform: translateX(2px); }
   </style>
 </head>
 <body>
@@ -122,7 +130,7 @@ export class HtmlPageRenderer {
     </div>
   </main>
 
-  <!-- Modal -->
+  <!-- Enhanced Inspector Modal -->
   <div class="modal-overlay" id="modalOverlay" onclick="closeStationModal()"></div>
   <div class="station-modal" id="stationModal">
     <button class="modal-close" onclick="closeStationModal()">&times;</button>
@@ -130,11 +138,22 @@ export class HtmlPageRenderer {
     <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.35rem; margin: 0 0 0.5rem; color: var(--text-primary);" id="modalTitle">Station Name</h3>
     <p style="font-size: 0.85rem; font-family: monospace; background: var(--bg-subtle); padding: 0.4rem 0.6rem; border-radius: var(--radius-sm); color: var(--vliz-blue);" id="modalPath">/path</p>
     <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); margin: 0.8rem 0;" id="modalDesc">Description text goes here.</p>
-    <div style="background: var(--bg-subtle); border-radius: var(--radius-sm); padding: 0.6rem 0.8rem; margin-bottom: 1.2rem; font-size: 0.85rem;">
-      <strong>Implemented Specifications:</strong>
-      <div id="modalSpecs" style="color: var(--marine-teal); font-weight: 600; margin-top: 0.25rem;">RFC 8288, RFC 9264</div>
+    
+    <!-- Applicable RT Patterns -->
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fa-solid fa-layer-group" style="color: var(--marine-teal);"></i> Applicable Radical Transparency Patterns:</div>
+      <div id="modalPatternsList"></div>
     </div>
-    <a href="#" id="modalActionBtn" target="_blank" class="btn-download" style="display: block; text-align: center; padding: 0.6rem 1rem;">Open Live Resource &rarr;</a>
+
+    <!-- Implemented Specifications -->
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fa-solid fa-scroll" style="color: var(--vliz-blue);"></i> Implemented Standards & RFC Specifications:</div>
+      <div id="modalSpecsList" style="display: flex; flex-wrap: wrap;"></div>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem;">
+      <a href="#" id="modalActionBtn" target="_blank" class="btn-download" style="flex: 1; text-align: center; padding: 0.6rem 1rem;">Open Live Resource &rarr;</a>
+    </div>
   </div>
 
   <script>
@@ -190,41 +209,82 @@ export class HtmlPageRenderer {
     function traceUri() {
       const targetUri = document.getElementById('uriInput').value.trim();
       if (!targetUri) return;
-      // Re-highlight origin station visually if present
       document.querySelectorAll('.station-node circle').forEach(c => {
         c.setAttribute('stroke', '#0284c7');
         c.setAttribute('fill', '#ffffff');
-        c.setAttribute('r', '7.5');
+        c.setAttribute('r', '7');
       });
       document.querySelectorAll('.station-node').forEach(node => {
-        const onclickAttr = node.getAttribute('onclick') || '';
-        if (onclickAttr.includes(targetUri)) {
+        const nodeUri = node.getAttribute('data-uri') || '';
+        if (nodeUri === targetUri || nodeUri.includes(targetUri)) {
           const circle = node.querySelector('circle');
           if (circle) {
             circle.setAttribute('stroke', '#ef4444');
             circle.setAttribute('fill', '#fee2e2');
-            circle.setAttribute('r', '10');
+            circle.setAttribute('r', '9.5');
           }
           node.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
         }
       });
     }
 
-    function openStationModal(title, path, desc, liveUrl, specs) {
+    function handleNodeClick(el, title, uri, desc, liveUrl) {
+      const patternsData = JSON.parse(el.getAttribute('data-patterns') || '[]');
+      const specsData = JSON.parse(el.getAttribute('data-specs') || '[]');
+
       document.getElementById('modalTitle').textContent = title;
-      document.getElementById('modalPath').textContent = path;
-      document.getElementById('modalDesc').textContent = desc;
+      document.getElementById('modalPath').textContent = uri;
+      document.getElementById('modalDesc').textContent = desc || 'Node endpoint participating in Radical Transparency linked data transit graph.';
       document.getElementById('modalActionBtn').href = liveUrl;
-      document.getElementById('modalSpecs').textContent = specs || 'None declared';
+
+      // Render RT Patterns
+      const patternsListEl = document.getElementById('modalPatternsList');
+      patternsListEl.innerHTML = '';
+      if (patternsData.length === 0) {
+        patternsListEl.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">None assigned.</span>';
+      } else {
+        patternsData.forEach(p => {
+          const card = document.createElement('a');
+          card.className = 'pattern-card-link';
+          card.href = p.docUrl;
+          card.target = '_blank';
+          card.innerHTML = \`
+            <div>
+              <strong style="color: \${p.themeColor};">RT-P\${p.number < 10 ? '0' + p.number : p.number}: \${p.name}</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">EOSC Semantic Interop Proposal Document &rarr;</div>
+            </div>
+            <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.8rem; color: var(--marine-teal);"></i>
+          \`;
+          patternsListEl.appendChild(card);
+        });
+      }
+
+      // Render Specs
+      const specsListEl = document.getElementById('modalSpecsList');
+      specsListEl.innerHTML = '';
+      if (specsData.length === 0) {
+        specsListEl.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">No RFC specifications declared.</span>';
+      } else {
+        specsData.forEach(s => {
+          const badge = document.createElement('a');
+          badge.className = 'spec-badge-link';
+          badge.href = s.specUrl || '#';
+          badge.target = '_blank';
+          badge.innerHTML = \`\${s.code} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem; opacity: 0.7;"></i>\`;
+          badge.title = \`\${s.name} (\${s.publisher})\`;
+          specsListEl.appendChild(badge);
+        });
+      }
+
       document.getElementById('modalOverlay').style.display = 'block';
       document.getElementById('stationModal').style.display = 'block';
     }
+
     function closeStationModal() {
       document.getElementById('modalOverlay').style.display = 'none';
       document.getElementById('stationModal').style.display = 'none';
     }
 
-    // Auto-focus if origin parameter is passed in URL
     const urlParams = new URLSearchParams(window.location.search);
     const originParam = urlParams.get('origin');
     if (originParam) {

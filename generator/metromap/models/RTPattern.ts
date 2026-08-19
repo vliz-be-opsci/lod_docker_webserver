@@ -10,6 +10,7 @@ export class RTPattern {
     public readonly specs: Specification[],
     public readonly themeColor: string,
     public readonly bgTint: string,
-    public readonly matchesNode: (node: MetroNode) => boolean
+    public readonly matchesNode: (node: MetroNode) => boolean,
+    public readonly docUrl?: string
   ) {}
 }

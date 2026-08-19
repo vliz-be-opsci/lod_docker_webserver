@@ -1,6 +1,8 @@
 import { RTPattern } from "../models/RTPattern";
 import { SPECS_REGISTRY } from "./specsRegistry";
 
+const EOSC_BASE_URL = "https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns";
+
 export const RT_PATTERNS_REGISTRY: RTPattern[] = [
   new RTPattern(
     "RT_P01",
@@ -10,7 +12,8 @@ export const RT_PATTERNS_REGISTRY: RTPattern[] = [
     [SPECS_REGISTRY.RFC_6906, SPECS_REGISTRY.RFC_8288, SPECS_REGISTRY.RFC_7284],
     "#0284c7",
     "#f0f9ff",
-    node => node.category === "dataset" || node.category === "institute" || node.category === "publication"
+    node => node.category === "dataset" || node.category === "institute" || node.category === "publication" || node.specs.some(s => s.id === "RFC_6906"),
+    `${EOSC_BASE_URL}/01-profile-declaration.md`
   ),
   new RTPattern(
     "RT_P02",
@@ -20,7 +23,8 @@ export const RT_PATTERNS_REGISTRY: RTPattern[] = [
     [SPECS_REGISTRY.RFC_6906, SPECS_REGISTRY.RFC_6573, SPECS_REGISTRY.RFC_8288],
     "#0369a1",
     "#f0f9ff",
-    node => node.category === "dataset" && node.specs.some(s => s.id === "RFC_6906")
+    node => node.category === "dataset" && node.specs.some(s => s.id === "RFC_6906"),
+    `${EOSC_BASE_URL}/02-profile-composition.md`
   ),
   new RTPattern(
     "RT_P03",
@@ -30,7 +34,8 @@ export const RT_PATTERNS_REGISTRY: RTPattern[] = [
     [SPECS_REGISTRY.RFC_9110, SPECS_REGISTRY.RFC_8288, SPECS_REGISTRY.RFC_9264, SPECS_REGISTRY.RFC_6906],
     "#ea580c",
     "#fff7ed",
-    node => node.id.includes("pid") || node.id.includes("html") || node.id.includes("ttl") || node.id.includes("jsonld") || node.id.includes("rdf")
+    node => node.id.includes("pid") || node.id.includes("html") || node.id.includes("ttl") || node.id.includes("jsonld") || node.id.includes("rdf") || node.uri.includes("/resource/"),
+    `${EOSC_BASE_URL}/03-content-negotiation-menu.md`
   ),
   new RTPattern(
     "RT_P04",
@@ -40,7 +45,8 @@ export const RT_PATTERNS_REGISTRY: RTPattern[] = [
     [SPECS_REGISTRY.RFC_8574, SPECS_REGISTRY.RFC_8288, SPECS_REGISTRY.RFC_9264],
     "#16a34a",
     "#f0fdf4",
-    node => node.category === "distribution"
+    node => node.category === "distribution",
+    `${EOSC_BASE_URL}/04-no-landing-page-solution.md`
   ),
   new RTPattern(
     "RT_P05",
@@ -50,7 +56,8 @@ export const RT_PATTERNS_REGISTRY: RTPattern[] = [
     [SPECS_REGISTRY.RFC_9727, SPECS_REGISTRY.RFC_8631, SPECS_REGISTRY.RFC_6573, SPECS_REGISTRY.RFC_8574, SPECS_REGISTRY.OPENAPI_3],
     "#0d9488",
     "#f0fdfa",
-    node => node.category === "api"
+    node => node.category === "api" || node.uri.includes("/api/"),
+    `${EOSC_BASE_URL}/05-subsetting-api.md`
   ),
   new RTPattern(
     "RT_P06",
@@ -60,7 +67,8 @@ export const RT_PATTERNS_REGISTRY: RTPattern[] = [
     [SPECS_REGISTRY.RESOURCESYNC, SPECS_REGISTRY.RFC_8288],
     "#0284c7",
     "#f0f9ff",
-    node => node.category === "domain" && (node.id.includes("root") || node.id.includes("robots") || node.id.includes("sitemap"))
+    node => node.category === "domain" && (node.id.includes("root") || node.id.includes("robots") || node.id.includes("sitemap")),
+    `${EOSC_BASE_URL}/06-hostwide-discovery.md`
   ),
   new RTPattern(
     "RT_P07",
@@ -70,7 +78,8 @@ export const RT_PATTERNS_REGISTRY: RTPattern[] = [
     [SPECS_REGISTRY.RFC_9727, SPECS_REGISTRY.DCAT_3, SPECS_REGISTRY.RESOURCESYNC],
     "#0284c7",
     "#f0f9ff",
-    node => node.id.includes("api-catalog") || node.id.includes("dcat") || node.id.includes("catalog")
+    node => node.id.includes("api-catalog") || node.id.includes("dcat") || node.id.includes("catalog"),
+    `${EOSC_BASE_URL}/07-catalog-assistance.md`
   ),
   new RTPattern(
     "RT_P08",
@@ -80,7 +89,8 @@ export const RT_PATTERNS_REGISTRY: RTPattern[] = [
     [SPECS_REGISTRY.RFC_6573, SPECS_REGISTRY.RFC_9264],
     "#ca8a04",
     "#fefce8",
-    node => node.category === "linkset"
+    node => node.category === "linkset" || node.uri.includes("/linksets/"),
+    `${EOSC_BASE_URL}/08-large-linksets.md`
   ),
   new RTPattern(
     "RT_P10",
@@ -90,7 +100,8 @@ export const RT_PATTERNS_REGISTRY: RTPattern[] = [
     [SPECS_REGISTRY.RFC_6906, SPECS_REGISTRY.RFC_9264, SPECS_REGISTRY.RO_CRATE],
     "#15803d",
     "#f0fdf4",
-    node => node.category === "distribution" && (node.id.includes("rocrate") || node.id.includes("zip"))
+    node => node.category === "distribution" && (node.id.includes("rocrate") || node.id.includes("zip")),
+    `${EOSC_BASE_URL}/10-detached-local-storage.md`
   )
 ];
 
