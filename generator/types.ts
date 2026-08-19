@@ -14,13 +14,15 @@ export interface SampleData {
   rows: Record<string, string | number>[];
 }
 
+export type EntityCategory = "dataset" | "institute" | "publication" | "project" | "person" | "service" | "api" | "profile";
+
 export interface Resource {
   id: string;
   type: string; // e.g. "Person", "Dataset", "Organization", "Software", "ScholarlyArticle", "Project", "DataService"
   title: string;
   description: string;
   properties: Record<string, string | string[]>;
-  category?: "dataset" | "institute" | "publication" | "project" | "person" | "api";
+  category?: EntityCategory;
   distributions?: ResourceDistribution[];
   sampleData?: SampleData;
   sourceUri?: string;
@@ -46,6 +48,32 @@ export interface Resource {
 }
 
 export type MarineEntity = Resource;
+
+export function getEntityTypeSlug(entity: { category?: string; type?: string; id?: string }): string {
+  if (entity.category === "api" || entity.category === "service" || entity.type === "DataService") return "service";
+  if (entity.category === "dataset" || entity.type === "Dataset") return "dataset";
+  if (entity.category === "institute" || entity.type === "Organization") return "institute";
+  if (entity.category === "person" || entity.type === "Person") return "person";
+  if (entity.category === "publication" || entity.type === "ScholarlyArticle") return "publication";
+  if (entity.category === "project" || entity.type === "Project") return "project";
+  if (entity.category === "profile") return "profile";
+  return "dataset";
+}
+
+export function getEntityNameSlug(entityOrId: { id: string } | string): string {
+  const rawId = typeof entityOrId === "string" ? entityOrId : entityOrId.id;
+  return rawId.replace(/^resource-/, "").replace(/^profile-/, "");
+}
+
+export function getEntityIdPath(entity: MarineEntity): string {
+  const typeSlug = getEntityTypeSlug(entity);
+  const nameSlug = getEntityNameSlug(entity);
+  return `/id/${typeSlug}/${nameSlug}`;
+}
+
+export function getEntityHtmlPath(entity: MarineEntity): string {
+  return `${getEntityIdPath(entity)}.html`;
+}
 
 export enum DiscoveryStrategy {
   HTML_LINKS = "HTML_LINKS",

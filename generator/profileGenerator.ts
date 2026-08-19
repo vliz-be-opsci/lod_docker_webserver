@@ -1,13 +1,13 @@
 import { Profile, PROFILES, getProfileById } from "./profiles";
 
 export function generateProfileLinkset(profile: Profile, baseUrl: string) {
-  const profileUri = `${baseUrl}/profiles/${profile.id}.html`;
+  const profileUri = `${baseUrl}/id/profile/${profile.id}`;
   const items: any[] = [];
 
   if (profile.composedProfiles) {
     for (const subId of profile.composedProfiles) {
       const subProfile = getProfileById(subId);
-      const targetUri = subProfile ? `${baseUrl}/profiles/${subProfile.id}.html` : `${baseUrl}/profiles/${subId}`;
+      const targetUri = subProfile ? `${baseUrl}/id/profile/${subProfile.id}.html` : `${baseUrl}/id/profile/${subId}`;
       items.push({
         href: targetUri,
         type: "text/html",
@@ -21,11 +21,14 @@ export function generateProfileLinkset(profile: Profile, baseUrl: string) {
       {
         anchor: profileUri,
         "http://www.w3.org/1999/xhtml/vocab#describedby": [
-          { href: `${baseUrl}/profiles/${profile.id}.ttl`, type: "text/turtle" },
-          { href: `${baseUrl}/profiles/${profile.id}.jsonld`, type: "application/ld+json" }
+          { href: `${baseUrl}/id/profile/${profile.id}.ttl`, type: "text/turtle" },
+          { href: `${baseUrl}/id/profile/${profile.id}.jsonld`, type: "application/ld+json" }
         ],
         "http://www.w3.org/1999/xhtml/vocab#profile": [
           { href: "https://www.w3.org/TR/dx-prof/", title: "W3C Profiles Vocabulary" }
+        ],
+        "http://www.w3.org/1999/xhtml/vocab#alternate": [
+          { href: `${baseUrl}/id/profile/${profile.id}.html`, type: "text/html" }
         ]
       }
     ]
@@ -39,7 +42,7 @@ export function generateProfileLinkset(profile: Profile, baseUrl: string) {
 }
 
 export function generateProfileTurtle(profile: Profile, baseUrl: string): string {
-  const profileUri = `${baseUrl}/profiles/${profile.id}.html`;
+  const profileUri = `${baseUrl}/id/profile/${profile.id}`;
   let ttl = `@prefix prof: <http://www.w3.org/ns/dx/prof/> .\n`;
   ttl += `@prefix dcterms: <http://purl.org/dc/terms/> .\n`;
   ttl += `@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n`;
@@ -53,7 +56,7 @@ export function generateProfileTurtle(profile: Profile, baseUrl: string): string
   ttl += `    prof:isProfileOf <${profile.conformsToStandard}> ;\n`;
 
   if (profile.composedProfiles && profile.composedProfiles.length > 0) {
-    const subUris = profile.composedProfiles.map(s => `<${baseUrl}/profiles/${s}.html>`).join(",\n        ");
+    const subUris = profile.composedProfiles.map(s => `<${baseUrl}/id/profile/${s}.html>`).join(",\n        ");
     ttl += `    dcterms:hasPart ${subUris} ;\n`;
   }
 
@@ -61,7 +64,7 @@ export function generateProfileTurtle(profile: Profile, baseUrl: string): string
   ttl += `        a prof:ResourceDescriptor ;\n`;
   ttl += `        rdfs:label "SHACL Validation Shape" ;\n`;
   ttl += `        prof:hasRole <http://www.w3.org/ns/dx/prof/role/validation> ;\n`;
-  ttl += `        prof:hasArtifact <${baseUrl}/profiles/${profile.id}.ttl#shape> ;\n`;
+  ttl += `        prof:hasArtifact <${baseUrl}/id/profile/${profile.id}.ttl#shape> ;\n`;
   ttl += `    ] .\n\n`;
 
   ttl += `# --- SHACL Validation Shape ---\n`;
@@ -71,7 +74,7 @@ export function generateProfileTurtle(profile: Profile, baseUrl: string): string
 }
 
 export function generateProfileJsonLd(profile: Profile, baseUrl: string): string {
-  const profileUri = `${baseUrl}/profiles/${profile.id}.html`;
+  const profileUri = `${baseUrl}/id/profile/${profile.id}`;
   const jsonld: any = {
     "@context": {
       "prof": "http://www.w3.org/ns/dx/prof/",
@@ -89,7 +92,7 @@ export function generateProfileJsonLd(profile: Profile, baseUrl: string): string
 
   if (profile.composedProfiles && profile.composedProfiles.length > 0) {
     jsonld["dcterms:hasPart"] = profile.composedProfiles.map(s => ({
-      "@id": `${baseUrl}/profiles/${s}.html`
+      "@id": `${baseUrl}/id/profile/${s}.html`
     }));
   }
 
@@ -108,9 +111,9 @@ export function generateProfileHtml(profile: Profile, baseUrl: string): string {
             return `
               <div style="background: var(--bg-subtle); border: 1px solid var(--panel-border); border-radius: var(--radius-md); padding: 1rem;">
                 <div style="font-size: 0.75rem; font-weight: 700; color: var(--marine-teal); text-transform: uppercase;">ATOMIC PROFILE</div>
-                <h4 style="margin: 0.3rem 0 0.5rem; font-size: 1rem;"><a href="/profiles/${subId}.html" style="color: var(--text-primary); text-decoration: none;">${sub ? sub.title : subId}</a></h4>
+                <h4 style="margin: 0.3rem 0 0.5rem; font-size: 1rem;"><a href="/id/profile/${subId}.html" style="color: var(--text-primary); text-decoration: none;">${sub ? sub.title : subId}</a></h4>
                 <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">${sub ? sub.description : ''}</p>
-                <div style="margin-top: 0.75rem;"><a href="/profiles/${subId}.html" class="btn-download" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">View Sub-Profile &rarr;</a></div>
+                <div style="margin-top: 0.75rem;"><a href="/id/profile/${subId}.html" class="btn-download" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">View Sub-Profile &rarr;</a></div>
               </div>
             `;
           }).join("\n")}
@@ -132,6 +135,9 @@ export function generateProfileHtml(profile: Profile, baseUrl: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="describedby" type="text/turtle" href="/id/profile/${profile.id}.ttl">
+  <link rel="describedby" type="application/ld+json" href="/id/profile/${profile.id}.jsonld">
+  <link rel="linkset" type="application/linkset+json" href="/id/profile/${profile.id}.linkset.json">
 </head>
 <body>
   <header>
@@ -142,7 +148,7 @@ export function generateProfileHtml(profile: Profile, baseUrl: string): string {
     <nav class="nav-links">
       <a href="/">Datasets</a>
       <a href="/catalog/">DCAT Catalog</a>
-      <a href="/profiles/">Semantic Profiles</a>
+      <a href="/id/profiles">Semantic Profiles</a>
       <a href="/api/docs/">Subsetting API</a>
       <a href="/map.html">Metro Map</a>
     </nav>
@@ -167,11 +173,11 @@ export function generateProfileHtml(profile: Profile, baseUrl: string): string {
             Profile URI
             <span style="font-size: 0.75rem; background: #dcfce7; color: #166534; padding: 0.15rem 0.5rem; border-radius: 9999px; font-weight: 600; margin-left: 0.4rem; text-transform: none;"><i class="fa-solid fa-circle-check"></i> Local Canonical Endpoint</span>
           </div>
-          <code style="font-size: 0.95rem; color: var(--vliz-blue); background: var(--bg-subtle); padding: 0.2rem 0.5rem; border-radius: var(--radius-sm); margin-top: 0.35rem; display: inline-block;">${baseUrl}/profiles/${profile.id}.html</code>
+          <code style="font-size: 0.95rem; color: var(--vliz-blue); background: var(--bg-subtle); padding: 0.2rem 0.5rem; border-radius: var(--radius-sm); margin-top: 0.35rem; display: inline-block;">${baseUrl}/id/profile/${profile.id}.html</code>
         </div>
         <div style="display: flex; gap: 0.5rem;">
-          <a href="/profiles/${profile.id}.ttl" class="btn-download" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;"><i class="fa-solid fa-file-code"></i> Turtle RDF</a>
-          <a href="/profiles/${profile.id}.linkset.json" class="btn-download" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;"><i class="fa-solid fa-link"></i> RFC 9264 Linkset</a>
+          <a href="/id/profile/${profile.id}.ttl" class="btn-download" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;"><i class="fa-solid fa-file-code"></i> Turtle RDF</a>
+          <a href="/id/profile/${profile.id}.linkset.json" class="btn-download" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;"><i class="fa-solid fa-link"></i> RFC 9264 Linkset</a>
         </div>
       </div>
 
@@ -203,7 +209,7 @@ export function generateProfileHtml(profile: Profile, baseUrl: string): string {
       <div class="footer-links">
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank">🐙 EOSC RT Proposals</a>
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank">📋 RT Patterns</a>
-        <a href="/profiles/">Profiles Registry</a>
+        <a href="/id/profiles">Profiles Registry</a>
         <a href="/map.html">Metro Map</a>
         <a href="/catalog/dcat.ttl">DCAT Catalog</a>
         <a href="https://github.com/vliz-be-opsci/lod_docker_webserver">GitHub Repo</a>
@@ -236,11 +242,11 @@ export function generateProfileCatalogHtml(profiles: Profile[], baseUrl: string)
     <nav class="nav-links">
       <a href="/">Datasets</a>
       <a href="/catalog/">DCAT Catalog</a>
-      <a href="/profiles/" class="active">Semantic Profiles</a>
+      <a href="/id/profiles" class="active">Semantic Profiles</a>
       <a href="/api/docs/">Subsetting API</a>
-      <a href="/publications/ro-crate-paper.html">Publications</a>
+      <a href="/id/publication/ro-crate-paper.html">Publications</a>
       <a href="/map.html">Metro Map</a>
-      <a href="/institutes/vliz.html">Institute</a>
+      <a href="/id/institute/vliz.html">Institute</a>
     </nav>
   </header>
 
@@ -265,7 +271,7 @@ export function generateProfileCatalogHtml(profiles: Profile[], baseUrl: string)
           <div style="background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: var(--radius-lg); padding: 1.75rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
             <div>
               <span class="hero-tag" style="background: #f0f9ff; color: #0284c7; border-color: #bae6fd;">Composite Profile</span>
-              <h4 style="font-size: 1.2rem; margin: 0.6rem 0 0.5rem;"><a href="/profiles/${p.id}.html" style="color: var(--text-primary); text-decoration: none;">${p.title}</a></h4>
+              <h4 style="font-size: 1.2rem; margin: 0.6rem 0 0.5rem;"><a href="/id/profile/${p.id}.html" style="color: var(--text-primary); text-decoration: none;">${p.title}</a></h4>
               <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5;">${p.description}</p>
               
               <div style="margin-top: 1rem; background: var(--bg-subtle); padding: 0.8rem; border-radius: var(--radius-sm);">
@@ -277,7 +283,7 @@ export function generateProfileCatalogHtml(profiles: Profile[], baseUrl: string)
             </div>
 
             <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem;">
-              <a href="/profiles/${p.id}.html" class="btn-download" style="flex: 1; text-align: center; padding: 0.5rem;">Explore Profile &rarr;</a>
+              <a href="/id/profile/${p.id}.html" class="btn-download" style="flex: 1; text-align: center; padding: 0.5rem;">Explore Profile &rarr;</a>
             </div>
           </div>
         `).join("\n")}
@@ -293,9 +299,9 @@ export function generateProfileCatalogHtml(profiles: Profile[], baseUrl: string)
         ${atomics.map(p => `
           <div style="background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: var(--radius-md); padding: 1.25rem; box-shadow: var(--shadow-sm);">
             <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">${p.publisher}</div>
-            <h4 style="font-size: 1.05rem; margin: 0.3rem 0 0.5rem;"><a href="/profiles/${p.id}.html" style="color: var(--text-primary); text-decoration: none;">${p.title}</a></h4>
+            <h4 style="font-size: 1.05rem; margin: 0.3rem 0 0.5rem;"><a href="/id/profile/${p.id}.html" style="color: var(--text-primary); text-decoration: none;">${p.title}</a></h4>
             <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0 0 1rem;">${p.description}</p>
-            <a href="/profiles/${p.id}.html" class="btn-download" style="padding: 0.35rem 0.7rem; font-size: 0.8rem;">Specification &rarr;</a>
+            <a href="/id/profile/${p.id}.html" class="btn-download" style="padding: 0.35rem 0.7rem; font-size: 0.8rem;">Specification &rarr;</a>
           </div>
         `).join("\n")}
       </div>
@@ -308,7 +314,7 @@ export function generateProfileCatalogHtml(profiles: Profile[], baseUrl: string)
       <div class="footer-links">
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank">🐙 EOSC RT Proposals</a>
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank">📋 RT Patterns</a>
-        <a href="/profiles/">Profiles Registry</a>
+        <a href="/id/profiles">Profiles Registry</a>
         <a href="/map.html">Metro Map</a>
         <a href="/catalog/dcat.ttl">DCAT Catalog</a>
         <a href="https://github.com/vliz-be-opsci/lod_docker_webserver">GitHub Repo</a>

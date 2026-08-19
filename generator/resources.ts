@@ -329,7 +329,7 @@ export const RESOURCES: MarineEntity[] = [
   {
     id: "resource-marineinfo-api",
     type: "DataService",
-    category: "api",
+    category: "service",
     title: "MarineInfo Subsetting & Observation API",
     description: "An OpenAPI 3.0-compliant data service supporting parameterized subsetting queries for marine biodiversity, ARMS genomic monitoring, and buoy telemetry observations.",
     sourceUri: "https://marineinfo.org/api",
