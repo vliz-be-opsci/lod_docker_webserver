@@ -52,19 +52,29 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
 
     const headersContent = fs.readFileSync(headersPath, "utf-8");
     expect(headersContent).toContain("location = /id/dataset/arms-mbon.html");
+    expect(headersContent).toContain('rel="type"');
     expect(headersContent).toContain('rel="describedby"; type="text/turtle"');
     expect(headersContent).toContain('rel="linkset"');
     expect(headersContent).toContain("location = /id/profiles");
   });
 
-  it("generates sitemap.xml with rs:ln and xhtml:link referencing /id/ paths", () => {
+  it("generates clean sitemap.xml with ResourceSync rs:ln referencing base /id/ paths and rel=type", () => {
     const sitemapPath = path.join(distDir, "sitemap.xml");
     expect(fs.existsSync(sitemapPath)).toBe(true);
 
     const sitemapContent = fs.readFileSync(sitemapPath, "utf-8");
-    expect(sitemapContent).toContain("<loc>http://localhost:8080/id/dataset/arms-mbon.html</loc>");
+    // Clean base PID in <loc>
+    expect(sitemapContent).toContain("<loc>http://localhost:8080/id/dataset/arms-mbon</loc>");
+    expect(sitemapContent).toContain('rel="alternate" href="http://localhost:8080/id/dataset/arms-mbon.html" type="text/html"');
+    expect(sitemapContent).toContain('rel="type"');
     expect(sitemapContent).toContain('href="http://localhost:8080/id/dataset/arms-mbon.linkset.json"');
     expect(sitemapContent).toContain('href="http://localhost:8080/id/dataset/arms-mbon.ttl"');
     expect(sitemapContent).toContain("<loc>http://localhost:8080/id/profiles</loc>");
+
+    // No xhtml namespace or elements, no invalid dcat-catalog rel
+    expect(sitemapContent).not.toContain("xmlns:xhtml");
+    expect(sitemapContent).not.toContain("xhtml:link");
+    expect(sitemapContent).not.toContain('rel="dcat-catalog"');
+    expect(sitemapContent).not.toContain('rel="profile"');
   });
 });

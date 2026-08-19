@@ -1047,9 +1047,9 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
   <title>${dataset.title} - VLIZ Marine Data Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
-  <link rel="profile" href="https://schema.org/Dataset">
-  <link rel="profile" href="https://www.w3.org/TR/vocab-dcat/">
-  ${dataset.profileId ? `<link rel="profile" href="/id/profile/${dataset.profileId}.html">` : ''}
+  <link rel="type" href="https://schema.org/Dataset">
+  <link rel="type" href="https://www.w3.org/TR/vocab-dcat/">
+  ${dataset.profileId ? `<link rel="type" href="/id/profile/${dataset.profileId}.html">` : ''}
   <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
   <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
   <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
@@ -1143,7 +1143,7 @@ export function renderInstitutePageHtml(institute: MarineEntity, baseUrl: string
   <title>${institute.title} - VLIZ Marine Data Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
-  <link rel="profile" href="https://schema.org/Organization">
+  <link rel="type" href="https://schema.org/Organization">
   <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
   <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
   <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
@@ -1241,7 +1241,7 @@ export function renderPublicationPageHtml(pub: MarineEntity, baseUrl: string): s
   <title>${pub.title} - VLIZ Marine Data Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
-  <link rel="profile" href="https://schema.org/ScholarlyArticle">
+  <link rel="type" href="https://schema.org/ScholarlyArticle">
   <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
   <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
   <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
@@ -1352,7 +1352,7 @@ export function renderProjectPageHtml(proj: MarineEntity, baseUrl: string): stri
   <title>${proj.title} - VLIZ Marine Data Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
-  <link rel="profile" href="https://schema.org/Project">
+  <link rel="type" href="https://schema.org/Project">
   <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
   <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
   <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
@@ -1430,7 +1430,7 @@ export function renderPersonPageHtml(person: MarineEntity, baseUrl: string): str
   <title>${person.title} - VLIZ Marine Data Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
-  <link rel="profile" href="https://schema.org/Person">
+  <link rel="type" href="https://schema.org/Person">
   <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
   <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
   <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
@@ -1522,7 +1522,7 @@ export function renderDcatHtml(resources: MarineEntity[], baseUrl: string): stri
   <title>DCAT Data Catalogue - VLIZ Marine Linked Data Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
-  <link rel="profile" href="https://www.w3.org/TR/vocab-dcat/">
+  <link rel="type" href="https://www.w3.org/TR/vocab-dcat/">
   <link rel="alternate" type="text/turtle" href="/catalog/dcat.ttl">
   <link rel="alternate" type="application/ld+json" href="/catalog/dcat.jsonld">
 </head>

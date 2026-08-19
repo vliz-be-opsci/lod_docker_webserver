@@ -156,71 +156,60 @@ async function main() {
     }
   }
 
-  // 9. Generate Sitemap with ResourceSync rs:ln and xhtml:link (Signmap)
-  console.log(`Generating sitemap.xml with rs:ln and xhtml:link extensions...`);
+  // 9. Generate Sitemap with ResourceSync rs:ln (Signmap)
+  console.log(`Generating sitemap.xml with ResourceSync rs:ln extensions...`);
   let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   sitemapXml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n`;
-  sitemapXml += `        xmlns:rs="http://www.openarchives.org/rs/terms/"\n`;
-  sitemapXml += `        xmlns:xhtml="http://www.w3.org/1999/xhtml">\n`;
+  sitemapXml += `        xmlns:rs="http://www.openarchives.org/rs/terms/">\n`;
 
   // Root URL
   sitemapXml += `  <url>\n    <loc>${BASE_URL}/</loc>\n`;
-  sitemapXml += `    <rs:ln rel="api-catalog" href="${BASE_URL}/.well-known/api-catalog" />\n`;
-  sitemapXml += `    <rs:ln rel="dcat-catalog" href="${BASE_URL}/catalog/dcat.ttl" />\n`;
-  sitemapXml += `    <xhtml:link rel="api-catalog" href="${BASE_URL}/.well-known/api-catalog" />\n`;
-  sitemapXml += `    <xhtml:link rel="dcat-catalog" href="${BASE_URL}/catalog/dcat.ttl" />\n`;
+  sitemapXml += `    <rs:ln rel="api-catalog" href="${BASE_URL}/.well-known/api-catalog" type="application/linkset+json" />\n`;
+  sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/catalog/dcat.ttl" type="text/turtle" />\n`;
   sitemapXml += `  </url>\n`;
 
   // Metro Map URL
   sitemapXml += `  <url>\n    <loc>${BASE_URL}/map.html</loc>\n`;
-  sitemapXml += `    <rs:ln rel="profile" href="https://schema.org/Thing" />\n`;
-  sitemapXml += `    <xhtml:link rel="profile" href="https://schema.org/Thing" />\n`;
+  sitemapXml += `    <rs:ln rel="type" href="https://schema.org/Thing" />\n`;
   sitemapXml += `  </url>\n`;
 
   // Profiles Registry & Profiles
   sitemapXml += `  <url>\n    <loc>${BASE_URL}/id/profiles</loc>\n`;
-  sitemapXml += `    <rs:ln rel="profile" href="https://www.w3.org/TR/dx-prof/" />\n`;
-  sitemapXml += `    <xhtml:link rel="profile" href="https://www.w3.org/TR/dx-prof/" />\n`;
+  sitemapXml += `    <rs:ln rel="type" href="https://www.w3.org/TR/dx-prof/" />\n`;
   sitemapXml += `  </url>\n`;
 
   for (const prof of PROFILES) {
-    sitemapXml += `  <url>\n    <loc>${BASE_URL}/id/profile/${prof.id}.html</loc>\n`;
-    sitemapXml += `    <rs:ln rel="profile" href="https://www.w3.org/TR/dx-prof/" />\n`;
+    sitemapXml += `  <url>\n    <loc>${BASE_URL}/id/profile/${prof.id}</loc>\n`;
+    sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}/id/profile/${prof.id}.html" type="text/html" />\n`;
     sitemapXml += `    <rs:ln rel="linkset" href="${BASE_URL}/id/profile/${prof.id}.linkset.json" type="application/linkset+json" />\n`;
     sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/id/profile/${prof.id}.ttl" type="text/turtle" />\n`;
-    sitemapXml += `    <xhtml:link rel="profile" href="https://www.w3.org/TR/dx-prof/" />\n`;
-    sitemapXml += `    <xhtml:link rel="linkset" href="${BASE_URL}/id/profile/${prof.id}.linkset.json" type="application/linkset+json" />\n`;
-    sitemapXml += `    <xhtml:link rel="describedby" href="${BASE_URL}/id/profile/${prof.id}.ttl" type="text/turtle" />\n`;
+    sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/id/profile/${prof.id}.jsonld" type="application/ld+json" />\n`;
     sitemapXml += `  </url>\n`;
   }
 
   // Catalog URL
   sitemapXml += `  <url>\n    <loc>${BASE_URL}/catalog/</loc>\n`;
-  sitemapXml += `    <rs:ln rel="profile" href="https://www.w3.org/TR/vocab-dcat/" />\n`;
+  sitemapXml += `    <rs:ln rel="type" href="https://www.w3.org/TR/vocab-dcat/" />\n`;
   sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}/catalog/dcat.ttl" type="text/turtle" />\n`;
-  sitemapXml += `    <xhtml:link rel="profile" href="https://www.w3.org/TR/vocab-dcat/" />\n`;
-  sitemapXml += `    <xhtml:link rel="alternate" href="${BASE_URL}/catalog/dcat.ttl" type="text/turtle" />\n`;
-  sitemapXml += `    <xhtml:link rel="alternate" href="${BASE_URL}/catalog/dcat.jsonld" type="application/ld+json" />\n`;
+  sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}/catalog/dcat.jsonld" type="application/ld+json" />\n`;
   sitemapXml += `  </url>\n`;
 
-  // Each entity URL
+  // Each entity URL (Clean Base PID, with .html as alternate)
   for (const res of RESOURCES) {
     const htmlPath = getEntityHtmlPath(res);
     const typeSlug = getEntityTypeSlug(res);
     const nameSlug = getEntityNameSlug(res);
-    const profileUri = res.profileId ? `${BASE_URL}/id/profile/${res.profileId}.html` : (res.alternateProfiles?.[0] || (res.type === "Dataset" ? "https://schema.org/Dataset" : `https://schema.org/${res.type}`));
-    sitemapXml += `  <url>\n    <loc>${BASE_URL}${htmlPath}</loc>\n`;
-    sitemapXml += `    <rs:ln rel="profile" href="${profileUri}" />\n`;
-    sitemapXml += `    <rs:ln rel="linkset" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json" type="application/linkset+json" />\n`;
+    const typeUri = res.profileId ? `${BASE_URL}/id/profile/${res.profileId}.html` : (res.alternateProfiles?.[0] || (res.type === "Dataset" ? "https://schema.org/Dataset" : (res.type === "Organization" ? "https://schema.org/Organization" : (res.type === "ScholarlyArticle" ? "https://schema.org/ScholarlyArticle" : (res.type === "Person" ? "https://schema.org/Person" : `https://schema.org/${res.type}`)))));
+    sitemapXml += `  <url>\n    <loc>${BASE_URL}/id/${typeSlug}/${nameSlug}</loc>\n`;
+    sitemapXml += `    <rs:ln rel="type" href="${typeUri}" />\n`;
+    sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}${htmlPath}" type="text/html" />\n`;
     sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.ttl" type="text/turtle" />\n`;
-    sitemapXml += `    <xhtml:link rel="profile" href="${profileUri}" />\n`;
-    sitemapXml += `    <xhtml:link rel="linkset" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json" type="application/linkset+json" />\n`;
-    sitemapXml += `    <xhtml:link rel="describedby" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.ttl" type="text/turtle" />\n`;
-    sitemapXml += `    <xhtml:link rel="describedby" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.jsonld" type="application/ld+json" />\n`;
-    sitemapXml += `    <xhtml:link rel="describedby" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.rdf" type="application/rdf+xml" />\n`;
+    sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.jsonld" type="application/ld+json" />\n`;
+    sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.rdf" type="application/rdf+xml" />\n`;
+    sitemapXml += `    <rs:ln rel="linkset" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json" type="application/linkset+json" />\n`;
     if (res.distributions) {
       for (const d of res.distributions) {
-        sitemapXml += `    <xhtml:link rel="item" href="${BASE_URL}${d.downloadUrl}" type="${d.mediaType}" />\n`;
+        sitemapXml += `    <rs:ln rel="item" href="${BASE_URL}${d.downloadUrl}" type="${d.mediaType}" />\n`;
       }
     }
     sitemapXml += `  </url>\n`;
@@ -255,26 +244,25 @@ async function main() {
   headersConf += `}\n\n`;
 
   headersConf += `location = /catalog/ {\n`;
-  headersConf += `    add_header Link '<https://www.w3.org/TR/vocab-dcat/>; rel="profile", <${BASE_URL}/catalog/dcat.ttl>; rel="alternate"; type="text/turtle", <${BASE_URL}/catalog/dcat.jsonld>; rel="alternate"; type="application/ld+json"' always;\n`;
+  headersConf += `    add_header Link '<https://www.w3.org/TR/vocab-dcat/>; rel="type", <${BASE_URL}/catalog/dcat.ttl>; rel="alternate"; type="text/turtle", <${BASE_URL}/catalog/dcat.jsonld>; rel="alternate"; type="application/ld+json"' always;\n`;
   headersConf += `}\n\n`;
 
   // Headers for Profiles Catalog
   headersConf += `location = /id/profiles {\n`;
   headersConf += `    default_type text/html;\n`;
-  headersConf += `    add_header Link '<https://www.w3.org/TR/dx-prof/>; rel="profile"' always;\n`;
+  headersConf += `    add_header Link '<https://www.w3.org/TR/dx-prof/>; rel="type"' always;\n`;
   headersConf += `    try_files /id/profiles/index.html =404;\n`;
   headersConf += `}\n\n`;
 
   headersConf += `location = /id/profiles/ {\n`;
   headersConf += `    default_type text/html;\n`;
-  headersConf += `    add_header Link '<https://www.w3.org/TR/dx-prof/>; rel="profile"' always;\n`;
+  headersConf += `    add_header Link '<https://www.w3.org/TR/dx-prof/>; rel="type"' always;\n`;
   headersConf += `    try_files /id/profiles/index.html =404;\n`;
   headersConf += `}\n\n`;
 
   // Headers for Profiles
   for (const prof of PROFILES) {
     const profileLinks = [
-      `<https://www.w3.org/TR/dx-prof/>; rel="profile"`,
       `<${BASE_URL}/id/profile/${prof.id}.ttl>; rel="describedby"; type="text/turtle"`,
       `<${BASE_URL}/id/profile/${prof.id}.jsonld>; rel="describedby"; type="application/ld+json"`,
       `<${BASE_URL}/id/profile/${prof.id}.linkset.json>; rel="linkset"; type="application/linkset+json"`,
@@ -297,13 +285,13 @@ async function main() {
     const htmlPath = getEntityHtmlPath(res);
     const typeSlug = getEntityTypeSlug(res);
     const nameSlug = getEntityNameSlug(res);
-    const profile = res.profileId ? `${BASE_URL}/id/profile/${res.profileId}.html` : (res.alternateProfiles?.[0] || (res.type === "Dataset" ? "https://schema.org/Dataset" : `https://schema.org/${res.type}`));
+    const typeUri = res.profileId ? `${BASE_URL}/id/profile/${res.profileId}.html` : (res.alternateProfiles?.[0] || (res.type === "Dataset" ? "https://schema.org/Dataset" : (res.type === "Organization" ? "https://schema.org/Organization" : (res.type === "ScholarlyArticle" ? "https://schema.org/ScholarlyArticle" : (res.type === "Person" ? "https://schema.org/Person" : `https://schema.org/${res.type}`)))));
     const linkHeaders: string[] = [
-      `<${profile}>; rel="profile"`,
+      `<${typeUri}>; rel="type"`,
       `<${BASE_URL}/id/${typeSlug}/${nameSlug}.ttl>; rel="describedby"; type="text/turtle"`,
       `<${BASE_URL}/id/${typeSlug}/${nameSlug}.jsonld>; rel="describedby"; type="application/ld+json"`,
       `<${BASE_URL}/id/${typeSlug}/${nameSlug}.rdf>; rel="describedby"; type="application/rdf+xml"`,
-      `<${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json>; rel="linkset"; type="application/linkset+json collaboration"`,
+      `<${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json>; rel="linkset"; type="application/linkset+json"`,
       `<${BASE_URL}/catalog/>; rel="collection"`
     ];
 
