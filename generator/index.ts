@@ -207,11 +207,6 @@ async function main() {
     sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.jsonld" type="application/ld+json" />\n`;
     sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.rdf" type="application/rdf+xml" />\n`;
     sitemapXml += `    <rs:ln rel="linkset" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json" type="application/linkset+json" />\n`;
-    if (res.distributions) {
-      for (const d of res.distributions) {
-        sitemapXml += `    <rs:ln rel="item" href="${BASE_URL}${d.downloadUrl}" type="${d.mediaType}" />\n`;
-      }
-    }
     sitemapXml += `  </url>\n`;
   }
 
@@ -294,12 +289,6 @@ async function main() {
       `<${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json>; rel="linkset"; type="application/linkset+json"`,
       `<${BASE_URL}/catalog/>; rel="collection"`
     ];
-
-    if (res.distributions) {
-      for (const d of res.distributions) {
-        linkHeaders.push(`<${BASE_URL}${d.downloadUrl}>; rel="item"; type="${d.mediaType}"`);
-      }
-    }
 
     headersConf += `location = ${htmlPath} {\n`;
     headersConf += `    add_header Link '${linkHeaders.join(", ")}' always;\n`;

@@ -1054,7 +1054,6 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
   <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
   <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
   <link rel="linkset" type="application/linkset+json" href="/id/${typeSlug}/${slug}.linkset.json">
-  ${(dataset.distributions || []).map(d => `<link rel="item" type="${d.mediaType}" href="${d.downloadUrl}">`).join('\n  ')}
 </head>
 <body>
   ${renderHeader('datasets')}

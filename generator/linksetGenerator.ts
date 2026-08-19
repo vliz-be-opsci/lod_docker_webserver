@@ -22,7 +22,7 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
 
   const linkObj: any = {
     anchor: resourceUri,
-    profile: profiles.map(p => ({ href: p })),
+    type: profiles.map(p => ({ href: p })),
     describedby: [
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`, type: "text/turtle" },
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`, type: "application/ld+json" },
@@ -35,14 +35,6 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
       { href: `${baseUrl}/catalog/`, type: "text/html" }
     ]
   };
-
-  if (resource.distributions && resource.distributions.length > 0) {
-    linkObj.item = resource.distributions.map(dist => ({
-      href: `${baseUrl}${dist.downloadUrl}`,
-      type: dist.mediaType,
-      ...(dist.profile ? { profile: dist.profile } : {})
-    }));
-  }
 
   if (resource.creators && resource.creators.length > 0) {
     linkObj.author = resource.creators.map(c => ({
