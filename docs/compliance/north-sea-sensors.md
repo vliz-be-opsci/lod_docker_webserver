@@ -20,23 +20,23 @@ LifeWatch portal telemetry viewer. Provides dashboard charts and streaming API w
 ### HTTP Link Headers (RFC 8288 & FAIR Signposting)
 ```http
 Link: <https://schema.org/Dataset>; rel="profile"
-Link: </rdf/resource-north-sea-sensors.ttl>; rel="describedby"; type="text/turtle"
-Link: </linksets/resource-north-sea-sensors.linkset.json>; rel="linkset"; type="application/linkset+json"
+Link: </id/dataset/north-sea-sensors.ttl>; rel="describedby"; type="text/turtle"
+Link: </id/dataset/north-sea-sensors.linkset.json>; rel="linkset"; type="application/linkset+json"
 Link: </data/north-sea-sensors-latest.csv>; rel="item"; type="text/csv"
 Link: </data/north-sea-sensors-stream.json>; rel="item"; type="application/json"
 ```
 
 ### RFC 9264 Standalone JSON Linkset
-- **Linkset Path:** `/linksets/resource-north-sea-sensors.linkset.json`
+- **Linkset Path:** `/id/dataset/north-sea-sensors.linkset.json`
 
 ### Data Distributions & Downloads
 - 📥 **CSV: /data/north-sea-sensors-latest.csv (Buoy temperature/salinity/turbidity)**
 - 📥 **JSON Stream: /data/north-sea-sensors-stream.json (Telemetry feed)**
 
 ### Machine-Readable RDF Representations
-- 🐢 `/rdf/resource-north-sea-sensors.ttl`
-- 🐢 `/rdf/resource-north-sea-sensors.jsonld`
+- 🐢 `/id/dataset/north-sea-sensors.ttl`
+- 🐢 `/id/dataset/north-sea-sensors.jsonld`
 
 ### Content Negotiation (RFC 9110)
-GET /resource/resource-north-sea-sensors with Accept: text/turtle returns 303 to /rdf/resource-north-sea-sensors.ttl.
+GET /id/dataset/north-sea-sensors with Accept: text/turtle returns 303 to /id/dataset/north-sea-sensors.ttl.
 

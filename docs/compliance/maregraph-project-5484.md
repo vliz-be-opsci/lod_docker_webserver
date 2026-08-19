@@ -19,17 +19,17 @@ MarineInfo project summary page with description and partner list. Lacks RFC 828
 ### HTTP Link Headers (RFC 8288 & FAIR Signposting)
 ```http
 Link: <https://schema.org/Project>; rel="profile"
-Link: </rdf/resource-maregraph.ttl>; rel="describedby"; type="text/turtle"
-Link: </linksets/resource-maregraph.linkset.json>; rel="linkset"; type="application/linkset+json"
+Link: </id/project/maregraph.ttl>; rel="describedby"; type="text/turtle"
+Link: </id/project/maregraph.linkset.json>; rel="linkset"; type="application/linkset+json"
 ```
 
 ### RFC 9264 Standalone JSON Linkset
-- **Linkset Path:** `/linksets/resource-maregraph.linkset.json`
+- **Linkset Path:** `/id/project/maregraph.linkset.json`
 
 ### Machine-Readable RDF Representations
-- 🐢 `/rdf/resource-maregraph.ttl`
-- 🐢 `/rdf/resource-maregraph.jsonld`
+- 🐢 `/id/project/maregraph.ttl`
+- 🐢 `/id/project/maregraph.jsonld`
 
 ### Content Negotiation (RFC 9110)
-GET /resource/resource-maregraph returns 303.
+GET /id/project/maregraph returns 303.
 

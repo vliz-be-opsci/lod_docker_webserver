@@ -22,16 +22,18 @@ MarineInfo standard dataset landing page. Provides HTML summary with schema.org 
 ```http
 Link: <https://schema.org/Dataset>; rel="profile"
 Link: <https://www.w3.org/TR/vocab-dcat/>; rel="profile"
-Link: </rdf/resource-arms-mbon.ttl>; rel="describedby"; type="text/turtle"
-Link: </rdf/resource-arms-mbon.jsonld>; rel="describedby"; type="application/ld+json"
-Link: </linksets/resource-arms-mbon.linkset.json>; rel="linkset"; type="application/linkset+json"
+Link: </id/profile/marine-genomic-dataset-profile.html>; rel="profile"
+Link: </id/dataset/arms-mbon.ttl>; rel="describedby"; type="text/turtle"
+Link: </id/dataset/arms-mbon.jsonld>; rel="describedby"; type="application/ld+json"
+Link: </id/dataset/arms-mbon.rdf>; rel="describedby"; type="application/rdf+xml"
+Link: </id/dataset/arms-mbon.linkset.json>; rel="linkset"; type="application/linkset+json"
 Link: </data/arms-mbon-18s.csv>; rel="item"; type="text/csv"
 Link: </data/arms-mbon-stations.geojson>; rel="item"; type="application/geo+json"
 Link: </data/arms-mbon-rocrate.zip>; rel="item"; type="application/zip"; profile="https://w3id.org/ro/crate"
 ```
 
 ### RFC 9264 Standalone JSON Linkset
-- **Linkset Path:** `/linksets/resource-arms-mbon.linkset.json`
+- **Linkset Path:** `/id/dataset/arms-mbon.linkset.json`
 
 ### Data Distributions & Downloads
 - 📥 **CSV: /data/arms-mbon-18s.csv (Metabarcoding read counts)**
@@ -39,10 +41,10 @@ Link: </data/arms-mbon-rocrate.zip>; rel="item"; type="application/zip"; profile
 - 📥 **RO-Crate: /data/arms-mbon-rocrate.zip (Complete RO-Crate metadata + data)**
 
 ### Machine-Readable RDF Representations
-- 🐢 `/rdf/resource-arms-mbon.ttl`
-- 🐢 `/rdf/resource-arms-mbon.jsonld`
-- 🐢 `/rdf/resource-arms-mbon.rdf`
+- 🐢 `/id/dataset/arms-mbon.ttl`
+- 🐢 `/id/dataset/arms-mbon.jsonld`
+- 🐢 `/id/dataset/arms-mbon.rdf`
 
 ### Content Negotiation (RFC 9110)
-GET /resource/resource-arms-mbon with Accept: text/turtle returns 303 to /rdf/resource-arms-mbon.ttl; Accept: text/html returns 303 to /datasets/arms-mbon.html.
+GET /id/dataset/arms-mbon with Accept: text/turtle returns 303 to /id/dataset/arms-mbon.ttl; Accept: text/html returns 303 to /id/dataset/arms-mbon.html.
 

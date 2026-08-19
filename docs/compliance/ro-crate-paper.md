@@ -19,21 +19,21 @@ Pensoft BISS journal article page with DOI redirection and HTML abstract. Does n
 ### HTTP Link Headers (RFC 8288 & FAIR Signposting)
 ```http
 Link: <https://schema.org/ScholarlyArticle>; rel="profile"
-Link: </rdf/resource-ro-crate-paper.ttl>; rel="describedby"; type="text/turtle"
-Link: </linksets/resource-ro-crate-paper.linkset.json>; rel="linkset"; type="application/linkset+json"
+Link: </id/publication/ro-crate-paper.ttl>; rel="describedby"; type="text/turtle"
+Link: </id/publication/ro-crate-paper.linkset.json>; rel="linkset"; type="application/linkset+json"
 Link: </data/ro-crate-paper.pdf>; rel="alternate"; type="application/pdf"
 ```
 
 ### RFC 9264 Standalone JSON Linkset
-- **Linkset Path:** `/linksets/resource-ro-crate-paper.linkset.json`
+- **Linkset Path:** `/id/publication/ro-crate-paper.linkset.json`
 
 ### Data Distributions & Downloads
 - 📥 **PDF: /data/ro-crate-paper.pdf (Full open access article)**
 
 ### Machine-Readable RDF Representations
-- 🐢 `/rdf/resource-ro-crate-paper.ttl`
-- 🐢 `/rdf/resource-ro-crate-paper.jsonld`
+- 🐢 `/id/publication/ro-crate-paper.ttl`
+- 🐢 `/id/publication/ro-crate-paper.jsonld`
 
 ### Content Negotiation (RFC 9110)
-GET /resource/resource-ro-crate-paper returns 303.
+GET /id/publication/ro-crate-paper returns 303.
 

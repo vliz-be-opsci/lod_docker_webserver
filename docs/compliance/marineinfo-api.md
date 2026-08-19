@@ -30,8 +30,8 @@ Link: </.well-known/api-catalog>; rel="api-catalog"
 - 📥 **Swagger UI: /api/docs/ (Interactive explorer)**
 
 ### Machine-Readable RDF Representations
-- 🐢 `/rdf/resource-marineinfo-api.ttl`
-- 🐢 `/rdf/resource-marineinfo-api.jsonld`
+- 🐢 `/id/service/marineinfo-api.ttl`
+- 🐢 `/id/service/marineinfo-api.jsonld`
 
 ### Content Negotiation (RFC 9110)
 Endpoint discoverable via RFC 9727 and DCAT-3.

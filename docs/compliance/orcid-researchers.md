@@ -18,20 +18,20 @@ Standard ORCID researcher profile web pages. ORCID provides RDF conneg at orcid.
 ### HTTP Link Headers (RFC 8288 & FAIR Signposting)
 ```http
 Link: <https://schema.org/Person>; rel="profile"
-Link: </rdf/:id.ttl>; rel="describedby"; type="text/turtle"
-Link: </linksets/:id.linkset.json>; rel="linkset"; type="application/linkset+json"
+Link: </id/person/:slug.ttl>; rel="describedby"; type="text/turtle"
+Link: </id/person/:slug.linkset.json>; rel="linkset"; type="application/linkset+json"
 ```
 
 ### RFC 9264 Standalone JSON Linkset
-- **Linkset Path:** `/linksets/resource-marc.linkset.json (and for each researcher)`
+- **Linkset Path:** `/id/person/marc.linkset.json (and for each researcher)`
 
 ### Machine-Readable RDF Representations
-- 🐢 `/rdf/resource-marc.ttl`
-- 🐢 `/rdf/resource-katrina.ttl`
-- 🐢 `/rdf/resource-cedric.ttl`
-- 🐢 `/rdf/resource-laurian.ttl`
-- 🐢 `/rdf/resource-joanna.ttl`
+- 🐢 `/id/person/marc.ttl`
+- 🐢 `/id/person/katrina.ttl`
+- 🐢 `/id/person/cedric.ttl`
+- 🐢 `/id/person/laurian.ttl`
+- 🐢 `/id/person/joanna.ttl`
 
 ### Content Negotiation (RFC 9110)
-GET /resource/resource-marc with Accept: text/turtle returns 303 to /rdf/resource-marc.ttl.
+GET /id/person/marc with Accept: text/turtle returns 303 to /id/person/marc.ttl.
 

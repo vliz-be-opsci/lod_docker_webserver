@@ -19,23 +19,23 @@ EurOBIS database interface and IPT Darwin Core Archive provider. Lacks HTTP Link
 ### HTTP Link Headers (RFC 8288 & FAIR Signposting)
 ```http
 Link: <https://schema.org/Dataset>; rel="profile"
-Link: </rdf/resource-eurobis-occurrences.ttl>; rel="describedby"; type="text/turtle"
-Link: </linksets/resource-eurobis-occurrences.linkset.json>; rel="linkset"; type="application/linkset+json"
+Link: </id/dataset/eurobis-occurrences.ttl>; rel="describedby"; type="text/turtle"
+Link: </id/dataset/eurobis-occurrences.linkset.json>; rel="linkset"; type="application/linkset+json"
 Link: </data/eurobis-occurrences.geojson>; rel="item"; type="application/geo+json"
 Link: </data/eurobis-dwca-sample.zip>; rel="item"; type="application/zip"
 ```
 
 ### RFC 9264 Standalone JSON Linkset
-- **Linkset Path:** `/linksets/resource-eurobis-occurrences.linkset.json`
+- **Linkset Path:** `/id/dataset/eurobis-occurrences.linkset.json`
 
 ### Data Distributions & Downloads
 - 📥 **GeoJSON: /data/eurobis-occurrences.geojson (Species coordinates)**
 - 📥 **DwC-A ZIP: /data/eurobis-dwca-sample.zip (Standard Darwin Core Archive)**
 
 ### Machine-Readable RDF Representations
-- 🐢 `/rdf/resource-eurobis-occurrences.ttl`
-- 🐢 `/rdf/resource-eurobis-occurrences.jsonld`
+- 🐢 `/id/dataset/eurobis-occurrences.ttl`
+- 🐢 `/id/dataset/eurobis-occurrences.jsonld`
 
 ### Content Negotiation (RFC 9110)
-GET /resource/resource-eurobis-occurrences with Accept: text/turtle returns 303.
+GET /id/dataset/eurobis-occurrences with Accept: text/turtle returns 303.
 

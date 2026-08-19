@@ -19,18 +19,18 @@ MarineInfo institute record with institutional address and staff list. Lacks RFC
 ### HTTP Link Headers (RFC 8288 & FAIR Signposting)
 ```http
 Link: <https://schema.org/Organization>; rel="profile"
-Link: </rdf/resource-vliz.ttl>; rel="describedby"; type="text/turtle"
-Link: </linksets/resource-vliz.linkset.json>; rel="linkset"; type="application/linkset+json"
+Link: </id/institute/vliz.ttl>; rel="describedby"; type="text/turtle"
+Link: </id/institute/vliz.linkset.json>; rel="linkset"; type="application/linkset+json"
 ```
 
 ### RFC 9264 Standalone JSON Linkset
-- **Linkset Path:** `/linksets/resource-vliz.linkset.json`
+- **Linkset Path:** `/id/institute/vliz.linkset.json`
 
 ### Machine-Readable RDF Representations
-- 🐢 `/rdf/resource-vliz.ttl`
-- 🐢 `/rdf/resource-vliz.jsonld`
-- 🐢 `/rdf/resource-vliz.rdf`
+- 🐢 `/id/institute/vliz.ttl`
+- 🐢 `/id/institute/vliz.jsonld`
+- 🐢 `/id/institute/vliz.rdf`
 
 ### Content Negotiation (RFC 9110)
-GET /resource/resource-vliz with Accept: text/turtle returns 303 to /rdf/resource-vliz.ttl.
+GET /id/institute/vliz with Accept: text/turtle returns 303 to /id/institute/vliz.ttl.
 
