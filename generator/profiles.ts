@@ -135,8 +135,8 @@ sosa:ObservationShape
     description: "Composite profile for marine eDNA/metagenomic datasets (such as ARMS-MBON). Composes Schema.org, DCAT-3, RO-Crate 1.1, and Darwin Core Occurrence profiles.",
     publisher: "Flanders Marine Institute (VLIZ) Open Science",
     isAtomic: false,
-    conformsToStandard: "https://marineinfo.org/profiles/marine-genomic-dataset-profile",
-    specUrl: "/profiles/marine-genomic-dataset-profile.html",
+    conformsToStandard: "https://www.w3.org/TR/dx-prof/",
+    specUrl: "https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/02-profile-composition.md",
     composedProfiles: [
       "schema-dataset-profile",
       "dcat3-dataset-profile",
@@ -161,8 +161,8 @@ vliz:MarineGenomicShape
     description: "Composite profile for long-term marine community monitoring datasets (such as ARMS-2018). Composes Schema.org, DCAT-3, and Darwin Core profiles.",
     publisher: "Flanders Marine Institute (VLIZ) Open Science",
     isAtomic: false,
-    conformsToStandard: "https://marineinfo.org/profiles/marine-ecological-baseline-profile",
-    specUrl: "/profiles/marine-ecological-baseline-profile.html",
+    conformsToStandard: "https://www.w3.org/TR/dx-prof/",
+    specUrl: "https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/02-profile-composition.md",
     composedProfiles: [
       "schema-dataset-profile",
       "dcat3-dataset-profile",
@@ -185,8 +185,8 @@ vliz:MarineEcologicalShape
     description: "Composite profile for live and archival buoy telemetry streams. Composes Schema.org, DCAT-3, and Sensor Telemetry profiles.",
     publisher: "LifeWatch / VLIZ Sensor Network",
     isAtomic: false,
-    conformsToStandard: "https://marineinfo.org/profiles/marine-buoy-telemetry-profile",
-    specUrl: "/profiles/marine-buoy-telemetry-profile.html",
+    conformsToStandard: "https://www.w3.org/TR/dx-prof/",
+    specUrl: "https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/02-profile-composition.md",
     composedProfiles: [
       "schema-dataset-profile",
       "dcat3-dataset-profile",

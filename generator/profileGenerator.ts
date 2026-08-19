@@ -163,8 +163,11 @@ export function generateProfileHtml(profile: Profile, baseUrl: string): string {
     <div style="background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-md);">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 1rem;">
         <div>
-          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Profile URI</div>
-          <code style="font-size: 0.95rem; color: var(--vliz-blue); background: var(--bg-subtle); padding: 0.2rem 0.5rem; border-radius: var(--radius-sm);">${baseUrl}/profiles/${profile.id}.html</code>
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+            Profile URI
+            <span style="font-size: 0.75rem; background: #dcfce7; color: #166534; padding: 0.15rem 0.5rem; border-radius: 9999px; font-weight: 600; margin-left: 0.4rem; text-transform: none;"><i class="fa-solid fa-circle-check"></i> Local Canonical Endpoint</span>
+          </div>
+          <code style="font-size: 0.95rem; color: var(--vliz-blue); background: var(--bg-subtle); padding: 0.2rem 0.5rem; border-radius: var(--radius-sm); margin-top: 0.35rem; display: inline-block;">${baseUrl}/profiles/${profile.id}.html</code>
         </div>
         <div style="display: flex; gap: 0.5rem;">
           <a href="/profiles/${profile.id}.ttl" class="btn-download" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;"><i class="fa-solid fa-file-code"></i> Turtle RDF</a>
@@ -179,7 +182,8 @@ export function generateProfileHtml(profile: Profile, baseUrl: string): string {
         </div>
         <div>
           <strong style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Conforms To Standard:</strong>
-          <div style="font-size: 0.95rem; margin-top: 0.2rem;"><a href="${profile.conformsToStandard}" target="_blank" style="color: var(--vliz-blue);">${profile.conformsToStandard}</a></div>
+          <div style="font-size: 0.95rem; margin-top: 0.2rem;"><a href="${profile.conformsToStandard}" target="_blank" style="color: var(--vliz-blue); font-weight: 600;">${profile.conformsToStandard}</a></div>
+          ${!profile.isAtomic ? `<div style="margin-top: 0.35rem;"><a href="${profile.specUrl}" target="_blank" style="color: var(--marine-teal); font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-arrow-up-right-from-square"></i> EOSC RT-P02 (Profile Composition) Spec &rarr;</a></div>` : ''}
         </div>
       </div>
 
