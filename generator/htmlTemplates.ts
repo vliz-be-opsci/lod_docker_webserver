@@ -1,4 +1,4 @@
-import { MarineEntity } from "./types";
+import { MarineEntity, getEntityTypeSlug, getEntityNameSlug, getEntityIdPath, getEntityHtmlPath } from "./types";
 import { getResourceById, RESOURCES } from "./resources";
 import { PROFILES } from "./profiles";
 
@@ -731,16 +731,20 @@ function renderHeader(activeNav: string): string {
     <nav class="nav-links">
       <a href="/" class="${activeNav === 'datasets' ? 'active' : ''}">Datasets</a>
       <a href="/catalog/" class="${activeNav === 'catalog' ? 'active' : ''}">DCAT Catalog</a>
-      <a href="/profiles/" class="${activeNav === 'profiles' ? 'active' : ''}">Semantic Profiles</a>
+      <a href="/id/profiles" class="${activeNav === 'profiles' ? 'active' : ''}">Semantic Profiles</a>
       <a href="/api/docs/" class="${activeNav === 'api' ? 'active' : ''}">Subsetting API</a>
-      <a href="/publications/ro-crate-paper.html" class="${activeNav === 'publications' ? 'active' : ''}">Publications</a>
+      <a href="/id/publication/ro-crate-paper.html" class="${activeNav === 'publications' ? 'active' : ''}">Publications</a>
       <a href="/map.html" class="${activeNav === 'map' ? 'active' : ''}">Metro Map</a>
-      <a href="/institutes/vliz.html" class="${activeNav === 'institutes' ? 'active' : ''}">Institute</a>
+      <a href="/id/institute/vliz.html" class="${activeNav === 'institutes' ? 'active' : ''}">Institute</a>
     </nav>
   </header>`;
 }
 
 function renderRtBox(resourceId: string, isDataset = false): string {
+  const resource = getResourceById(resourceId);
+  const typeSlug = resource ? getEntityTypeSlug(resource) : (resourceId.startsWith("profile-") ? "profile" : "dataset");
+  const nameSlug = resource ? getEntityNameSlug(resource) : getEntityNameSlug(resourceId);
+
   return `
         <div class="rt-box">
           <h4>🌐 Radical Transparency Links</h4>
@@ -748,9 +752,10 @@ function renderRtBox(resourceId: string, isDataset = false): string {
             This resource implements RFC 8288 web linking, RFC 9264 JSON linksets, and content negotiation.
           </p>
           <ul class="rt-links-list">
-            <li>🐢 <a href="/rdf/${resourceId}.ttl">Download Turtle (RDF)</a></li>
-            <li>📜 <a href="/rdf/${resourceId}.jsonld">Download JSON-LD</a></li>
-            <li>🔗 <a href="/linksets/${resourceId}.linkset.json">RFC 9264 Linkset JSON</a></li>
+            <li>🐢 <a href="/id/${typeSlug}/${nameSlug}.ttl">Download Turtle (RDF)</a></li>
+            <li>📜 <a href="/id/${typeSlug}/${nameSlug}.jsonld">Download JSON-LD</a></li>
+            <li>🏷️ <a href="/id/${typeSlug}/${nameSlug}.rdf">Download RDF/XML</a></li>
+            <li>🔗 <a href="/id/${typeSlug}/${nameSlug}.linkset.json">RFC 9264 Linkset JSON</a></li>
             ${isDataset ? `<li>⚡ <a href="/api/docs/">Subsetting API Explorer</a></li>` : ''}
             <li>🗺️ <a href="/map.html"><strong>Interactive Protocol Metro Map</strong></a></li>
             <li style="border-top: 1px dashed #99f6e4; margin-top: 0.75rem; padding-top: 0.75rem;">📄 <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank">RT Position Paper (PDF)</a></li>
@@ -772,7 +777,7 @@ function renderFooter(): string {
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" title="EOSC Radical Transparency Proposals on GitHub">🐙 EOSC RT Proposals (GitHub)</a>
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank" title="EOSC Linkset Usage Patterns (RT-P01 to RT-P10)">📋 RT Patterns (RT-P01..10)</a>
         <a href="/map.html">🗺️ Metro Map</a>
-        <a href="/profiles/">📑 Profiles</a>
+        <a href="/id/profiles">📑 Profiles</a>
         <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" title="Radical Transparency Position Paper">📄 Position Paper</a>
         <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank" title="Presentation Slides">📊 Slides</a>
         <a href="https://www.iana.org/assignments/link-relations" target="_blank" title="IANA Link Relations Registry">🌐 IANA Link Relations</a>
@@ -788,20 +793,15 @@ function renderFooter(): string {
 export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string): string {
   const datasets = resources.filter(r => r.category === "dataset");
   const pubs = resources.filter(r => r.category === "publication");
-  const apis = resources.filter(r => r.category === "api");
+  const services = resources.filter(r => r.category === "service" || r.category === "api");
   const institutes = resources.filter(r => r.category === "institute");
   const people = resources.filter(r => r.category === "person");
 
   let cardsHtml = "";
   for (const res of resources) {
-    const slug = res.id.replace("resource-", "");
-    const href = 
-      res.category === "dataset" ? `/datasets/${slug}.html` :
-      res.category === "institute" ? `/institutes/${slug}.html` :
-      res.category === "publication" ? `/publications/${slug}.html` :
-      res.category === "project" ? `/projects/${slug}.html` :
-      res.category === "person" ? `/people/${slug}.html` :
-      res.category === "api" ? `/api/docs/` : `/pages/${slug}.html`;
+    const typeSlug = getEntityTypeSlug(res);
+    const nameSlug = getEntityNameSlug(res);
+    const href = getEntityHtmlPath(res);
 
     const tagFormats = res.distributions ? res.distributions.map(d => `<span class="tag">${d.format}</span>`).join(" ") : `<span class="tag">RDF / HTML</span>`;
 
@@ -817,7 +817,7 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
           ${tagFormats}
         </div>
         <div class="card-footer">
-          <span style="color: var(--text-muted); font-size: 0.8rem;">URI: /resource/${res.id}</span>
+          <span style="color: var(--text-muted); font-size: 0.8rem;">URI: /id/${typeSlug}/${nameSlug}</span>
           <a href="${href}" class="card-link">Explore Resource &rarr;</a>
         </div>
       </div>`;
@@ -837,14 +837,14 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
           <span class="card-badge profile">${badgeText}</span>
           <span class="tag">${prof.isAtomic ? 'RFC 6906' : 'RT-P02'}</span>
         </div>
-        <h3 class="card-title"><a href="/profiles/${prof.id}.html">${prof.title}</a></h3>
+        <h3 class="card-title"><a href="/id/profile/${prof.id}.html">${prof.title}</a></h3>
         <p class="card-desc">${prof.description}</p>
         <div class="card-tags">
           ${tagsHtml}
         </div>
         <div class="card-footer">
-          <span style="color: var(--text-muted); font-size: 0.8rem;">URI: /profiles/${prof.id}.html</span>
-          <a href="/profiles/${prof.id}.html" class="card-link">Explore Profile &rarr;</a>
+          <span style="color: var(--text-muted); font-size: 0.8rem;">URI: /id/profile/${prof.id}</span>
+          <a href="/id/profile/${prof.id}.html" class="card-link">Explore Profile &rarr;</a>
         </div>
       </div>`;
   }
@@ -885,8 +885,8 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
           <span class="stat-label">Publications</span>
         </div>
         <div class="stat-item">
-          <span class="stat-num">${apis.length}</span>
-          <span class="stat-label">Data APIs</span>
+          <span class="stat-num">${services.length}</span>
+          <span class="stat-label">Data Services</span>
         </div>
         <div class="stat-item">
           <span class="stat-num">${institutes.length}</span>
@@ -907,7 +907,7 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
           <a href="/map.html" class="rt-btn" style="background: rgba(13, 148, 136, 0.5); border-color: #0d9488;">
             🗺️ RT Metro Map
           </a>
-          <a href="/profiles/" class="rt-btn" style="background: rgba(99, 102, 241, 0.4); border-color: #6366f1;">
+          <a href="/id/profiles" class="rt-btn" style="background: rgba(99, 102, 241, 0.4); border-color: #6366f1;">
             📑 Profiles Registry
           </a>
           <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" class="rt-btn primary">
@@ -934,7 +934,7 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
         <button class="filter-btn" onclick="filterCards('dataset')">Datasets (${datasets.length})</button>
         <button class="filter-btn" onclick="filterCards('profile')">Profiles (${PROFILES.length})</button>
         <button class="filter-btn" onclick="filterCards('publication')">Publications (${pubs.length})</button>
-        <button class="filter-btn" onclick="filterCards('api')">APIs (${apis.length})</button>
+        <button class="filter-btn" onclick="filterCards('service')">Data Services (${services.length})</button>
         <button class="filter-btn" onclick="filterCards('institute')">Institutes (${institutes.length})</button>
         <button class="filter-btn" onclick="filterCards('person')">People (${people.length})</button>
       </div>
@@ -956,7 +956,7 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
       event.target.classList.add('active');
       const cards = document.querySelectorAll('.card');
       cards.forEach(c => {
-        if (cat === 'all' || c.getAttribute('data-category') === cat) {
+        if (cat === 'all' || c.getAttribute('data-category') === cat || (cat === 'service' && c.getAttribute('data-category') === 'api')) {
           c.style.display = 'flex';
         } else {
           c.style.display = 'none';
@@ -984,6 +984,8 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
 export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): string {
   const publisher = dataset.publisher ? getResourceById(dataset.publisher) : undefined;
   const creators = (dataset.creators || []).map(c => getResourceById(c)).filter(Boolean) as MarineEntity[];
+  const slug = getEntityNameSlug(dataset);
+  const typeSlug = getEntityTypeSlug(dataset);
 
   // Table Preview Markup
   let tableHtml = "";
@@ -1035,7 +1037,7 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
   }
 
   const creatorsPills = creators.map(c => `
-    <a href="/people/${c.id.replace('resource-', '')}.html" class="author-pill">👤 ${c.title}</a>
+    <a href="${getEntityHtmlPath(c)}" class="author-pill">👤 ${c.title}</a>
   `).join('');
 
   return `<!DOCTYPE html>
@@ -1047,9 +1049,11 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
   <link rel="stylesheet" href="/style.css">
   <link rel="profile" href="https://schema.org/Dataset">
   <link rel="profile" href="https://www.w3.org/TR/vocab-dcat/">
-  <link rel="describedby" type="text/turtle" href="/rdf/${dataset.id}.ttl">
-  <link rel="describedby" type="application/ld+json" href="/rdf/${dataset.id}.jsonld">
-  <link rel="linkset" type="application/linkset+json" href="/linksets/${dataset.id}.linkset.json">
+  ${dataset.profileId ? `<link rel="profile" href="/id/profile/${dataset.profileId}.html">` : ''}
+  <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
+  <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
+  <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
+  <link rel="linkset" type="application/linkset+json" href="/id/${typeSlug}/${slug}.linkset.json">
   ${(dataset.distributions || []).map(d => `<link rel="item" type="${d.mediaType}" href="${d.downloadUrl}">`).join('\n  ')}
 </head>
 <body>
@@ -1065,6 +1069,7 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
         ${dataset.license ? `<span class="meta-badge">⚖️ ${dataset.license}</span>` : ''}
         ${dataset.temporalCoverage ? `<span class="meta-badge">📅 ${dataset.temporalCoverage}</span>` : ''}
         ${dataset.spatialCoverage ? `<span class="meta-badge">📍 ${dataset.spatialCoverage}</span>` : ''}
+        ${dataset.profileId ? `<a href="/id/profile/${dataset.profileId}.html" class="meta-badge" style="background: #f0fdf4; color: #166534; text-decoration: none;">📑 Profile: ${dataset.profileId}</a>` : ''}
       </div>
     </div>
   </div>
@@ -1088,7 +1093,7 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
           <div class="meta-group">
             <div class="meta-label">Publisher</div>
             <div class="meta-value">
-              ${publisher ? `<a href="/institutes/${publisher.id.replace('resource-', '')}.html">🏛️ ${publisher.title}</a>` : 'VLIZ'}
+              ${publisher ? `<a href="${getEntityHtmlPath(publisher)}">🏛️ ${publisher.title}</a>` : 'VLIZ'}
             </div>
           </div>
 
@@ -1102,7 +1107,7 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
           <div class="meta-group">
             <div class="meta-label">Permanent Persistent Identifier</div>
             <div class="meta-value" style="word-break: break-all;">
-              <code>${baseUrl}/resource/${dataset.id}</code>
+              <code>${baseUrl}/id/${typeSlug}/${slug}</code>
             </div>
           </div>
 
@@ -1126,6 +1131,8 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
 }
 
 export function renderInstitutePageHtml(institute: MarineEntity, baseUrl: string): string {
+  const slug = getEntityNameSlug(institute);
+  const typeSlug = getEntityTypeSlug(institute);
   const members = (RESOURCES.filter(r => r.category === "person" && (r.properties["schema:worksFor"] === institute.id || (institute.properties["schema:member"] as string[] || []).includes(r.id))));
   const datasets = RESOURCES.filter(r => r.category === "dataset" && r.publisher === institute.id);
 
@@ -1137,9 +1144,10 @@ export function renderInstitutePageHtml(institute: MarineEntity, baseUrl: string
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
   <link rel="profile" href="https://schema.org/Organization">
-  <link rel="describedby" type="text/turtle" href="/rdf/${institute.id}.ttl">
-  <link rel="describedby" type="application/ld+json" href="/rdf/${institute.id}.jsonld">
-  <link rel="linkset" type="application/linkset+json" href="/linksets/${institute.id}.linkset.json">
+  <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
+  <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
+  <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
+  <link rel="linkset" type="application/linkset+json" href="/id/${typeSlug}/${slug}.linkset.json">
 </head>
 <body>
   ${renderHeader('institutes')}
@@ -1176,7 +1184,7 @@ export function renderInstitutePageHtml(institute: MarineEntity, baseUrl: string
                   <h4 class="dist-title">${ds.title}</h4>
                   <p class="dist-desc">${ds.description.substring(0, 120)}...</p>
                 </div>
-                <a href="/datasets/${ds.id.replace('resource-', '')}.html" class="btn-download">View Dataset &rarr;</a>
+                <a href="${getEntityHtmlPath(ds)}" class="btn-download">View Dataset &rarr;</a>
               </div>
             `).join('')}
           </div>
@@ -1186,7 +1194,7 @@ export function renderInstitutePageHtml(institute: MarineEntity, baseUrl: string
           <h3 class="section-heading">👥 Research Staff & Data Officers (${members.length})</h3>
           <div class="meta-badges">
             ${members.map(m => `
-              <a href="/people/${m.id.replace('resource-', '')}.html" class="author-pill" style="padding: 0.4rem 0.8rem;">
+              <a href="${getEntityHtmlPath(m)}" class="author-pill" style="padding: 0.4rem 0.8rem;">
                 👤 <strong>${m.title}</strong> &bull; ${m.properties["schema:jobTitle"] || 'Scientist'}
               </a>
             `).join('')}
@@ -1206,7 +1214,7 @@ export function renderInstitutePageHtml(institute: MarineEntity, baseUrl: string
           </div>
           <div class="meta-group">
             <div class="meta-label">Persistent Identifier</div>
-            <div class="meta-value"><code>${baseUrl}/resource/${institute.id}</code></div>
+            <div class="meta-value"><code>${baseUrl}/id/${typeSlug}/${slug}</code></div>
           </div>
         </div>
 
@@ -1221,6 +1229,8 @@ export function renderInstitutePageHtml(institute: MarineEntity, baseUrl: string
 }
 
 export function renderPublicationPageHtml(pub: MarineEntity, baseUrl: string): string {
+  const slug = getEntityNameSlug(pub);
+  const typeSlug = getEntityTypeSlug(pub);
   const authors = (pub.properties["schema:author"] as string[] || []).map(a => getResourceById(a)).filter(Boolean) as MarineEntity[];
   const aboutDataset = pub.properties["schema:about"] ? getResourceById(pub.properties["schema:about"] as string) : undefined;
 
@@ -1232,9 +1242,10 @@ export function renderPublicationPageHtml(pub: MarineEntity, baseUrl: string): s
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
   <link rel="profile" href="https://schema.org/ScholarlyArticle">
-  <link rel="describedby" type="text/turtle" href="/rdf/${pub.id}.ttl">
-  <link rel="describedby" type="application/ld+json" href="/rdf/${pub.id}.jsonld">
-  <link rel="linkset" type="application/linkset+json" href="/linksets/${pub.id}.linkset.json">
+  <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
+  <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
+  <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
+  <link rel="linkset" type="application/linkset+json" href="/id/${typeSlug}/${slug}.linkset.json">
   <link rel="alternate" type="application/pdf" href="/data/ro-crate-paper.pdf">
 </head>
 <body>
@@ -1286,7 +1297,7 @@ export function renderPublicationPageHtml(pub: MarineEntity, baseUrl: string): s
               <h4 class="dist-title">${aboutDataset.title}</h4>
               <p class="dist-desc">${aboutDataset.description}</p>
             </div>
-            <a href="/datasets/${aboutDataset.id.replace('resource-', '')}.html" class="btn-download">Explore ARMS-MBON Dataset &rarr;</a>
+            <a href="${getEntityHtmlPath(aboutDataset)}" class="btn-download">Explore ARMS-MBON Dataset &rarr;</a>
           </div>
         </div>` : ''}
       </div>
@@ -1296,8 +1307,13 @@ export function renderPublicationPageHtml(pub: MarineEntity, baseUrl: string): s
           <div class="meta-group">
             <div class="meta-label">Authors</div>
             <div class="meta-value">
-              ${authors.map(a => `<a href="/people/${a.id.replace('resource-', '')}.html" class="author-pill">👤 ${a.title}</a>`).join('')}
+              ${authors.map(a => `<a href="${getEntityHtmlPath(a)}" class="author-pill">👤 ${a.title}</a>`).join('')}
             </div>
+          </div>
+
+          <div class="meta-group">
+            <div class="meta-label">Persistent Identifier</div>
+            <div class="meta-value"><code>${baseUrl}/id/${typeSlug}/${slug}</code></div>
           </div>
 
           <div class="meta-group">
@@ -1325,6 +1341,8 @@ export function renderPublicationPageHtml(pub: MarineEntity, baseUrl: string): s
 }
 
 export function renderProjectPageHtml(proj: MarineEntity, baseUrl: string): string {
+  const slug = getEntityNameSlug(proj);
+  const typeSlug = getEntityTypeSlug(proj);
   const parts = (proj.properties["schema:hasPart"] as string[] || []).map(p => getResourceById(p)).filter(Boolean) as MarineEntity[];
 
   return `<!DOCTYPE html>
@@ -1335,9 +1353,10 @@ export function renderProjectPageHtml(proj: MarineEntity, baseUrl: string): stri
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
   <link rel="profile" href="https://schema.org/Project">
-  <link rel="describedby" type="text/turtle" href="/rdf/${proj.id}.ttl">
-  <link rel="describedby" type="application/ld+json" href="/rdf/${proj.id}.jsonld">
-  <link rel="linkset" type="application/linkset+json" href="/linksets/${proj.id}.linkset.json">
+  <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
+  <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
+  <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
+  <link rel="linkset" type="application/linkset+json" href="/id/${typeSlug}/${slug}.linkset.json">
 </head>
 <body>
   ${renderHeader('datasets')}
@@ -1373,7 +1392,7 @@ export function renderProjectPageHtml(proj: MarineEntity, baseUrl: string): stri
                   <h4 class="dist-title">${p.title}</h4>
                   <p class="dist-desc">${p.description.substring(0, 100)}...</p>
                 </div>
-                <a href="/datasets/${p.id.replace('resource-', '')}.html" class="btn-download">Explore Dataset &rarr;</a>
+                <a href="${getEntityHtmlPath(p)}" class="btn-download">Explore Dataset &rarr;</a>
               </div>
             `).join('')}
           </div>
@@ -1381,6 +1400,12 @@ export function renderProjectPageHtml(proj: MarineEntity, baseUrl: string): stri
       </div>
 
       <aside>
+        <div class="sidebar-panel">
+          <div class="meta-group">
+            <div class="meta-label">Persistent Identifier</div>
+            <div class="meta-value"><code>${baseUrl}/id/${typeSlug}/${slug}</code></div>
+          </div>
+        </div>
         ${renderRtBox(proj.id, false)}
       </aside>
     </div>
@@ -1392,6 +1417,8 @@ export function renderProjectPageHtml(proj: MarineEntity, baseUrl: string): stri
 }
 
 export function renderPersonPageHtml(person: MarineEntity, baseUrl: string): string {
+  const slug = getEntityNameSlug(person);
+  const typeSlug = getEntityTypeSlug(person);
   const orcid = person.properties["owl:sameAs"] as string;
   const authoredDatasets = RESOURCES.filter(r => r.category === "dataset" && (r.creators || []).includes(person.id));
   const authoredPubs = RESOURCES.filter(r => r.category === "publication" && ((r.properties["schema:author"] as string[] || []).includes(person.id)));
@@ -1404,9 +1431,10 @@ export function renderPersonPageHtml(person: MarineEntity, baseUrl: string): str
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
   <link rel="profile" href="https://schema.org/Person">
-  <link rel="describedby" type="text/turtle" href="/rdf/${person.id}.ttl">
-  <link rel="describedby" type="application/ld+json" href="/rdf/${person.id}.jsonld">
-  <link rel="linkset" type="application/linkset+json" href="/linksets/${person.id}.linkset.json">
+  <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
+  <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
+  <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
+  <link rel="linkset" type="application/linkset+json" href="/id/${typeSlug}/${slug}.linkset.json">
 </head>
 <body>
   ${renderHeader('datasets')}
@@ -1418,7 +1446,7 @@ export function renderPersonPageHtml(person: MarineEntity, baseUrl: string): str
       <div class="meta-badges">
         <span class="card-badge person">${person.properties["schema:jobTitle"] || 'Researcher'}</span>
         ${orcid ? `<span class="meta-badge">🟢 ORCID: <a href="${orcid}" target="_blank" style="color: inherit;">${orcid.replace('https://orcid.org/', '')}</a></span>` : ''}
-        <span class="meta-badge"><a href="/institutes/vliz.html" style="color: inherit; text-decoration: none;">🏛️ Flanders Marine Institute</a></span>
+        <span class="meta-badge"><a href="/id/institute/vliz.html" style="color: inherit; text-decoration: none;">🏛️ Flanders Marine Institute</a></span>
       </div>
     </div>
   </div>
@@ -1443,7 +1471,7 @@ export function renderPersonPageHtml(person: MarineEntity, baseUrl: string): str
                   <span class="dist-format">Dataset</span>
                   <h4 class="dist-title">${d.title}</h4>
                 </div>
-                <a href="/datasets/${d.id.replace('resource-', '')}.html" class="btn-download">View Dataset &rarr;</a>
+                <a href="${getEntityHtmlPath(d)}" class="btn-download">View Dataset &rarr;</a>
               </div>
             `).join('')}
           </div>
@@ -1459,7 +1487,7 @@ export function renderPersonPageHtml(person: MarineEntity, baseUrl: string): str
                   <span class="dist-format">Publication</span>
                   <h4 class="dist-title">${p.title}</h4>
                 </div>
-                <a href="/publications/${p.id.replace('resource-', '')}.html" class="btn-download">View Publication &rarr;</a>
+                <a href="${getEntityHtmlPath(p)}" class="btn-download">View Publication &rarr;</a>
               </div>
             `).join('')}
           </div>
@@ -1467,6 +1495,12 @@ export function renderPersonPageHtml(person: MarineEntity, baseUrl: string): str
       </div>
 
       <aside>
+        <div class="sidebar-panel">
+          <div class="meta-group">
+            <div class="meta-label">Persistent Identifier</div>
+            <div class="meta-value"><code>${baseUrl}/id/${typeSlug}/${slug}</code></div>
+          </div>
+        </div>
         ${renderRtBox(person.id, false)}
       </aside>
     </div>
@@ -1479,7 +1513,7 @@ export function renderPersonPageHtml(person: MarineEntity, baseUrl: string): str
 
 export function renderDcatHtml(resources: MarineEntity[], baseUrl: string): string {
   const datasets = resources.filter(r => r.category === "dataset");
-  const apis = resources.filter(r => r.category === "api");
+  const services = resources.filter(r => r.category === "service" || r.category === "api");
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -1514,13 +1548,13 @@ export function renderDcatHtml(resources: MarineEntity[], baseUrl: string): stri
       <div class="cards-grid">
         ${datasets.map(ds => `
           <div class="card">
-            <h3 class="card-title"><a href="/datasets/${ds.id.replace('resource-', '')}.html">${ds.title}</a></h3>
+            <h3 class="card-title"><a href="${getEntityHtmlPath(ds)}">${ds.title}</a></h3>
             <p class="card-desc">${ds.description}</p>
             <div class="card-tags">
               ${(ds.distributions || []).map(d => `<span class="tag">${d.format}</span>`).join(' ')}
             </div>
             <div class="card-footer">
-              <a href="/datasets/${ds.id.replace('resource-', '')}.html" class="card-link">View Dataset Details &rarr;</a>
+              <a href="${getEntityHtmlPath(ds)}" class="card-link">View Dataset Details &rarr;</a>
             </div>
           </div>
         `).join('')}
@@ -1528,9 +1562,9 @@ export function renderDcatHtml(resources: MarineEntity[], baseUrl: string): stri
     </div>
 
     <div class="content-section">
-      <h3 class="section-heading">⚡ Data Services / APIs (${apis.length})</h3>
+      <h3 class="section-heading">⚡ Data Services / APIs (${services.length})</h3>
       <div class="cards-grid">
-        ${apis.map(api => `
+        ${services.map(api => `
           <div class="card">
             <h3 class="card-title"><a href="/api/docs/">${api.title}</a></h3>
             <p class="card-desc">${api.description}</p>
