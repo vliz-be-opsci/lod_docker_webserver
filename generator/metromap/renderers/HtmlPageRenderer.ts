@@ -26,9 +26,59 @@ export class HtmlPageRenderer {
     .toggle-pill { display: inline-flex; align-items: center; gap: 0.35rem; background: var(--bg-subtle); border: 1px solid var(--panel-border); padding: 0.35rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); cursor: pointer; user-select: none; transition: all 0.2s ease; }
     .toggle-pill.active { background: var(--vliz-blue); color: #ffffff; border-color: var(--vliz-blue); }
     .toggle-pill.teal.active { background: var(--marine-teal); border-color: var(--marine-teal); color: #ffffff; }
-    .metro-canvas-container { position: relative; background: #f8fafc; border: 1px solid var(--panel-border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); min-height: 850px; }
-    svg#metroSvg { width: 100%; height: 880px; cursor: grab; background: radial-gradient(circle, #e2e8f0 1px, transparent 1px); background-size: 24px 24px; background-color: #fafbfc; }
+    
+    /* Interactive Canvas Container with Focus Feedback */
+    .metro-canvas-container {
+      position: relative;
+      background: #f8fafc;
+      border: 2px solid var(--panel-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      min-height: 850px;
+      outline: none;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .metro-canvas-container:focus,
+    .metro-canvas-container:focus-within,
+    .metro-canvas-container.is-focused,
+    .metro-canvas-container:hover {
+      border-color: var(--marine-teal);
+      box-shadow: 0 0 0 3.5px rgba(13, 148, 136, 0.22), var(--shadow-lg);
+    }
+    
+    .canvas-hint-pill {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--panel-border);
+      border-radius: 9999px;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      pointer-events: none;
+      z-index: 10;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: opacity 0.3s;
+    }
+
+    svg#metroSvg {
+      width: 100%;
+      height: 880px;
+      cursor: grab;
+      background: radial-gradient(circle, #e2e8f0 1px, transparent 1px);
+      background-size: 24px 24px;
+      background-color: #fafbfc;
+      user-select: none;
+    }
     svg#metroSvg:active { cursor: grabbing; }
+    
     .track { fill: none; stroke-width: 4.5px; stroke-linecap: round; stroke-linejoin: round; transition: stroke-opacity 0.3s, stroke-width 0.2s; }
     .track-domain { stroke: #0284c7; }
     .track-dataset { stroke: #ea580c; }
@@ -117,15 +167,19 @@ export class HtmlPageRenderer {
           <div class="toggle-pill" id="pill-RT_P08" onclick="filterPattern('RT_P08')">RT-P08 Linkset</div>
         </div>
         <div class="controls-group">
-          <button class="zoom-btn" onclick="zoomIn()" style="width: 32px; height: 32px; border-radius: 4px; border: 1px solid var(--panel-border); cursor: pointer;"><i class="fa-solid fa-plus"></i></button>
-          <button class="zoom-btn" onclick="zoomOut()" style="width: 32px; height: 32px; border-radius: 4px; border: 1px solid var(--panel-border); cursor: pointer;"><i class="fa-solid fa-minus"></i></button>
-          <button class="zoom-btn" onclick="resetZoom()" style="width: 32px; height: 32px; border-radius: 4px; border: 1px solid var(--panel-border); cursor: pointer;"><i class="fa-solid fa-arrows-rotate"></i></button>
+          <button class="zoom-btn" onclick="zoomIn()" title="Zoom In (+)" style="width: 32px; height: 32px; border-radius: 4px; border: 1px solid var(--panel-border); cursor: pointer;"><i class="fa-solid fa-plus"></i></button>
+          <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out (-)" style="width: 32px; height: 32px; border-radius: 4px; border: 1px solid var(--panel-border); cursor: pointer;"><i class="fa-solid fa-minus"></i></button>
+          <button class="zoom-btn" onclick="resetZoom()" title="Reset View" style="width: 32px; height: 32px; border-radius: 4px; border: 1px solid var(--panel-border); cursor: pointer;"><i class="fa-solid fa-arrows-rotate"></i></button>
         </div>
       </div>
     </div>
 
-    <!-- Canvas -->
-    <div class="metro-canvas-container" id="metroCanvasContainer">
+    <!-- Canvas Container with Interactive Focus & Hint -->
+    <div class="metro-canvas-container" id="metroCanvasContainer" tabindex="0">
+      <div class="canvas-hint-pill">
+        <i class="fa-solid fa-mouse" style="color: var(--marine-teal);"></i>
+        <span>Scroll to Zoom • Drag to Pan • Double-Click to Zoom In</span>
+      </div>
       ${svgContent}
     </div>
   </main>
@@ -160,26 +214,104 @@ export class HtmlPageRenderer {
     let currentZoom = 1, panX = 0, panY = 0, isDragging = false, startX, startY;
     let viewport = document.getElementById('viewport');
     let svg = document.getElementById('metroSvg');
+    const canvasContainer = document.getElementById('metroCanvasContainer');
 
     function updateTransform() {
       if (viewport) {
         viewport.setAttribute('transform', \`translate(\${panX}, \${panY}) scale(\${currentZoom})\`);
       }
     }
-    function zoomIn() { currentZoom = Math.min(currentZoom * 1.2, 3); updateTransform(); }
-    function zoomOut() { currentZoom = Math.max(currentZoom / 1.2, 0.5); updateTransform(); }
-    function resetZoom() { currentZoom = 1; panX = 0; panY = 0; updateTransform(); }
+    
+    function zoomIn(factor = 1.2, centerX = null, centerY = null) {
+      const newZoom = Math.min(currentZoom * factor, 4.0);
+      if (centerX !== null && centerY !== null) {
+        panX = centerX - (centerX - panX) * (newZoom / currentZoom);
+        panY = centerY - (centerY - panY) * (newZoom / currentZoom);
+      }
+      currentZoom = newZoom;
+      updateTransform();
+    }
 
-    function setupDragEvents() {
+    function zoomOut(factor = 1.2, centerX = null, centerY = null) {
+      const newZoom = Math.max(currentZoom / factor, 0.4);
+      if (centerX !== null && centerY !== null) {
+        panX = centerX - (centerX - panX) * (newZoom / currentZoom);
+        panY = centerY - (centerY - panY) * (newZoom / currentZoom);
+      }
+      currentZoom = newZoom;
+      updateTransform();
+    }
+
+    function resetZoom() {
+      currentZoom = 1;
+      panX = 0;
+      panY = 0;
+      updateTransform();
+    }
+
+    function setupCanvasInteractions() {
       svg = document.getElementById('metroSvg');
       viewport = document.getElementById('viewport');
       if (!svg) return;
-      svg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - panX; startY = e.clientY - panY; });
-      window.addEventListener('mousemove', (e) => { if (!isDragging) return; panX = e.clientX - startX; panY = e.clientY - startY; updateTransform(); });
-      window.addEventListener('mouseup', () => { isDragging = false; });
+
+      // Mouse drag panning
+      svg.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.station-node')) return; // let node click handler take precedence
+        isDragging = true;
+        startX = e.clientX - panX;
+        startY = e.clientY - panY;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        panX = e.clientX - startX;
+        panY = e.clientY - startY;
+        updateTransform();
+      });
+
+      window.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+
+      // Mouse Wheel Zoom In / Out
+      svg.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const rect = svg.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        if (e.deltaY < 0) {
+          zoomIn(1.15, mouseX, mouseY);
+        } else {
+          zoomOut(1.15, mouseX, mouseY);
+        }
+      }, { passive: false });
+
+      // Double Click to Zoom In
+      svg.addEventListener('dblclick', (e) => {
+        if (e.target.closest('.station-node')) return;
+        e.preventDefault();
+        const rect = svg.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        zoomIn(1.4, mouseX, mouseY);
+      });
+
+      // Keyboard Controls (+, -, 0, Arrow Keys) when canvas is focused
+      if (canvasContainer) {
+        canvasContainer.addEventListener('keydown', (e) => {
+          if (e.key === '+' || e.key === '=') { zoomIn(1.2); e.preventDefault(); }
+          if (e.key === '-' || e.key === '_') { zoomOut(1.2); e.preventDefault(); }
+          if (e.key === '0') { resetZoom(); e.preventDefault(); }
+          if (e.key === 'ArrowLeft') { panX += 50; updateTransform(); e.preventDefault(); }
+          if (e.key === 'ArrowRight') { panX -= 50; updateTransform(); e.preventDefault(); }
+          if (e.key === 'ArrowUp') { panY += 50; updateTransform(); e.preventDefault(); }
+          if (e.key === 'ArrowDown') { panY -= 50; updateTransform(); e.preventDefault(); }
+        });
+      }
     }
 
-    setupDragEvents();
+    setupCanvasInteractions();
 
     function toggleOverlays() {
       const g = document.getElementById('clusterGroup');
