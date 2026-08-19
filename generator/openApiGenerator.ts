@@ -180,17 +180,20 @@ export function generateApiDocsHtml(baseUrl: string): string {
   <footer>
     <div class="footer-container">
       <div>
-        <strong>VLIZ Marine Linked Data Portal</strong> — Reference Implementation of <em>Radical Transparency</em> (RFC 8288, RFC 9264, RFC 9727).
+        <strong>VLIZ Marine Linked Data Portal</strong> — Live Reference Implementation implementing the <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" style="color: #ffffff; text-decoration: underline;">EOSC Radical Transparency Proposals</a> & Linkset Usage Patterns (RFC 8288, RFC 9264, RFC 9727, RFC 8631, OpenAPI 3.0).
       </div>
       <div class="footer-links">
+        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" title="EOSC Radical Transparency Proposals on GitHub">🐙 EOSC RT Proposals (GitHub)</a>
+        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank" title="EOSC Linkset Usage Patterns (RT-P01 to RT-P10)">📋 RT Patterns</a>
+        <a href="/map.html">🗺️ Metro Map</a>
+        <a href="/profiles/">📑 Profiles</a>
         <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" title="Radical Transparency Position Paper">📄 Position Paper</a>
         <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank" title="Presentation Slides">📊 Slides</a>
-        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" title="EOSC Semantic Interoperability Proposals Repo">🐙 EOSC Repo</a>
         <a href="https://www.iana.org/assignments/link-relations" target="_blank" title="IANA Link Relations Registry">🌐 IANA Link Relations</a>
         <a href="/catalog/dcat.ttl">DCAT Turtle</a>
         <a href="/.well-known/api-catalog">API Catalog</a>
         <a href="/sitemap.xml">Sitemap (rs:ln)</a>
-        <a href="https://github.com/vliz-be-opsci/lod_docker_webserver">GitHub</a>
+        <a href="https://github.com/vliz-be-opsci/lod_docker_webserver">GitHub Repo</a>
       </div>
     </div>
   </footer>

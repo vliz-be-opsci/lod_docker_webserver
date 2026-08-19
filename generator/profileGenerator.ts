@@ -195,11 +195,14 @@ export function generateProfileHtml(profile: Profile, baseUrl: string): string {
 
   <footer>
     <div class="footer-container">
-      <div><strong>VLIZ Marine Linked Data Portal</strong> — Semantic Profiles (RFC 6906, RFC 6573, W3C DX-PROF).</div>
+      <div><strong>VLIZ Marine Linked Data Portal</strong> — Live Reference Implementation for <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" style="color: #ffffff; text-decoration: underline;">EOSC Radical Transparency Proposals</a> (RFC 6906, RFC 6573, W3C DX-PROF).</div>
       <div class="footer-links">
+        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank">🐙 EOSC RT Proposals</a>
+        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank">📋 RT Patterns</a>
         <a href="/profiles/">Profiles Registry</a>
         <a href="/map.html">Metro Map</a>
         <a href="/catalog/dcat.ttl">DCAT Catalog</a>
+        <a href="https://github.com/vliz-be-opsci/lod_docker_webserver">GitHub Repo</a>
       </div>
     </div>
   </footer>
@@ -231,7 +234,9 @@ export function generateProfileCatalogHtml(profiles: Profile[], baseUrl: string)
       <a href="/catalog/">DCAT Catalog</a>
       <a href="/profiles/" class="active">Semantic Profiles</a>
       <a href="/api/docs/">Subsetting API</a>
+      <a href="/publications/ro-crate-paper.html">Publications</a>
       <a href="/map.html">Metro Map</a>
+      <a href="/institutes/vliz.html">Institute</a>
     </nav>
   </header>
 
@@ -295,10 +300,14 @@ export function generateProfileCatalogHtml(profiles: Profile[], baseUrl: string)
 
   <footer>
     <div class="footer-container">
-      <div><strong>VLIZ Marine Linked Data Portal</strong> — Semantic Profiles (RFC 6906, RFC 6573, W3C DX-PROF).</div>
+      <div><strong>VLIZ Marine Linked Data Portal</strong> — Live Reference Implementation for <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" style="color: #ffffff; text-decoration: underline;">EOSC Radical Transparency Proposals</a> (RFC 6906, RFC 6573, W3C DX-PROF).</div>
       <div class="footer-links">
+        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank">🐙 EOSC RT Proposals</a>
+        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank">📋 RT Patterns</a>
+        <a href="/profiles/">Profiles Registry</a>
         <a href="/map.html">Metro Map</a>
         <a href="/catalog/dcat.ttl">DCAT Catalog</a>
+        <a href="https://github.com/vliz-be-opsci/lod_docker_webserver">GitHub Repo</a>
       </div>
     </div>
   </footer>
