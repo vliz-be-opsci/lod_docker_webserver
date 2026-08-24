@@ -37,7 +37,7 @@ export function generateProfileLinkset(profile: Profile, baseUrl: string) {
   };
 
   if (items.length > 0) {
-    linksetObject.linkset[0].item = items;
+    linksetObject.linkset[0]["http://schema.org/hasPart"] = items;
   }
 
   return linksetObject;

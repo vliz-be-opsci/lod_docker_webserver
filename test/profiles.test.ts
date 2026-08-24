@@ -27,15 +27,15 @@ describe("Profiles System & RT-P02 Composition", () => {
     expect(ttl).toContain("vliz:MarineGenomicShape");
   });
 
-  it("generates RFC 9264 JSON Linkset encoding rel=\"item\" sub-profile hierarchy under /id/profile/", () => {
+  it("generates RFC 9264 JSON Linkset encoding http://schema.org/hasPart sub-profile hierarchy under /id/profile/", () => {
     const genomicProfile = getProfileById("marine-genomic-dataset-profile")!;
     const linkset = generateProfileLinkset(genomicProfile, "http://localhost:8080");
 
     expect(linkset.linkset).toBeDefined();
     expect(linkset.linkset[0].anchor).toBe("http://localhost:8080/id/profile/marine-genomic-dataset-profile");
     expect(linkset.linkset[0].self[0].href).toBe("http://localhost:8080/id/profile/marine-genomic-dataset-profile");
-    expect(linkset.linkset[0].item).toBeDefined();
-    expect(linkset.linkset[0].item[0].href).toBe("http://localhost:8080/id/profile/schema-dataset-profile");
+    expect(linkset.linkset[0]["http://schema.org/hasPart"]).toBeDefined();
+    expect(linkset.linkset[0]["http://schema.org/hasPart"][0].href).toBe("http://localhost:8080/id/profile/schema-dataset-profile");
   });
 
   it("renders profile catalog at /id/profiles and individual profile HTML", () => {

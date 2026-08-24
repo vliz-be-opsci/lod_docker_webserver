@@ -298,7 +298,7 @@ async function main() {
 
     if (prof.composedProfiles && prof.composedProfiles.length > 0) {
       for (const subId of prof.composedProfiles) {
-        profileHtmlLinks.push(`<${BASE_URL}/id/profile/${subId}>; rel="item"`);
+        profileHtmlLinks.push(`<${BASE_URL}/id/profile/${subId}>; rel="http://schema.org/hasPart"`);
       }
     }
 
