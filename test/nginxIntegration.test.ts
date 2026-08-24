@@ -71,11 +71,14 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     const sitemapContent = fs.readFileSync(sitemapPath, "utf-8");
     // Clean base PID in <loc>
     expect(sitemapContent).toContain("<loc>http://localhost:8080/id/dataset/arms-mbon</loc>");
+    // arms-mbon showcases optional alternate format links in the sitemap
     expect(sitemapContent).toContain('rel="alternate" href="http://localhost:8080/id/dataset/arms-mbon.html" type="text/html"');
-    expect(sitemapContent).toContain('rel="type"');
-    expect(sitemapContent).toContain('rel="profile" href="http://localhost:8080/id/profile/marine-genomic-dataset-profile"');
-    expect(sitemapContent).toContain('href="http://localhost:8080/id/dataset/arms-mbon.linkset.json"');
     expect(sitemapContent).toContain('href="http://localhost:8080/id/dataset/arms-mbon.ttl"');
+
+    // Other resources rely solely on their linkset and do not repeat alternate format links
+    expect(sitemapContent).toContain("<loc>http://localhost:8080/id/dataset/arms-2018</loc>");
+    expect(sitemapContent).not.toContain('rel="alternate" href="http://localhost:8080/id/dataset/arms-2018.html"');
+
     expect(sitemapContent).toContain("<loc>http://localhost:8080/id/profiles</loc>");
 
     // No xhtml namespace or elements, no invalid dcat-catalog rel
