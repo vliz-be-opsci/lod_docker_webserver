@@ -16,8 +16,9 @@ export class MetroMapGenerator {
 
   public generateHtml(entrypointUri: string = "/"): string {
     const graph = this.graphBuilder.buildGraph(entrypointUri);
-    this.layoutEngine.computeLayout(graph);
+    this.layoutEngine.computeLayout(graph, 1680);
     const bounds = this.layoutEngine.computePatternBounds(graph);
-    return this.htmlRenderer.renderPage(graph, bounds, this.baseUrl);
+    const corridors = this.layoutEngine.computeCorridorBounds(1680);
+    return this.htmlRenderer.renderPage(graph, bounds, corridors, this.baseUrl);
   }
 }
