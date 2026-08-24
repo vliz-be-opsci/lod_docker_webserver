@@ -34,12 +34,14 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     }
   });
 
-  it("generates valid nginx-coneg.conf with conneg suffixes", () => {
+  it("generates valid nginx-coneg.conf with conneg suffixes and default ttl", () => {
     const conegPath = path.join(distDir, "nginx-coneg.conf");
     expect(fs.existsSync(conegPath)).toBe(true);
 
     const conegContent = fs.readFileSync(conegPath, "utf-8");
     expect(conegContent).toContain("map $http_accept $conneg_suffix");
+    expect(conegContent).toContain("default                          ttl;");
+    expect(conegContent).toContain('"~text/html"                     html;');
     expect(conegContent).toContain('"~text/turtle"                   ttl;');
     expect(conegContent).toContain('"~application/ld\\+json"          jsonld;');
     expect(conegContent).toContain('"~application/rdf\\+xml"          rdf;');

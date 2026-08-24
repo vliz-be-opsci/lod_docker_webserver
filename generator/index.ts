@@ -280,7 +280,8 @@ async function main() {
   console.log(`Generating nginx-coneg.conf...`);
   let conegConf = `# Dynamic Content-Negotiation Map\n`;
   conegConf += `map $http_accept $conneg_suffix {\n`;
-  conegConf += `    default                          html;\n`;
+  conegConf += `    default                          ttl;\n`;
+  conegConf += `    "~text/html"                     html;\n`;
   conegConf += `    "~text/turtle"                   ttl;\n`;
   conegConf += `    "~application/ld\\+json"          jsonld;\n`;
   conegConf += `    "~application/rdf\\+xml"          rdf;\n`;
