@@ -56,12 +56,28 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     expect(headersContent).toContain("location = /id/dataset/arms-mbon.jsonld");
     expect(headersContent).toContain("location = /id/dataset/arms-mbon.rdf");
     expect(headersContent).toContain("location = /id/dataset/arms-mbon.linkset.json");
+    expect(headersContent).toContain("location = /api/v1/observations");
+    expect(headersContent).toContain('rel="cite-as"');
+    expect(headersContent).toContain('rel="service-desc"');
+    expect(headersContent).toContain('rel="service-doc"');
+    expect(headersContent).toContain('rel="service-meta"');
     expect(headersContent).toContain('rel="describes"');
     expect(headersContent).toContain('rel="type"');
     expect(headersContent).toContain('rel="profile"');
     expect(headersContent).toContain('rel="describedby"; type="text/turtle"');
     expect(headersContent).toContain('rel="linkset"');
     expect(headersContent).toContain("location = /id/profiles");
+  });
+
+  it("generates valid RFC 9727 API Catalog with RT-P05 cite-as link to parent dataset PID", () => {
+    const catalogPath = path.join(distDir, ".well-known", "api-catalog");
+    expect(fs.existsSync(catalogPath)).toBe(true);
+
+    const catalog = JSON.parse(fs.readFileSync(catalogPath, "utf-8"));
+    expect(catalog.linkset).toBeDefined();
+    expect(catalog.linkset[0].anchor).toBe("http://localhost:8080/api/v1/observations");
+    expect(catalog.linkset[0]["cite-as"][0].href).toBe("http://localhost:8080/id/dataset/arms-mbon");
+    expect(catalog.linkset[0]["service-desc"][0].href).toContain("/api/openapi.json");
   });
 
   it("generates clean sitemap.xml with ResourceSync rs:ln referencing base /id/ paths, rel=type, and rel=profile", () => {

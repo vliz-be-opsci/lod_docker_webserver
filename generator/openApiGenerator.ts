@@ -5,8 +5,8 @@ export function generateOpenApiSpec(baseUrl: string): any {
   return {
     openapi: "3.0.3",
     info: {
-      title: "MarineInfo Subsetting & Observation API",
-      description: "An OpenAPI 3.0-compliant data service supporting parameterized subsetting queries for marine biodiversity, ARMS genomic monitoring, and buoy telemetry observations from the Flanders Marine Institute (VLIZ). Conforms to Radical Transparency LSUP #05.",
+      title: "ARMS-MBON Subsetting & Observation API",
+      description: "An OpenAPI 3.0-compliant data service supporting parameterized subsetting queries for the ARMS-MBON Metagenomic 18S Observations dataset (PID: /id/dataset/arms-mbon). Conforms to Radical Transparency LSUP #05 (Subsetting API).",
       version: "1.0.0",
       contact: {
         name: "VLIZ Data Centre",
@@ -27,27 +27,30 @@ export function generateOpenApiSpec(baseUrl: string): any {
     paths: {
       "/api/v1/observations": {
         get: {
-          summary: "Query Marine Observations",
-          description: "Retrieve subsetted marine observation records across ARMS metagenomics, baseline ecology, buoy sensors, and species occurrences.",
+          summary: "Subset ARMS-MBON Observations",
+          description: "Retrieve subsetted marine genomic observation records from the ARMS-MBON dataset. Response headers include rel=\"collection\" (pointing to /api/v1/observations), rel=\"cite-as\" (pointing to /id/dataset/arms-mbon), and rel=\"linkset\" per RT-P05.",
           operationId: "getObservations",
           parameters: [
-            {
-              name: "dataset",
-              in: "query",
-              required: false,
-              description: "Filter by dataset identifier (`arms-mbon`, `arms-2018`, `north-sea-sensors`, `eurobis`)",
-              schema: {
-                type: "string",
-                enum: ["arms-mbon", "arms-2018", "north-sea-sensors", "eurobis"],
-                default: "arms-mbon"
-              }
-            },
             {
               name: "station",
               in: "query",
               required: false,
-              description: "Filter by station ID (e.g. `BE-NRT-01`, `Thorntonbank`)",
-              schema: { type: "string" }
+              description: "Filter by station ID (e.g. `BE-NRT-01`, `BE-NRT-02`, `BE-NRT-03`)",
+              schema: { type: "string", example: "BE-NRT-01" }
+            },
+            {
+              name: "taxon",
+              in: "query",
+              required: false,
+              description: "Filter by taxon scientific name (e.g. `Mytilus edulis`, `Balanus crenatus`)",
+              schema: { type: "string", example: "Mytilus edulis" }
+            },
+            {
+              name: "marker_gene",
+              in: "query",
+              required: false,
+              description: "Filter by genetic marker (e.g. `18S`)",
+              schema: { type: "string", default: "18S" }
             },
             {
               name: "limit",
@@ -59,15 +62,27 @@ export function generateOpenApiSpec(baseUrl: string): any {
           ],
           responses: {
             "200": {
-              description: "Observation query results",
+              description: "Subsetted observation records with RT-P05 Link headers",
+              headers: {
+                "Link": {
+                  "description": "RFC 8288 Link headers linking to dataset PID (cite-as), base service (collection), and linkset",
+                  "schema": {
+                    "type": "string",
+                    "example": "<http://localhost:8080/id/dataset/arms-mbon>; rel=\"cite-as\", <http://localhost:8080/api/openapi.json>; rel=\"service-desc\"; type=\"application/json\", <http://localhost:8080/.well-known/api-catalog>; rel=\"linkset\""
+                  }
+                }
+              },
               content: {
                 "application/json": {
                   schema: {
                     type: "object",
                     properties: {
-                      total: { type: "integer", example: 42 },
+                      dataset: { type: "string", example: "http://localhost:8080/id/dataset/arms-mbon" },
+                      title: { type: "string", example: "ARMS-MBON data on long-term monitoring of hard-bottom communities: 18S results from 2018-2020" },
+                      cite_as: { type: "string", example: "https://doi.org/10.14284/578" },
+                      license: { type: "string", example: "https://creativecommons.org/licenses/by/4.0/" },
+                      total: { type: "integer", example: 24 },
                       limit: { type: "integer", example: 20 },
-                      dataset: { type: "string", example: "arms-mbon" },
                       data: {
                         type: "array",
                         items: {
@@ -77,42 +92,9 @@ export function generateOpenApiSpec(baseUrl: string): any {
                             station: { type: "string" },
                             date: { type: "string" },
                             taxon: { type: "string" },
-                            value: { type: "number" },
+                            marker_gene: { type: "string" },
+                            reads: { type: "number" },
                             unit: { type: "string" }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "/api/v1/datasets": {
-        get: {
-          summary: "List Datasets",
-          description: "Get metadata for all datasets hosted on this webserver.",
-          operationId: "listDatasets",
-          responses: {
-            "200": {
-              description: "List of available datasets",
-              content: {
-                "application/json": {
-                  schema: {
-                    type: "object",
-                    properties: {
-                      count: { type: "integer" },
-                      datasets: {
-                        type: "array",
-                        items: {
-                          type: "object",
-                          properties: {
-                            id: { type: "string" },
-                            title: { type: "string" },
-                            category: { type: "string" },
-                            distributions: { type: "array", items: { type: "string" } }
                           }
                         }
                       }
@@ -228,57 +210,30 @@ export function generateApiSampleResponses(distDir: string): void {
 
   // 1. /api/v1/observations default response (and as observations.json)
   const observationsResponse = {
+    dataset: "http://localhost:8080/id/dataset/arms-mbon",
+    title: "ARMS-MBON data on long-term monitoring of hard-bottom communities: 18S results from 2018-2020",
+    cite_as: "https://doi.org/10.14284/578",
+    license: "https://creativecommons.org/licenses/by/4.0/",
+    query: {
+      marker_gene: "18S",
+      limit: 20
+    },
     total: 24,
     limit: 20,
-    dataset: "arms-mbon",
     data: [
-      { id: "EVT-2018-01", station: "BE-NRT-01", date: "2018-06-14", taxon: "Mytilus edulis", value: 1420, unit: "reads" },
-      { id: "EVT-2018-02", station: "BE-NRT-01", date: "2018-06-14", taxon: "Balanus crenatus", value: 3840, unit: "reads" },
-      { id: "EVT-2018-03", station: "BE-NRT-02", date: "2018-09-22", taxon: "Electra pilosa", value: 980, unit: "reads" },
-      { id: "EVT-2018-04", station: "BE-NRT-02", date: "2018-09-22", taxon: "Spirobranchus triqueter", value: 1890, unit: "reads" },
-      { id: "EVT-2019-01", station: "BE-NRT-03", date: "2019-05-18", taxon: "Tubularia indivisa", value: 2450, unit: "reads" },
-      { id: "EVT-2019-02", station: "BE-NRT-03", date: "2019-05-18", taxon: "Botryllus schlosseri", value: 3120, unit: "reads" },
-      { id: "EVT-2019-03", station: "BE-NRT-03", date: "2019-08-30", taxon: "Asterias rubens", value: 760, unit: "reads" },
-      { id: "EVT-2020-01", station: "BE-NRT-04", date: "2020-10-05", taxon: "Sabellaria spinulosa", value: 1610, unit: "reads" },
-      { id: "EVT-2020-02", station: "BE-NRT-04", date: "2020-10-05", taxon: "Suberites ficus", value: 1150, unit: "reads" },
-      { id: "EVT-2020-03", station: "BE-NRT-04", date: "2020-10-05", taxon: "Necora puber", value: 840, unit: "reads" }
+      { id: "OBS-2018-01", station: "BE-NRT-01", date: "2018-06-14", taxon: "Mytilus edulis", marker_gene: "18S", reads: 1420, unit: "sequence_reads" },
+      { id: "OBS-2018-02", station: "BE-NRT-01", date: "2018-06-14", taxon: "Balanus crenatus", marker_gene: "18S", reads: 3840, unit: "sequence_reads" },
+      { id: "OBS-2018-03", station: "BE-NRT-02", date: "2018-09-22", taxon: "Electra pilosa", marker_gene: "18S", reads: 980, unit: "sequence_reads" },
+      { id: "OBS-2018-04", station: "BE-NRT-02", date: "2018-09-22", taxon: "Spirobranchus triqueter", marker_gene: "18S", reads: 1890, unit: "sequence_reads" },
+      { id: "OBS-2019-01", station: "BE-NRT-03", date: "2019-05-18", taxon: "Tubularia indivisa", marker_gene: "18S", reads: 2450, unit: "sequence_reads" },
+      { id: "OBS-2019-02", station: "BE-NRT-03", date: "2019-05-18", taxon: "Botryllus schlosseri", marker_gene: "18S", reads: 3120, unit: "sequence_reads" },
+      { id: "OBS-2019-03", station: "BE-NRT-03", date: "2019-08-30", taxon: "Asterias rubens", marker_gene: "18S", reads: 760, unit: "sequence_reads" },
+      { id: "OBS-2020-01", station: "BE-NRT-04", date: "2020-10-05", taxon: "Sabellaria spinulosa", marker_gene: "18S", reads: 1610, unit: "sequence_reads" },
+      { id: "OBS-2020-02", station: "BE-NRT-04", date: "2020-10-05", taxon: "Suberites ficus", marker_gene: "18S", reads: 1150, unit: "sequence_reads" },
+      { id: "OBS-2020-03", station: "BE-NRT-04", date: "2020-10-05", taxon: "Necora puber", marker_gene: "18S", reads: 840, unit: "sequence_reads" }
     ]
   };
 
   fs.writeFileSync(path.join(apiV1Dir, "observations"), JSON.stringify(observationsResponse, null, 2));
   fs.writeFileSync(path.join(apiV1Dir, "observations.json"), JSON.stringify(observationsResponse, null, 2));
-
-  // 2. /api/v1/datasets
-  const datasetsResponse = {
-    count: 4,
-    datasets: [
-      {
-        id: "resource-arms-mbon",
-        title: "ARMS-MBON data on long-term monitoring of hard-bottom communities: 18S results from 2018-2020",
-        category: "dataset",
-        distributions: ["/data/arms-mbon-18s.csv", "/data/arms-mbon-stations.geojson", "/data/arms-mbon-rocrate.zip"]
-      },
-      {
-        id: "resource-arms-2018",
-        title: "ARMS 2018 dataset on long-term monitoring and biodiversity assessment of invasive and indigenous hard-bottom communities",
-        category: "dataset",
-        distributions: ["/data/arms-2018-samples.csv"]
-      },
-      {
-        id: "resource-north-sea-sensors",
-        title: "Belgian North Sea Sensor & Buoy Time-Series (LifeWatch/VLIZ)",
-        category: "dataset",
-        distributions: ["/data/north-sea-sensors-latest.csv", "/data/north-sea-sensors-stream.json"]
-      },
-      {
-        id: "resource-eurobis-occurrences",
-        title: "EurOBIS European Marine Species Taxon Occurrences Sample",
-        category: "dataset",
-        distributions: ["/data/eurobis-occurrences.geojson", "/data/eurobis-dwca-sample.zip"]
-      }
-    ]
-  };
-
-  fs.writeFileSync(path.join(apiV1Dir, "datasets"), JSON.stringify(datasetsResponse, null, 2));
-  fs.writeFileSync(path.join(apiV1Dir, "datasets.json"), JSON.stringify(datasetsResponse, null, 2));
 }

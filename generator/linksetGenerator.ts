@@ -43,6 +43,12 @@ export function generateApiCatalog(baseUrl: string): object {
     linkset: [
       {
         anchor: `${baseUrl}/api/v1/observations`,
+        "cite-as": [
+          { href: `${baseUrl}/id/dataset/arms-mbon` }
+        ],
+        "api-catalog": [
+          { href: `${baseUrl}/.well-known/api-catalog` }
+        ],
         profile: [
           { href: "https://www.rfc-editor.org/info/rfc9727" }
         ],

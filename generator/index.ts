@@ -246,6 +246,26 @@ async function main() {
   headersConf += `    add_header Link '<https://www.w3.org/TR/vocab-dcat/>; rel="type", <${BASE_URL}/catalog/dcat.ttl>; rel="alternate"; type="text/turtle", <${BASE_URL}/catalog/dcat.jsonld>; rel="alternate"; type="application/ld+json"' always;\n`;
   headersConf += `}\n\n`;
 
+  // Headers for Subsetting API (RT-P05)
+  const apiLinks = [
+    `<${BASE_URL}/id/dataset/arms-mbon>; rel="cite-as"`,
+    `<${BASE_URL}/api/openapi.json>; rel="service-desc"; type="application/json"`,
+    `<${BASE_URL}/api/docs/>; rel="service-doc"; type="text/html"`,
+    `<${BASE_URL}/id/service/marineinfo-api.ttl>; rel="service-meta"; type="text/turtle"`,
+    `<${BASE_URL}/.well-known/api-catalog>; rel="linkset"`
+  ];
+
+  headersConf += `location = /api/v1/observations {\n`;
+  headersConf += `    default_type application/json;\n`;
+  headersConf += `    add_header Link '${apiLinks.join(", ")}' always;\n`;
+  headersConf += `    try_files /api/v1/observations.json /api/v1/observations =404;\n`;
+  headersConf += `}\n\n`;
+
+  headersConf += `location = /api/v1/observations.json {\n`;
+  headersConf += `    default_type application/json;\n`;
+  headersConf += `    add_header Link '${apiLinks.join(", ")}' always;\n`;
+  headersConf += `}\n\n`;
+
   // Headers for Profiles Catalog
   headersConf += `location = /id/profiles {\n`;
   headersConf += `    default_type text/html;\n`;
