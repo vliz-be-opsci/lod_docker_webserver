@@ -27,9 +27,13 @@ import {
 import { getEntityTypeSlug, getEntityNameSlug, getEntityIdPath, getEntityHtmlPath } from "./types";
 import { generateMetroMapHtml } from "./metroMapGenerator";
 import { generateComplianceDocs } from "./complianceDocs";
+import { generateAuditHtml, generateComplianceJson } from "./auditPageRenderer";
+import { generateGappedSite } from "./gappedGenerator";
 
 const BASE_URL = process.env.BASE_URL || "http://localhost:8080";
+const BASE_URL_GAPPED = process.env.BASE_URL_GAPPED || "http://localhost:8081";
 const DIST_DIR = path.resolve(process.cwd(), "dist");
+const DIST_GAPPED_DIR = path.resolve(process.cwd(), "dist-gapped");
 
 function cleanDist() {
   if (fs.existsSync(DIST_DIR)) {
@@ -484,7 +488,19 @@ async function main() {
   console.log(`Generating Radical Transparency compliance audit documentation in docs/compliance/...`);
   generateComplianceDocs();
 
-  console.log(`✅ Generation completed successfully! All assets written to /dist.`);
+  // 13. Generate Interactive Audit Dashboard & Compliance JSON
+  console.log(`Generating interactive audit dashboard and compliance JSON API in /audit.html and /compliance.json...`);
+  fs.writeFileSync(path.join(DIST_DIR, "audit.html"), generateAuditHtml(BASE_URL, BASE_URL_GAPPED));
+  fs.writeFileSync(path.join(DIST_DIR, "compliance.json"), JSON.stringify(generateComplianceJson(BASE_URL, BASE_URL_GAPPED), null, 2));
+
+  // 14. Generate Gapped / Deficient Site (Port 8081) in dist-gapped/
+  console.log(`Generating simulated gapped repository site in dist-gapped/...`);
+  await generateGappedSite(DIST_GAPPED_DIR, BASE_URL_GAPPED);
+  // Also place audit dashboard and JSON in dist-gapped
+  fs.writeFileSync(path.join(DIST_GAPPED_DIR, "audit.html"), generateAuditHtml(BASE_URL, BASE_URL_GAPPED));
+  fs.writeFileSync(path.join(DIST_GAPPED_DIR, "compliance.json"), JSON.stringify(generateComplianceJson(BASE_URL, BASE_URL_GAPPED), null, 2));
+
+  console.log(`✅ Generation completed successfully! All assets written to /dist and /dist-gapped.`);
 }
 
 main().catch(err => {

@@ -1,9 +1,19 @@
 services:
-  web:
+  reference-web:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8080:80"
     restart: unless-stopped
-    container_name: lod-discovery-webserver
+    container_name: lod-reference-webserver
+
+  gapped-web:
+    build:
+      context: .
+      dockerfile: Dockerfile.gapped
+    ports:
+      - "8081:80"
+    restart: unless-stopped
+    container_name: lod-gapped-webserver
+

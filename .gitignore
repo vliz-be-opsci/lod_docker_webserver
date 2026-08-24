@@ -1,4 +1,5 @@
 /dist
+/dist-gapped
 /node_modules
 /.claude
 /.agents
