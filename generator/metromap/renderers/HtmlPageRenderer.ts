@@ -999,10 +999,17 @@ export class HtmlPageRenderer {
           },
           {
             uri: "/data/arms-mbon-rocrate.zip.linkset.json",
-            req: "Local Storage Sidecar: arms-mbon-rocrate.zip.linkset.json",
-            res: "Status: Valid Offline RFC 9264 Sidecar",
+            req: "GET /data/arms-mbon-rocrate.zip.linkset.json HTTP/1.1",
+            res: "HTTP/1.1 200 OK | Content-Type: application/linkset+json",
             pattern: "RT-P10 Detached Local Storage",
             reasoning: "Client preserves semantic provenance and profile binding locally without network access."
+          },
+          {
+            uri: "/data/arms-mbon-rocrate.zip.sha256",
+            req: "GET /data/arms-mbon-rocrate.zip.sha256 HTTP/1.1",
+            res: "HTTP/1.1 200 OK | Content-Type: text/plain",
+            pattern: "RT-P10 Integrity Checksum",
+            reasoning: "Cryptographic checksum verifies payload integrity during offline transfer and detached archiving."
           }
         ]
       },

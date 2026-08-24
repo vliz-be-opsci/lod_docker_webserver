@@ -134,15 +134,26 @@ export class DiscoveryCascadeEngine {
 
           // RT-P10 Sidecars for arms-mbon
           if (res.id === "resource-arms-mbon" && dist.downloadUrl.endsWith(".zip")) {
-            signals.push({
-              sourceUri: dist.downloadUrl,
-              targetUri: `${dist.downloadUrl}.linkset.json`,
-              relation: "offline-sidecar (RT-P10)",
-              category: "linkset",
-              label: "Offline Linkset Sidecar",
-              sublabel: "RT-P10 Detached Sidecar",
-              specIds: ["RFC_9264", "RFC_6906"]
-            });
+            signals.push(
+              {
+                sourceUri: dist.downloadUrl,
+                targetUri: `${dist.downloadUrl}.linkset.json`,
+                relation: "offline-sidecar (RT-P10)",
+                category: "linkset",
+                label: "Offline Linkset Sidecar",
+                sublabel: "RT-P10 Detached Sidecar",
+                specIds: ["RFC_9264", "RFC_6906"]
+              },
+              {
+                sourceUri: dist.downloadUrl,
+                targetUri: `${dist.downloadUrl}.sha256`,
+                relation: "offline-checksum (RT-P10)",
+                category: "distribution",
+                label: "SHA-256 Checksum Sidecar",
+                sublabel: "RT-P10 Integrity Checksum",
+                specIds: ["RFC_8574"]
+              }
+            );
           }
         }
       }

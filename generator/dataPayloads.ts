@@ -367,7 +367,8 @@ startxref
           ],
           describedby: [
             { href: `${baseUrl}/id/dataset/arms-mbon.ttl`, type: "text/turtle" },
-            { href: `${baseUrl}/id/dataset/arms-mbon.html`, type: "text/html" }
+            { href: `${baseUrl}/id/dataset/arms-mbon.html`, type: "text/html" },
+            { href: `${baseUrl}/data/arms-mbon-rocrate.zip.sha256`, type: "text/plain" }
           ],
           linkset: [
             { href: `${baseUrl}/id/dataset/arms-mbon.linkset.json`, type: "application/linkset+json" }
@@ -400,7 +401,8 @@ startxref
           ],
           describedby: [
             { href: `${baseUrl}/id/dataset/arms-mbon.ttl`, type: "text/turtle" },
-            { href: `${baseUrl}/id/dataset/arms-mbon.html`, type: "text/html" }
+            { href: `${baseUrl}/id/dataset/arms-mbon.html`, type: "text/html" },
+            { href: `${baseUrl}/data/arms-mbon-18s.csv.sha256`, type: "text/plain" }
           ],
           linkset: [
             { href: `${baseUrl}/id/dataset/arms-mbon.linkset.json`, type: "application/linkset+json" }
@@ -433,7 +435,8 @@ startxref
           ],
           describedby: [
             { href: `${baseUrl}/id/dataset/north-sea-sensors.ttl`, type: "text/turtle" },
-            { href: `${baseUrl}/id/dataset/north-sea-sensors.html`, type: "text/html" }
+            { href: `${baseUrl}/id/dataset/north-sea-sensors.html`, type: "text/html" },
+            { href: `${baseUrl}/data/north-sea-sensors-latest.csv.sha256`, type: "text/plain" }
           ],
           linkset: [
             { href: `${baseUrl}/id/dataset/north-sea-sensors.linkset.json`, type: "application/linkset+json" }
