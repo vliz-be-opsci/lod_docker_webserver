@@ -33,8 +33,9 @@ describe("Profiles System & RT-P02 Composition", () => {
 
     expect(linkset.linkset).toBeDefined();
     expect(linkset.linkset[0].anchor).toBe("http://localhost:8080/id/profile/marine-genomic-dataset-profile");
-    expect(linkset.linkset[0]["http://www.w3.org/1999/xhtml/vocab#item"]).toBeDefined();
-    expect(linkset.linkset[0]["http://www.w3.org/1999/xhtml/vocab#item"][0].href).toContain("/id/profile/schema-dataset-profile.html");
+    expect(linkset.linkset[0].self[0].href).toBe("http://localhost:8080/id/profile/marine-genomic-dataset-profile");
+    expect(linkset.linkset[0].item).toBeDefined();
+    expect(linkset.linkset[0].item[0].href).toBe("http://localhost:8080/id/profile/schema-dataset-profile");
   });
 
   it("renders profile catalog at /id/profiles and individual profile HTML", () => {

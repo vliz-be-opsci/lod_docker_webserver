@@ -1048,11 +1048,10 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
   <link rel="type" href="https://schema.org/Dataset">
-  <link rel="type" href="https://www.w3.org/TR/vocab-dcat/">
-  ${dataset.profileId ? `<link rel="type" href="/id/profile/${dataset.profileId}.html">` : ''}
+  ${dataset.profileId ? `<link rel="type" href="/id/profile/${dataset.profileId}">` : ''}
   <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
-  <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
-  <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
+  <link rel="alternate" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
+  <link rel="alternate" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
   <link rel="linkset" type="application/linkset+json" href="/id/${typeSlug}/${slug}.linkset.json">
 </head>
 <body>
@@ -1144,8 +1143,8 @@ export function renderInstitutePageHtml(institute: MarineEntity, baseUrl: string
   <link rel="stylesheet" href="/style.css">
   <link rel="type" href="https://schema.org/Organization">
   <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
-  <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
-  <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
+  <link rel="alternate" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
+  <link rel="alternate" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
   <link rel="linkset" type="application/linkset+json" href="/id/${typeSlug}/${slug}.linkset.json">
 </head>
 <body>
@@ -1242,8 +1241,8 @@ export function renderPublicationPageHtml(pub: MarineEntity, baseUrl: string): s
   <link rel="stylesheet" href="/style.css">
   <link rel="type" href="https://schema.org/ScholarlyArticle">
   <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
-  <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
-  <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
+  <link rel="alternate" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
+  <link rel="alternate" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
   <link rel="linkset" type="application/linkset+json" href="/id/${typeSlug}/${slug}.linkset.json">
   <link rel="alternate" type="application/pdf" href="/data/ro-crate-paper.pdf">
 </head>
@@ -1353,8 +1352,8 @@ export function renderProjectPageHtml(proj: MarineEntity, baseUrl: string): stri
   <link rel="stylesheet" href="/style.css">
   <link rel="type" href="https://schema.org/Project">
   <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
-  <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
-  <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
+  <link rel="alternate" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
+  <link rel="alternate" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
   <link rel="linkset" type="application/linkset+json" href="/id/${typeSlug}/${slug}.linkset.json">
 </head>
 <body>
@@ -1431,8 +1430,8 @@ export function renderPersonPageHtml(person: MarineEntity, baseUrl: string): str
   <link rel="stylesheet" href="/style.css">
   <link rel="type" href="https://schema.org/Person">
   <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
-  <link rel="describedby" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
-  <link rel="describedby" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
+  <link rel="alternate" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
+  <link rel="alternate" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
   <link rel="linkset" type="application/linkset+json" href="/id/${typeSlug}/${slug}.linkset.json">
 </head>
 <body>

@@ -7,10 +7,9 @@ export function generateProfileLinkset(profile: Profile, baseUrl: string) {
   if (profile.composedProfiles) {
     for (const subId of profile.composedProfiles) {
       const subProfile = getProfileById(subId);
-      const targetUri = subProfile ? `${baseUrl}/id/profile/${subProfile.id}.html` : `${baseUrl}/id/profile/${subId}`;
+      const targetUri = `${baseUrl}/id/profile/${subId}`;
       items.push({
         href: targetUri,
-        type: "text/html",
         title: subProfile ? subProfile.title : subId
       });
     }
@@ -20,22 +19,25 @@ export function generateProfileLinkset(profile: Profile, baseUrl: string) {
     linkset: [
       {
         anchor: profileUri,
-        "http://www.w3.org/1999/xhtml/vocab#describedby": [
-          { href: `${baseUrl}/id/profile/${profile.id}.ttl`, type: "text/turtle" },
+        self: [
+          { href: profileUri }
+        ],
+        type: [
+          { href: "http://www.w3.org/ns/dx/prof/Profile", title: "W3C Profiles Vocabulary" }
+        ],
+        describedby: [
+          { href: `${baseUrl}/id/profile/${profile.id}.ttl`, type: "text/turtle" }
+        ],
+        alternate: [
+          { href: `${baseUrl}/id/profile/${profile.id}.html`, type: "text/html" },
           { href: `${baseUrl}/id/profile/${profile.id}.jsonld`, type: "application/ld+json" }
-        ],
-        "http://www.w3.org/1999/xhtml/vocab#profile": [
-          { href: "https://www.w3.org/TR/dx-prof/", title: "W3C Profiles Vocabulary" }
-        ],
-        "http://www.w3.org/1999/xhtml/vocab#alternate": [
-          { href: `${baseUrl}/id/profile/${profile.id}.html`, type: "text/html" }
         ]
       }
     ]
   };
 
   if (items.length > 0) {
-    linksetObject.linkset[0]["http://www.w3.org/1999/xhtml/vocab#item"] = items;
+    linksetObject.linkset[0].item = items;
   }
 
   return linksetObject;
@@ -56,7 +58,7 @@ export function generateProfileTurtle(profile: Profile, baseUrl: string): string
   ttl += `    prof:isProfileOf <${profile.conformsToStandard}> ;\n`;
 
   if (profile.composedProfiles && profile.composedProfiles.length > 0) {
-    const subUris = profile.composedProfiles.map(s => `<${baseUrl}/id/profile/${s}.html>`).join(",\n        ");
+    const subUris = profile.composedProfiles.map(s => `<${baseUrl}/id/profile/${s}>`).join(",\n        ");
     ttl += `    dcterms:hasPart ${subUris} ;\n`;
   }
 
@@ -64,7 +66,8 @@ export function generateProfileTurtle(profile: Profile, baseUrl: string): string
   ttl += `        a prof:ResourceDescriptor ;\n`;
   ttl += `        rdfs:label "SHACL Validation Shape" ;\n`;
   ttl += `        prof:hasRole <http://www.w3.org/ns/dx/prof/role/validation> ;\n`;
-  ttl += `        prof:hasArtifact <${baseUrl}/id/profile/${profile.id}.ttl#shape> ;\n`;
+  ttl += `        prof:hasArtifact <${baseUrl}/id/profile/${profile.id}.ttl> ;\n`;
+  ttl += `        dcterms:format "text/turtle"\n`;
   ttl += `    ] .\n\n`;
 
   ttl += `# --- SHACL Validation Shape ---\n`;
@@ -92,7 +95,7 @@ export function generateProfileJsonLd(profile: Profile, baseUrl: string): string
 
   if (profile.composedProfiles && profile.composedProfiles.length > 0) {
     jsonld["dcterms:hasPart"] = profile.composedProfiles.map(s => ({
-      "@id": `${baseUrl}/id/profile/${s}.html`
+      "@id": `${baseUrl}/id/profile/${s}`
     }));
   }
 

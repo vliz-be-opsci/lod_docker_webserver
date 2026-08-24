@@ -52,6 +52,11 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
 
     const headersContent = fs.readFileSync(headersPath, "utf-8");
     expect(headersContent).toContain("location = /id/dataset/arms-mbon.html");
+    expect(headersContent).toContain("location = /id/dataset/arms-mbon.ttl");
+    expect(headersContent).toContain("location = /id/dataset/arms-mbon.jsonld");
+    expect(headersContent).toContain("location = /id/dataset/arms-mbon.rdf");
+    expect(headersContent).toContain("location = /id/dataset/arms-mbon.linkset.json");
+    expect(headersContent).toContain('rel="describes"');
     expect(headersContent).toContain('rel="type"');
     expect(headersContent).toContain('rel="describedby"; type="text/turtle"');
     expect(headersContent).toContain('rel="linkset"');

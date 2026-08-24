@@ -165,7 +165,7 @@ async function main() {
   // Root URL
   sitemapXml += `  <url>\n    <loc>${BASE_URL}/</loc>\n`;
   sitemapXml += `    <rs:ln rel="api-catalog" href="${BASE_URL}/.well-known/api-catalog" type="application/linkset+json" />\n`;
-  sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/catalog/dcat.ttl" type="text/turtle" />\n`;
+  sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}/catalog/dcat.ttl" type="text/turtle" />\n`;
   sitemapXml += `  </url>\n`;
 
   // Metro Map URL
@@ -175,15 +175,16 @@ async function main() {
 
   // Profiles Registry & Profiles
   sitemapXml += `  <url>\n    <loc>${BASE_URL}/id/profiles</loc>\n`;
-  sitemapXml += `    <rs:ln rel="type" href="https://www.w3.org/TR/dx-prof/" />\n`;
+  sitemapXml += `    <rs:ln rel="type" href="http://www.w3.org/ns/dx/prof/Profile" />\n`;
   sitemapXml += `  </url>\n`;
 
   for (const prof of PROFILES) {
     sitemapXml += `  <url>\n    <loc>${BASE_URL}/id/profile/${prof.id}</loc>\n`;
+    sitemapXml += `    <rs:ln rel="type" href="http://www.w3.org/ns/dx/prof/Profile" />\n`;
     sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}/id/profile/${prof.id}.html" type="text/html" />\n`;
+    sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}/id/profile/${prof.id}.ttl" type="text/turtle" />\n`;
+    sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}/id/profile/${prof.id}.jsonld" type="application/ld+json" />\n`;
     sitemapXml += `    <rs:ln rel="linkset" href="${BASE_URL}/id/profile/${prof.id}.linkset.json" type="application/linkset+json" />\n`;
-    sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/id/profile/${prof.id}.ttl" type="text/turtle" />\n`;
-    sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/id/profile/${prof.id}.jsonld" type="application/ld+json" />\n`;
     sitemapXml += `  </url>\n`;
   }
 
@@ -194,18 +195,24 @@ async function main() {
   sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}/catalog/dcat.jsonld" type="application/ld+json" />\n`;
   sitemapXml += `  </url>\n`;
 
-  // Each entity URL (Clean Base PID, with .html as alternate)
+  // Each entity URL (Clean Base PID, with .html and all RDF variants as alternate)
   for (const res of RESOURCES) {
     const htmlPath = getEntityHtmlPath(res);
     const typeSlug = getEntityTypeSlug(res);
     const nameSlug = getEntityNameSlug(res);
-    const typeUri = res.profileId ? `${BASE_URL}/id/profile/${res.profileId}.html` : (res.alternateProfiles?.[0] || (res.type === "Dataset" ? "https://schema.org/Dataset" : (res.type === "Organization" ? "https://schema.org/Organization" : (res.type === "ScholarlyArticle" ? "https://schema.org/ScholarlyArticle" : (res.type === "Person" ? "https://schema.org/Person" : `https://schema.org/${res.type}`)))));
     sitemapXml += `  <url>\n    <loc>${BASE_URL}/id/${typeSlug}/${nameSlug}</loc>\n`;
-    sitemapXml += `    <rs:ln rel="type" href="${typeUri}" />\n`;
+    if (res.profileId) {
+      sitemapXml += `    <rs:ln rel="type" href="${BASE_URL}/id/profile/${res.profileId}" />\n`;
+    }
+    if (res.type === "Dataset") {
+      sitemapXml += `    <rs:ln rel="type" href="https://schema.org/Dataset" />\n`;
+    } else {
+      sitemapXml += `    <rs:ln rel="type" href="https://schema.org/${res.type}" />\n`;
+    }
     sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}${htmlPath}" type="text/html" />\n`;
-    sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.ttl" type="text/turtle" />\n`;
-    sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.jsonld" type="application/ld+json" />\n`;
-    sitemapXml += `    <rs:ln rel="describedby" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.rdf" type="application/rdf+xml" />\n`;
+    sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.ttl" type="text/turtle" />\n`;
+    sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.jsonld" type="application/ld+json" />\n`;
+    sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.rdf" type="application/rdf+xml" />\n`;
     sitemapXml += `    <rs:ln rel="linkset" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json" type="application/linkset+json" />\n`;
     sitemapXml += `  </url>\n`;
   }
@@ -245,53 +252,102 @@ async function main() {
   // Headers for Profiles Catalog
   headersConf += `location = /id/profiles {\n`;
   headersConf += `    default_type text/html;\n`;
-  headersConf += `    add_header Link '<https://www.w3.org/TR/dx-prof/>; rel="type"' always;\n`;
+  headersConf += `    add_header Link '<http://www.w3.org/ns/dx/prof/Profile>; rel="type"' always;\n`;
   headersConf += `    try_files /id/profiles/index.html =404;\n`;
   headersConf += `}\n\n`;
 
   headersConf += `location = /id/profiles/ {\n`;
   headersConf += `    default_type text/html;\n`;
-  headersConf += `    add_header Link '<https://www.w3.org/TR/dx-prof/>; rel="type"' always;\n`;
+  headersConf += `    add_header Link '<http://www.w3.org/ns/dx/prof/Profile>; rel="type"' always;\n`;
   headersConf += `    try_files /id/profiles/index.html =404;\n`;
   headersConf += `}\n\n`;
 
   // Headers for Profiles
   for (const prof of PROFILES) {
-    const profileLinks = [
+    const profileHtmlLinks = [
+      `<http://www.w3.org/ns/dx/prof/Profile>; rel="type"`,
       `<${BASE_URL}/id/profile/${prof.id}.ttl>; rel="describedby"; type="text/turtle"`,
-      `<${BASE_URL}/id/profile/${prof.id}.jsonld>; rel="describedby"; type="application/ld+json"`,
       `<${BASE_URL}/id/profile/${prof.id}.linkset.json>; rel="linkset"; type="application/linkset+json"`,
       `<${BASE_URL}/id/profiles>; rel="collection"`
     ];
 
     if (prof.composedProfiles && prof.composedProfiles.length > 0) {
       for (const subId of prof.composedProfiles) {
-        profileLinks.push(`<${BASE_URL}/id/profile/${subId}.html>; rel="item"`);
+        profileHtmlLinks.push(`<${BASE_URL}/id/profile/${subId}>; rel="item"`);
       }
     }
 
     headersConf += `location = /id/profile/${prof.id}.html {\n`;
-    headersConf += `    add_header Link '${profileLinks.join(", ")}' always;\n`;
+    headersConf += `    add_header Link '${profileHtmlLinks.join(", ")}' always;\n`;
+    headersConf += `}\n\n`;
+
+    const profileRdfLinks = [
+      `<${BASE_URL}/id/profile/${prof.id}>; rel="describes"`,
+      `<http://www.w3.org/ns/dx/prof/Profile>; rel="type"`,
+      `<${BASE_URL}/id/profile/${prof.id}.linkset.json>; rel="linkset"; type="application/linkset+json"`
+    ];
+
+    headersConf += `location = /id/profile/${prof.id}.ttl {\n`;
+    headersConf += `    add_header Link '${profileRdfLinks.join(", ")}' always;\n`;
+    headersConf += `}\n\n`;
+
+    headersConf += `location = /id/profile/${prof.id}.jsonld {\n`;
+    headersConf += `    add_header Link '${profileRdfLinks.join(", ")}' always;\n`;
+    headersConf += `}\n\n`;
+
+    headersConf += `location = /id/profile/${prof.id}.linkset.json {\n`;
+    headersConf += `    add_header Link '<${BASE_URL}/id/profile/${prof.id}>; rel="describes", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
     headersConf += `}\n\n`;
   }
 
-  // Headers for each entity page
+  // Headers for each entity page and its format representations
   for (const res of RESOURCES) {
     const htmlPath = getEntityHtmlPath(res);
     const typeSlug = getEntityTypeSlug(res);
     const nameSlug = getEntityNameSlug(res);
-    const typeUri = res.profileId ? `${BASE_URL}/id/profile/${res.profileId}.html` : (res.alternateProfiles?.[0] || (res.type === "Dataset" ? "https://schema.org/Dataset" : (res.type === "Organization" ? "https://schema.org/Organization" : (res.type === "ScholarlyArticle" ? "https://schema.org/ScholarlyArticle" : (res.type === "Person" ? "https://schema.org/Person" : `https://schema.org/${res.type}`)))));
-    const linkHeaders: string[] = [
-      `<${typeUri}>; rel="type"`,
+    const entityPid = `${BASE_URL}/id/${typeSlug}/${nameSlug}`;
+    const profileUri = res.profileId ? `${BASE_URL}/id/profile/${res.profileId}` : undefined;
+    const typeUri = res.type === "Dataset" ? "https://schema.org/Dataset" : `https://schema.org/${res.type}`;
+
+    const profileHeaders = profileUri ? [`<${profileUri}>; rel="type"`] : [];
+    const typeHeader = `<${typeUri}>; rel="type"`;
+
+    // 1. Headers for .html landing page
+    const htmlLinks: string[] = [
+      ...profileHeaders,
+      typeHeader,
       `<${BASE_URL}/id/${typeSlug}/${nameSlug}.ttl>; rel="describedby"; type="text/turtle"`,
-      `<${BASE_URL}/id/${typeSlug}/${nameSlug}.jsonld>; rel="describedby"; type="application/ld+json"`,
-      `<${BASE_URL}/id/${typeSlug}/${nameSlug}.rdf>; rel="describedby"; type="application/rdf+xml"`,
       `<${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json>; rel="linkset"; type="application/linkset+json"`,
       `<${BASE_URL}/catalog/>; rel="collection"`
     ];
 
     headersConf += `location = ${htmlPath} {\n`;
-    headersConf += `    add_header Link '${linkHeaders.join(", ")}' always;\n`;
+    headersConf += `    add_header Link '${htmlLinks.join(", ")}' always;\n`;
+    headersConf += `}\n\n`;
+
+    // 2. Headers for RDF representations (.ttl, .jsonld, .rdf)
+    const rdfLinks: string[] = [
+      `<${entityPid}>; rel="describes"`,
+      ...profileHeaders,
+      typeHeader,
+      `<${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json>; rel="linkset"; type="application/linkset+json"`
+    ];
+
+    headersConf += `location = /id/${typeSlug}/${nameSlug}.ttl {\n`;
+    headersConf += `    add_header Link '${rdfLinks.join(", ")}' always;\n`;
+    headersConf += `}\n\n`;
+
+    headersConf += `location = /id/${typeSlug}/${nameSlug}.jsonld {\n`;
+    headersConf += `    add_header Link '${rdfLinks.join(", ")}' always;\n`;
+    headersConf += `}\n\n`;
+
+    headersConf += `location = /id/${typeSlug}/${nameSlug}.rdf {\n`;
+    headersConf += `    add_header Link '${rdfLinks.join(", ")}' always;\n`;
+    headersConf += `}\n\n`;
+
+    // 3. Headers for Linkset (.linkset.json)
+    headersConf += `location = /id/${typeSlug}/${nameSlug}.linkset.json {\n`;
+    headersConf += `    add_header Link '<${entityPid}>; rel="describes", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
     headersConf += `}\n\n`;
   }
 

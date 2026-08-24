@@ -7,52 +7,31 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
   const nameSlug = getEntityNameSlug(resource);
   const htmlPath = getEntityHtmlPath(resource);
 
-  const profiles = resource.alternateProfiles || [
-    resource.type === "Dataset" ? "https://schema.org/Dataset" :
-    resource.type === "Organization" ? "https://schema.org/Organization" :
-    resource.type === "ScholarlyArticle" ? "https://schema.org/ScholarlyArticle" :
-    resource.type === "Person" ? "https://schema.org/Person" :
-    resource.type === "Project" ? "https://schema.org/Project" :
-    "https://schema.org/Thing"
-  ];
-
+  const typeEntries: { href: string }[] = [];
   if (resource.profileId) {
-    profiles.unshift(`${baseUrl}/id/profile/${resource.profileId}.html`);
+    typeEntries.push({ href: `${baseUrl}/id/profile/${resource.profileId}` });
+  }
+  if (resource.type === "Dataset") {
+    typeEntries.push({ href: "https://schema.org/Dataset" });
+  } else {
+    typeEntries.push({ href: `https://schema.org/${resource.type}` });
   }
 
   const linkObj: any = {
     anchor: resourceUri,
-    type: profiles.map(p => ({ href: p })),
+    self: [
+      { href: resource.sourceUri || resourceUri }
+    ],
+    type: typeEntries,
     describedby: [
-      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`, type: "text/turtle" },
-      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`, type: "application/ld+json" },
-      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`, type: "application/rdf+xml" }
+      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`, type: "text/turtle" }
     ],
     alternate: [
-      { href: `${baseUrl}${htmlPath}`, type: "text/html" }
-    ],
-    collection: [
-      { href: `${baseUrl}/catalog/`, type: "text/html" }
+      { href: `${baseUrl}${htmlPath}`, type: "text/html" },
+      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`, type: "application/ld+json" },
+      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`, type: "application/rdf+xml" }
     ]
   };
-
-  if (resource.creators && resource.creators.length > 0) {
-    linkObj.author = resource.creators.map(c => ({
-      href: expandUri(c, baseUrl)
-    }));
-  }
-
-  if (resource.publisher) {
-    linkObj.publisher = [
-      { href: expandUri(resource.publisher, baseUrl) }
-    ];
-  }
-
-  if (resource.sourceUri) {
-    linkObj["canonical"] = [
-      { href: resource.sourceUri }
-    ];
-  }
 
   return {
     linkset: [linkObj]
