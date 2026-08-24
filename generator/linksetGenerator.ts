@@ -5,37 +5,32 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
   const resourceUri = expandUri(resource.id, baseUrl);
   const typeSlug = getEntityTypeSlug(resource);
   const nameSlug = getEntityNameSlug(resource);
-  const htmlPath = getEntityHtmlPath(resource);
 
   const typeUri = resource.type === "Dataset" ? "https://schema.org/Dataset" : `https://schema.org/${resource.type}`;
 
-  const linkObj: any = {
+  const primaryObj: any = {
     anchor: resourceUri,
-    self: [
-      { href: resource.sourceUri || resourceUri }
-    ],
-    type: [
-      { href: typeUri }
-    ],
-    describedby: [
-      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`, type: "text/turtle" }
-    ],
     alternate: [
-      { href: `${baseUrl}${htmlPath}`, type: "text/html" },
+      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`, type: "text/turtle; charset=utf-8" },
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`, type: "application/ld+json" },
+      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.html`, type: "text/html; charset=utf-8" },
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`, type: "application/rdf+xml" }
     ]
   };
 
+  if (resource.type) {
+    primaryObj.type = [{ href: typeUri }];
+  }
+
   if (resource.profileId) {
-    linkObj.profile = [
+    primaryObj.profile = [
       { href: `${baseUrl}/id/profile/${resource.profileId}` }
     ];
   }
 
   // Showcase RT-P08 (Large Linkset Split-Up) on arms-mbon
   if (nameSlug === "arms-mbon") {
-    linkObj.item = [
+    primaryObj.item = [
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.conneg.linkset.json`, title: "Content Negotiation Variants Linkset" },
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.profiles.linkset.json`, title: "Profiles & Conformance Linkset" },
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.provenance.linkset.json`, title: "Provenance & Attribution Linkset" }
@@ -43,7 +38,25 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
   }
 
   return {
-    linkset: [linkObj]
+    linkset: [
+      primaryObj,
+      {
+        anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`,
+        self: [{ href: resourceUri }]
+      },
+      {
+        anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`,
+        self: [{ href: resourceUri }]
+      },
+      {
+        anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.html`,
+        self: [{ href: resourceUri }]
+      },
+      {
+        anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`,
+        self: [{ href: resourceUri }]
+      }
+    ]
   };
 }
 
@@ -51,7 +64,6 @@ export function generateSplitLinksets(resource: MarineEntity, baseUrl: string): 
   const resourceUri = expandUri(resource.id, baseUrl);
   const typeSlug = getEntityTypeSlug(resource);
   const nameSlug = getEntityNameSlug(resource);
-  const htmlPath = getEntityHtmlPath(resource);
   const masterLinksetUri = `${baseUrl}/id/${typeSlug}/${nameSlug}.linkset.json`;
 
   return {
@@ -61,12 +73,28 @@ export function generateSplitLinksets(resource: MarineEntity, baseUrl: string): 
           anchor: resourceUri,
           self: [{ href: `${baseUrl}/id/${typeSlug}/${nameSlug}.conneg.linkset.json` }],
           collection: [{ href: masterLinksetUri }],
-          describedby: [{ href: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`, type: "text/turtle" }],
           alternate: [
-            { href: `${baseUrl}${htmlPath}`, type: "text/html" },
+            { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`, type: "text/turtle; charset=utf-8" },
             { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`, type: "application/ld+json" },
+            { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.html`, type: "text/html; charset=utf-8" },
             { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`, type: "application/rdf+xml" }
           ]
+        },
+        {
+          anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`,
+          self: [{ href: resourceUri }]
+        },
+        {
+          anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`,
+          self: [{ href: resourceUri }]
+        },
+        {
+          anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.html`,
+          self: [{ href: resourceUri }]
+        },
+        {
+          anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`,
+          self: [{ href: resourceUri }]
         }
       ]
     },

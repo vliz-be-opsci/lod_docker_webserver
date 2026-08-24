@@ -33,12 +33,15 @@ describe("RDF Serialization & Linkset Generation", () => {
     expect(jsonld["dcterms:conformsTo"]["@id"]).toBe("http://localhost:8080/id/profile/marine-genomic-dataset-profile");
   });
 
-  it("generates RFC 9264 Linkset with co-located siblings in /id/dataset/ and profile relation", () => {
+  it("generates RFC 9264 Linkset with RT-P03 conneg menu and reverse self bindings", () => {
     const linkset = generateLinkset(dataset, "http://localhost:8080") as any;
     expect(linkset.linkset[0].anchor).toBe("http://localhost:8080/id/dataset/arms-mbon");
     expect(linkset.linkset[0].type[0].href).toBe("https://schema.org/Dataset");
     expect(linkset.linkset[0].profile[0].href).toBe("http://localhost:8080/id/profile/marine-genomic-dataset-profile");
-    expect(linkset.linkset[0].describedby.some((d: any) => d.href === "http://localhost:8080/id/dataset/arms-mbon.ttl")).toBe(true);
+    expect(linkset.linkset[0].alternate.some((a: any) => a.href === "http://localhost:8080/id/dataset/arms-mbon.ttl" && a.type.includes("text/turtle"))).toBe(true);
     expect(linkset.linkset[0].alternate.some((a: any) => a.href === "http://localhost:8080/id/dataset/arms-mbon.html")).toBe(true);
+    expect(linkset.linkset.some((entry: any) => entry.anchor === "http://localhost:8080/id/dataset/arms-mbon.ttl" && entry.self[0].href === "http://localhost:8080/id/dataset/arms-mbon")).toBe(true);
+    expect(linkset.linkset.some((entry: any) => entry.anchor === "http://localhost:8080/id/dataset/arms-mbon.jsonld" && entry.self[0].href === "http://localhost:8080/id/dataset/arms-mbon")).toBe(true);
+    expect(linkset.linkset.some((entry: any) => entry.anchor === "http://localhost:8080/id/dataset/arms-mbon.html" && entry.self[0].href === "http://localhost:8080/id/dataset/arms-mbon")).toBe(true);
   });
 });

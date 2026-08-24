@@ -15,32 +15,39 @@ export function generateProfileLinkset(profile: Profile, baseUrl: string) {
     }
   }
 
-  const linksetObject: any = {
-    linkset: [
-      {
-        anchor: profileUri,
-        self: [
-          { href: profileUri }
-        ],
-        type: [
-          { href: "http://www.w3.org/ns/dx/prof/Profile", title: "W3C Profiles Vocabulary" }
-        ],
-        describedby: [
-          { href: `${baseUrl}/id/profile/${profile.id}.ttl`, type: "text/turtle" }
-        ],
-        alternate: [
-          { href: `${baseUrl}/id/profile/${profile.id}.html`, type: "text/html" },
-          { href: `${baseUrl}/id/profile/${profile.id}.jsonld`, type: "application/ld+json" }
-        ]
-      }
+  const primaryObj: any = {
+    anchor: profileUri,
+    type: [
+      { href: "http://www.w3.org/ns/dx/prof/Profile", title: "W3C Profiles Vocabulary" }
+    ],
+    alternate: [
+      { href: `${baseUrl}/id/profile/${profile.id}.ttl`, type: "text/turtle; charset=utf-8" },
+      { href: `${baseUrl}/id/profile/${profile.id}.jsonld`, type: "application/ld+json" },
+      { href: `${baseUrl}/id/profile/${profile.id}.html`, type: "text/html; charset=utf-8" }
     ]
   };
 
   if (items.length > 0) {
-    linksetObject.linkset[0]["http://schema.org/hasPart"] = items;
+    primaryObj["http://schema.org/hasPart"] = items;
   }
 
-  return linksetObject;
+  return {
+    linkset: [
+      primaryObj,
+      {
+        anchor: `${baseUrl}/id/profile/${profile.id}.ttl`,
+        self: [{ href: profileUri }]
+      },
+      {
+        anchor: `${baseUrl}/id/profile/${profile.id}.jsonld`,
+        self: [{ href: profileUri }]
+      },
+      {
+        anchor: `${baseUrl}/id/profile/${profile.id}.html`,
+        self: [{ href: profileUri }]
+      }
+    ]
+  };
 }
 
 export function generateProfileTurtle(profile: Profile, baseUrl: string): string {

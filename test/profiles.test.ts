@@ -33,7 +33,7 @@ describe("Profiles System & RT-P02 Composition", () => {
 
     expect(linkset.linkset).toBeDefined();
     expect(linkset.linkset[0].anchor).toBe("http://localhost:8080/id/profile/marine-genomic-dataset-profile");
-    expect(linkset.linkset[0].self[0].href).toBe("http://localhost:8080/id/profile/marine-genomic-dataset-profile");
+    expect(linkset.linkset.some((e: any) => e.anchor.endsWith(".ttl") && e.self[0].href.endsWith("marine-genomic-dataset-profile"))).toBe(true);
     expect(linkset.linkset[0]["http://schema.org/hasPart"]).toBeDefined();
     expect(linkset.linkset[0]["http://schema.org/hasPart"][0].href).toBe("http://localhost:8080/id/profile/schema-dataset-profile");
   });
