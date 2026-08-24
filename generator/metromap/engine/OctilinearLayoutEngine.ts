@@ -11,38 +11,133 @@ export interface PatternBoundingBox {
   enclosedNodes: MetroNode[];
 }
 
-export class OctilinearLayoutEngine {
-  private laneXCoordinates = [120, 420, 720, 1000, 1280, 1560];
+export interface CorridorBoundingBox {
+  layer: 1 | 2 | 3 | 4;
+  name: string;
+  title: string;
+  subtitle: string;
+  themeColor: string;
+  bgColor: string;
+  borderColor: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  patterns: string[];
+}
 
-  public computeLayout(graph: MetroGraph): void {
-    // 1. Assign semantic lanes
-    const laneCounters = [0, 0, 0, 0, 0, 0];
-    const ySpacing = 85;
-    const yOffset = 140;
+export class OctilinearLayoutEngine {
+  public static readonly CORRIDOR_DEFINITIONS: Record<1 | 2 | 3 | 4, {
+    name: string;
+    title: string;
+    subtitle: string;
+    themeColor: string;
+    bgColor: string;
+    borderColor: string;
+    yStart: number;
+    height: number;
+    patterns: string[];
+  }> = {
+    1: {
+      name: "LAYER 1: HOSTWIDE DISCOVERY & CATALOG ASSISTANCE",
+      title: "Discovery & Catalog Gateway",
+      subtitle: "Domain Onboarding, Sitemap Indexing, W3C DCAT-3 & RFC 9727 API Catalogs",
+      themeColor: "#0284c7",
+      bgColor: "#f0f9ff",
+      borderColor: "#bae6fd",
+      yStart: 60,
+      height: 280,
+      patterns: ["RT_P06", "RT_P07"]
+    },
+    2: {
+      name: "LAYER 2: CONTENT NEGOTIATION & PID 303 HUBS",
+      title: "Semantic Content Negotiation (Conneg)",
+      subtitle: "Base Persistent Identifiers (PIDs), 303 Redirects, HTML Landing Pages & RDF Graphs (Turtle, JSON-LD, RDF/XML)",
+      themeColor: "#ea580c",
+      bgColor: "#fff7ed",
+      borderColor: "#fed7aa",
+      yStart: 380,
+      height: 310,
+      patterns: ["RT_P03"]
+    },
+    3: {
+      name: "LAYER 3: PROFILES CONFORMITY & COMPOSITION HIERARCHY",
+      title: "Profile Conformance & Composition",
+      subtitle: "W3C DX-PROF Declarations (rel=\"profile\") & Recursive Compound Profiles (rel=\"http://schema.org/hasPart\")",
+      themeColor: "#6366f1",
+      bgColor: "#eef2ff",
+      borderColor: "#c7d2fe",
+      yStart: 730,
+      height: 290,
+      patterns: ["RT_P01", "RT_P02"]
+    },
+    4: {
+      name: "LAYER 4: DIRECT DATA PAYLOADS, SUBSETTING APIS & OFFLINE SIDECARS",
+      title: "Machine Data Payloads & Sidecars",
+      subtitle: "No-Landing Direct Binary Downloads, RFC 9727 Subsetting API, Large Linkset Fragments & Offline Storage Sidecars",
+      themeColor: "#16a34a",
+      bgColor: "#f0fdf4",
+      borderColor: "#bbf7d0",
+      yStart: 1060,
+      height: 420,
+      patterns: ["RT_P04", "RT_P05", "RT_P08", "RT_P10"]
+    }
+  };
+
+  public computeLayout(graph: MetroGraph, canvasWidth: number = 1680): void {
+    // 1. Group nodes by layer (1..4)
+    const layerNodes: Record<1 | 2 | 3 | 4, MetroNode[]> = {
+      1: [],
+      2: [],
+      3: [],
+      4: []
+    };
 
     for (const node of graph.nodes) {
-      let laneIndex = 1;
-      if (node.category === "domain" || node.id.includes("root") || node.id.includes("robots") || node.id.includes("sitemap")) {
-        laneIndex = 0;
-      } else if (node.id.includes("pid") || (node.uri.startsWith("/id/") && !node.uri.includes(".")) || node.uri.includes("/resource/")) {
-        laneIndex = 1;
-      } else if ((node.uri.endsWith(".html") && node.uri.includes("/id/")) || node.uri.includes("/datasets/") || node.uri.includes("/institutes/") || node.uri.includes("/publications/") || node.uri.includes("/projects/")) {
-        laneIndex = 2;
-      } else if (node.category === "profile" || node.uri.includes("/profiles/") || node.uri.includes("/id/profile")) {
-        laneIndex = 3;
-      } else if (node.category === "linkset" || node.uri.includes(".linkset.json") || node.uri.includes("/linksets/")) {
-        laneIndex = 4;
-      } else if (node.category === "distribution" || node.category === "api" || node.uri.includes("/data/") || node.uri.includes("/api/")) {
-        laneIndex = 5;
-      }
-
-      node.lane = laneIndex;
-      node.sublane = laneCounters[laneIndex]++;
-      node.x = this.laneXCoordinates[laneIndex];
-      node.y = yOffset + node.sublane * ySpacing;
+      layerNodes[node.layer].push(node);
     }
 
-    // 2. Compute 90°/45° octilinear path routes for tracks
+    // 2. Position nodes within Layer 1 (Discovery)
+    const l1Nodes = layerNodes[1];
+    for (let i = 0; i < l1Nodes.length; i++) {
+      const node = l1Nodes[i];
+      const col = i % 4;
+      const row = Math.floor(i / 4);
+      node.x = 100 + col * 380;
+      node.y = 120 + row * 90;
+    }
+
+    // 3. Position nodes within Layer 2 (Conneg & 303 Hubs)
+    const l2Nodes = layerNodes[2];
+    for (let i = 0; i < l2Nodes.length; i++) {
+      const node = l2Nodes[i];
+      const col = i % 4;
+      const row = Math.floor(i / 4);
+      node.x = 100 + col * 380;
+      node.y = 440 + row * 100;
+    }
+
+    // 4. Position nodes within Layer 3 (Profiles)
+    const l3Nodes = layerNodes[3];
+    for (let i = 0; i < l3Nodes.length; i++) {
+      const node = l3Nodes[i];
+      const col = i % 4;
+      const row = Math.floor(i / 4);
+      node.x = 100 + col * 380;
+      node.y = 790 + row * 95;
+    }
+
+    // 5. Position nodes within Layer 4 (Data Payloads & Sidecars)
+    const l4Nodes = layerNodes[4];
+    for (let i = 0; i < l4Nodes.length; i++) {
+      const node = l4Nodes[i];
+      const col = i % 4;
+      const row = Math.floor(i / 4);
+      node.x = 100 + col * 380;
+      node.y = 1120 + row * 95;
+    }
+
+    // 6. Compute 90°/45° smooth octilinear path routes for tracks
     for (const track of graph.tracks) {
       const sx = track.source.x;
       const sy = track.source.y;
@@ -50,27 +145,46 @@ export class OctilinearLayoutEngine {
       const ty = track.target.y;
 
       if (sx === tx) {
-        // Vertical trunk line
         track.pathPoints = [{ x: sx, y: sy }, { x: tx, y: ty }];
       } else if (sy === ty) {
-        // Direct horizontal line
         track.pathPoints = [{ x: sx, y: sy }, { x: tx, y: ty }];
       } else {
-        // 45° / 90° metro transition
-        const midX = sx + (tx - sx) * 0.45;
+        const midY = sy + (ty - sy) * 0.5;
         track.pathPoints = [
           { x: sx, y: sy },
-          { x: midX, y: sy },
-          { x: midX + 35, y: ty },
+          { x: sx, y: midY },
+          { x: tx, y: midY },
           { x: tx, y: ty }
         ];
       }
     }
   }
 
+  public computeCorridorBounds(canvasWidth: number = 1680): CorridorBoundingBox[] {
+    const corridors: CorridorBoundingBox[] = [];
+    for (const layerKey of [1, 2, 3, 4] as const) {
+      const def = OctilinearLayoutEngine.CORRIDOR_DEFINITIONS[layerKey];
+      corridors.push({
+        layer: layerKey,
+        name: def.name,
+        title: def.title,
+        subtitle: def.subtitle,
+        themeColor: def.themeColor,
+        bgColor: def.bgColor,
+        borderColor: def.borderColor,
+        x: 40,
+        y: def.yStart,
+        width: canvasWidth - 80,
+        height: def.height,
+        patterns: def.patterns
+      });
+    }
+    return corridors;
+  }
+
   public computePatternBounds(graph: MetroGraph): PatternBoundingBox[] {
     const bounds: PatternBoundingBox[] = [];
-    const padding = 28;
+    const padding = 24;
 
     for (const pattern of graph.patterns) {
       const matchingNodes = graph.nodes.filter(n => pattern.matchesNode(n));
@@ -87,9 +201,9 @@ export class OctilinearLayoutEngine {
       bounds.push({
         pattern,
         x: Math.max(minX - padding, 20),
-        y: Math.max(minY - padding - 36, 20),
-        width: Math.max(maxX - minX + padding * 2 + 190, 220),
-        height: Math.max(maxY - minY + padding * 2 + 50, 90),
+        y: Math.max(minY - padding - 24, 20),
+        width: Math.max(maxX - minX + padding * 2 + 180, 220),
+        height: Math.max(maxY - minY + padding * 2 + 40, 80),
         enclosedNodes: matchingNodes
       });
     }

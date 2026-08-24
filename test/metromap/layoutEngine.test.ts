@@ -40,4 +40,20 @@ describe("OctilinearLayoutEngine", () => {
       expect(box.pattern).toBeDefined();
     }
   });
+
+  it("calculates 4 distinct horizontal corridor swimlane boundaries", () => {
+    const layout = new OctilinearLayoutEngine();
+    const corridors = layout.computeCorridorBounds(1680);
+
+    expect(corridors.length).toBe(4);
+    expect(corridors[0].layer).toBe(1);
+    expect(corridors[1].layer).toBe(2);
+    expect(corridors[2].layer).toBe(3);
+    expect(corridors[3].layer).toBe(4);
+
+    // Verify distinct vertical offsets (Y positions increase sequentially)
+    expect(corridors[1].y).toBeGreaterThan(corridors[0].y + corridors[0].height);
+    expect(corridors[2].y).toBeGreaterThan(corridors[1].y + corridors[1].height);
+    expect(corridors[3].y).toBeGreaterThan(corridors[2].y + corridors[2].height);
+  });
 });
