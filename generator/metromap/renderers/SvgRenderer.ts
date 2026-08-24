@@ -36,7 +36,7 @@ export class SvgRenderer {
 
     // 2. Render Pattern Clusters
     const clustersSvg = bounds.map(b => `
-      <g class="rt-cluster rt-pattern-${b.pattern.id}" id="cluster-${b.pattern.id}">
+      <g class="rt-cluster rt-pattern-${b.pattern.id}" id="cluster-${b.pattern.id}" data-pattern-id="${b.pattern.id}">
         <rect class="rt-cluster-bg" x="${b.x}" y="${b.y}" width="${b.width}" height="${b.height}" fill="${b.pattern.bgTint}" stroke="${b.pattern.themeColor}" rx="12" ry="12" stroke-dasharray="5 3" stroke-width="1.5" opacity="0.6" />
         <text class="rt-cluster-header" x="${b.x + 12}" y="${b.y + 18}" fill="${b.pattern.themeColor}" font-family="'Outfit', sans-serif" font-size="11px" font-weight="700">
           RT-P${b.pattern.number < 10 ? '0' + b.pattern.number : b.pattern.number}: ${b.pattern.name.toUpperCase()}
@@ -63,6 +63,8 @@ export class SvgRenderer {
               stroke-linecap="round" 
               stroke-linejoin="round"
               data-track-id="track-${idx}"
+              data-source-id="${t.source.id}"
+              data-target-id="${t.target.id}"
               data-source-uri="${t.source.uri}"
               data-target-uri="${t.target.uri}"
               data-relation="${escapedRelation}"
@@ -84,7 +86,10 @@ export class SvgRenderer {
 
       return `
         <g class="track-label-group" 
+           id="track-label-group-${idx}"
            data-track-ref="track-${idx}"
+           data-source-id="${t.source.id}"
+           data-target-id="${t.target.id}"
            onclick="handleTrackClick(document.getElementById('track-${idx}'))"
            style="cursor: pointer;">
           <rect x="${lx - 4}" y="${ly - 10}" width="${(t.relationLabel?.length || 0) * 6.2 + 8}" height="14" rx="3" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.8" opacity="0.95" />

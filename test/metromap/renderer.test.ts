@@ -14,7 +14,10 @@ describe("MetroMapGenerator & Renderers", () => {
     expect(html).toContain("LAYER 3: PROFILES CONFORMITY");
     expect(html).toContain("LAYER 4: DIRECT DATA PAYLOADS");
     expect(html).toContain("Crawler Simulator");
-    expect(html).toContain("simTerminalHud");
+    expect(html).toContain("crawlerSimSection");
+    expect(html).toContain("simStepsTable");
+    expect(html).toContain("focusStatusBanner");
+    expect(html).toContain("focusOnUri");
     expect(html).toContain("stationModal");
     expect(html).toContain("trackDrawer");
   });
