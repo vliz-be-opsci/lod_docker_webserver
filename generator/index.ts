@@ -492,14 +492,6 @@ async function main() {
   headersConf += `    add_header Link '<${BASE_URL}/data/north-sea-sensors-latest.csv>; rel="describes", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
   headersConf += `}\n\n`;
 
-  // Headers for Sitemaps (RT-P06 & RT-P07)
-  const sitemapFiles = ["sitemap.xml", "sitemap-index.xml", "sitemap-datasets.xml", "sitemap-profiles.xml", "sitemap-catalog.xml"];
-  for (const sFile of sitemapFiles) {
-    headersConf += `location = /${sFile} {\n`;
-    headersConf += `    default_type application/xml;\n`;
-    headersConf += `}\n\n`;
-  }
-
   fs.writeFileSync(path.join(DIST_DIR, "nginx-headers.conf"), headersConf);
 
   // 12. Generate Radical Transparency Compliance & Gap Documentation
