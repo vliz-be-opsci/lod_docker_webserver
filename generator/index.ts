@@ -192,7 +192,7 @@ async function main() {
   sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}/catalog/dcat.jsonld" type="application/ld+json" />\n`;
   sitemapXml += `  </url>\n`;
 
-  // Each entity URL (Clean Base PID with linkset; optional alternate variants demonstrated on arms-mbon)
+  // Each entity URL (Clean Base PID with linkset; optional rel=type and alternate variants demonstrated on arms-mbon)
   for (const res of RESOURCES) {
     const htmlPath = getEntityHtmlPath(res);
     const typeSlug = getEntityTypeSlug(res);
@@ -201,15 +201,11 @@ async function main() {
     if (res.profileId) {
       sitemapXml += `    <rs:ln rel="profile" href="${BASE_URL}/id/profile/${res.profileId}" />\n`;
     }
-    if (res.type === "Dataset") {
-      sitemapXml += `    <rs:ln rel="type" href="https://schema.org/Dataset" />\n`;
-    } else {
-      sitemapXml += `    <rs:ln rel="type" href="https://schema.org/${res.type}" />\n`;
-    }
     sitemapXml += `    <rs:ln rel="linkset" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json" type="application/linkset+json" />\n`;
     
-    // Optional showcase: Demonstrating that alternate format variants can optionally be declared directly in the sitemap alongside the linkset
+    // Optional showcase: Demonstrating that rel=type and alternate format variants can optionally be declared directly in the sitemap alongside the linkset
     if (res.id === "resource-arms-mbon") {
+      sitemapXml += `    <rs:ln rel="type" href="https://schema.org/Dataset" />\n`;
       sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}${htmlPath}" type="text/html" />\n`;
       sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.ttl" type="text/turtle" />\n`;
       sitemapXml += `    <rs:ln rel="alternate" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.jsonld" type="application/ld+json" />\n`;
