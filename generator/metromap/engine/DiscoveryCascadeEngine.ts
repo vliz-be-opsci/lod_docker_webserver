@@ -119,7 +119,7 @@ export class DiscoveryCascadeEngine {
         );
       }
 
-      // Physical Distributions & Payloads (RT-P04) & Offline Sidecars (RT-P10)
+      // Physical Distributions & Payloads (RT-P04)
       if (res.distributions) {
         for (const dist of res.distributions) {
           signals.push({
@@ -131,30 +131,6 @@ export class DiscoveryCascadeEngine {
             sublabel: `${dist.format} (${dist.mediaType})`,
             specIds: ["RFC_8574", "RFC_8288"]
           });
-
-          // RT-P10 Sidecars for arms-mbon
-          if (res.id === "resource-arms-mbon" && dist.downloadUrl.endsWith(".zip")) {
-            signals.push(
-              {
-                sourceUri: dist.downloadUrl,
-                targetUri: `${dist.downloadUrl}.linkset.json`,
-                relation: "offline-sidecar (RT-P10)",
-                category: "linkset",
-                label: "Offline Linkset Sidecar",
-                sublabel: "RT-P10 Detached Sidecar",
-                specIds: ["RFC_9264", "RFC_6906"]
-              },
-              {
-                sourceUri: dist.downloadUrl,
-                targetUri: `${dist.downloadUrl}.sha256`,
-                relation: "offline-checksum (RT-P10)",
-                category: "distribution",
-                label: "SHA-256 Checksum Sidecar",
-                sublabel: "RT-P10 Integrity Checksum",
-                specIds: ["RFC_8574"]
-              }
-            );
-          }
         }
       }
     }

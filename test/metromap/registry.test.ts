@@ -17,8 +17,8 @@ describe("MetroMap Registries", () => {
     expect(getSpecById("RFC_8288")?.code).toBe("RFC 8288");
   });
 
-  it("contains the 9 official EOSC Radical Transparency Patterns", () => {
-    expect(RT_PATTERNS_REGISTRY.length).toBe(9);
+  it("contains the 8 official EOSC Radical Transparency Patterns (RT-P01 through RT-P08)", () => {
+    expect(RT_PATTERNS_REGISTRY.length).toBe(8);
     const p1 = getPatternById("RT_P01");
     expect(p1?.name).toBe("Profile Conformity Declarations");
     const p3 = getPatternById("RT_P03");

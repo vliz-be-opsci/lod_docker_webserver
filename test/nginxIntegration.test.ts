@@ -156,24 +156,17 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     expect(prov.linkset[0].author[0].href).toContain("/id/person/katrina");
   });
 
-  it("generates RT-P10 physical sidecar files (.linkset.json and .sha256) in dist/data/", () => {
-    const zipSidecarJson = path.join(distDir, "data", "arms-mbon-rocrate.zip.linkset.json");
-    const zipSidecarSha = path.join(distDir, "data", "arms-mbon-rocrate.zip.sha256");
-    const csvSidecarJson = path.join(distDir, "data", "arms-mbon-18s.csv.linkset.json");
-    const csvSidecarSha = path.join(distDir, "data", "arms-mbon-18s.csv.sha256");
+  it("generates RT-P04 physical data download payload files in dist/data/", () => {
+    const zipPayload = path.join(distDir, "data", "arms-mbon-rocrate.zip");
+    const csvPayload = path.join(distDir, "data", "arms-mbon-18s.csv");
+    const geoJsonPayload = path.join(distDir, "data", "arms-mbon-stations.geojson");
 
-    expect(fs.existsSync(zipSidecarJson)).toBe(true);
-    expect(fs.existsSync(zipSidecarSha)).toBe(true);
-    expect(fs.existsSync(csvSidecarJson)).toBe(true);
-    expect(fs.existsSync(csvSidecarSha)).toBe(true);
+    expect(fs.existsSync(zipPayload)).toBe(true);
+    expect(fs.existsSync(csvPayload)).toBe(true);
+    expect(fs.existsSync(geoJsonPayload)).toBe(true);
 
-    const zipLinkset = JSON.parse(fs.readFileSync(zipSidecarJson, "utf-8"));
-    expect(zipLinkset.linkset[0].anchor).toBe("http://localhost:8080/data/arms-mbon-rocrate.zip");
-    expect(zipLinkset.linkset[0]["cite-as"][0].href).toBe("http://localhost:8080/id/dataset/arms-mbon");
-    expect(zipLinkset.linkset[0].describedby[0].href).toContain("/id/dataset/arms-mbon.ttl");
-
-    const shaContent = fs.readFileSync(zipSidecarSha, "utf-8");
-    expect(shaContent).toContain("arms-mbon-rocrate.zip");
-    expect(shaContent.length).toBeGreaterThan(64);
+    const headersConf = fs.readFileSync(path.join(distDir, "nginx-headers.conf"), "utf-8");
+    expect(headersConf).toContain('location = /data/arms-mbon-rocrate.zip');
+    expect(headersConf).toContain('rel="cite-as"');
   });
 });

@@ -91,17 +91,6 @@ export const RT_PATTERNS_REGISTRY: RTPattern[] = [
     "#fefce8",
     node => node.category === "linkset" || node.uri.includes(".linkset.json") || node.uri.includes("/linksets/"),
     `${EOSC_BASE_URL}/08-large-linksets.md`
-  ),
-  new RTPattern(
-    "RT_P10",
-    10,
-    "Detached Local Storage Sidecars",
-    "Maintains profile compliance and provenance on downloaded offline artifacts through deterministic RO-Crate packages and sidecar linksets.",
-    [SPECS_REGISTRY.RFC_6906, SPECS_REGISTRY.RFC_9264, SPECS_REGISTRY.RO_CRATE],
-    "#15803d",
-    "#f0fdf4",
-    node => node.category === "distribution" && (node.id.includes("rocrate") || node.id.includes("zip")),
-    `${EOSC_BASE_URL}/10-detached-local-storage.md`
   )
 ];
 

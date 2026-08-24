@@ -70,8 +70,8 @@ async function main() {
   // 1. Write Shared CSS
   fs.writeFileSync(path.join(DIST_DIR, "style.css"), getCssContent());
 
-  // 2. Generate Physical Download Payloads (CSV, GeoJSON, RO-Crate ZIP) & RT-P10 Sidecars
-  console.log(`Generating downloadable data payloads and RT-P10 sidecars in /data/...`);
+  // 2. Generate Physical Download Payloads (CSV, GeoJSON, RO-Crate ZIP)
+  console.log(`Generating downloadable data payloads in /data/...`);
   await generateDataPayloads(DIST_DIR, BASE_URL);
 
   // 3. Serialize all entities into RDF (Turtle, JSON-LD, RDF/XML) and Linksets in dist/id/{type}/
@@ -442,29 +442,17 @@ async function main() {
     }
   }
 
-  // Headers for RT-P04 Data Payloads & RT-P10 Offline Sidecars
+  // Headers for RT-P04 Direct Data Payloads (No Landing Page Solution)
   const armsZipLinks = [
     `<${BASE_URL}/id/dataset/arms-mbon>; rel="cite-as"`,
     `<${BASE_URL}/id/profile/marine-genomic-dataset-profile>; rel="profile"`,
     `<${BASE_URL}/id/profile/ro-crate-package-profile>; rel="profile"`,
     `<${BASE_URL}/id/dataset/arms-mbon.ttl>; rel="describedby"; type="text/turtle"`,
     `<${BASE_URL}/id/dataset/arms-mbon.html>; rel="describedby"; type="text/html"`,
-    `<${BASE_URL}/data/arms-mbon-rocrate.zip.sha256>; rel="describedby"; type="text/plain"`,
-    `<${BASE_URL}/data/arms-mbon-rocrate.zip.linkset.json>; rel="linkset"; type="application/linkset+json"`,
     `<${BASE_URL}/id/dataset/arms-mbon.linkset.json>; rel="linkset"; type="application/linkset+json"`
   ];
   headersConf += `location = /data/arms-mbon-rocrate.zip {\n`;
   headersConf += `    add_header Link '${armsZipLinks.join(", ")}' always;\n`;
-  headersConf += `}\n\n`;
-
-  headersConf += `location = /data/arms-mbon-rocrate.zip.linkset.json {\n`;
-  headersConf += `    default_type application/linkset+json;\n`;
-  headersConf += `    add_header Link '<${BASE_URL}/data/arms-mbon-rocrate.zip>; rel="describes", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
-  headersConf += `}\n\n`;
-
-  headersConf += `location = /data/arms-mbon-rocrate.zip.sha256 {\n`;
-  headersConf += `    default_type text/plain;\n`;
-  headersConf += `    add_header Link '<${BASE_URL}/data/arms-mbon-rocrate.zip>; rel="describes"' always;\n`;
   headersConf += `}\n\n`;
 
   const armsCsvLinks = [
@@ -472,22 +460,10 @@ async function main() {
     `<${BASE_URL}/id/profile/marine-genomic-dataset-profile>; rel="profile"`,
     `<${BASE_URL}/id/dataset/arms-mbon.ttl>; rel="describedby"; type="text/turtle"`,
     `<${BASE_URL}/id/dataset/arms-mbon.html>; rel="describedby"; type="text/html"`,
-    `<${BASE_URL}/data/arms-mbon-18s.csv.sha256>; rel="describedby"; type="text/plain"`,
-    `<${BASE_URL}/data/arms-mbon-18s.csv.linkset.json>; rel="linkset"; type="application/linkset+json"`,
     `<${BASE_URL}/id/dataset/arms-mbon.linkset.json>; rel="linkset"; type="application/linkset+json"`
   ];
   headersConf += `location = /data/arms-mbon-18s.csv {\n`;
   headersConf += `    add_header Link '${armsCsvLinks.join(", ")}' always;\n`;
-  headersConf += `}\n\n`;
-
-  headersConf += `location = /data/arms-mbon-18s.csv.linkset.json {\n`;
-  headersConf += `    default_type application/linkset+json;\n`;
-  headersConf += `    add_header Link '<${BASE_URL}/data/arms-mbon-18s.csv>; rel="describes", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
-  headersConf += `}\n\n`;
-
-  headersConf += `location = /data/arms-mbon-18s.csv.sha256 {\n`;
-  headersConf += `    default_type text/plain;\n`;
-  headersConf += `    add_header Link '<${BASE_URL}/data/arms-mbon-18s.csv>; rel="describes"' always;\n`;
   headersConf += `}\n\n`;
 
   const sensorCsvLinks = [
@@ -495,22 +471,10 @@ async function main() {
     `<${BASE_URL}/id/profile/sensor-telemetry-profile>; rel="profile"`,
     `<${BASE_URL}/id/dataset/north-sea-sensors.ttl>; rel="describedby"; type="text/turtle"`,
     `<${BASE_URL}/id/dataset/north-sea-sensors.html>; rel="describedby"; type="text/html"`,
-    `<${BASE_URL}/data/north-sea-sensors-latest.csv.sha256>; rel="describedby"; type="text/plain"`,
-    `<${BASE_URL}/data/north-sea-sensors-latest.csv.linkset.json>; rel="linkset"; type="application/linkset+json"`,
     `<${BASE_URL}/id/dataset/north-sea-sensors.linkset.json>; rel="linkset"; type="application/linkset+json"`
   ];
   headersConf += `location = /data/north-sea-sensors-latest.csv {\n`;
   headersConf += `    add_header Link '${sensorCsvLinks.join(", ")}' always;\n`;
-  headersConf += `}\n\n`;
-
-  headersConf += `location = /data/north-sea-sensors-latest.csv.linkset.json {\n`;
-  headersConf += `    default_type application/linkset+json;\n`;
-  headersConf += `    add_header Link '<${BASE_URL}/data/north-sea-sensors-latest.csv>; rel="describes", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
-  headersConf += `}\n\n`;
-
-  headersConf += `location = /data/north-sea-sensors-latest.csv.sha256 {\n`;
-  headersConf += `    default_type text/plain;\n`;
-  headersConf += `    add_header Link '<${BASE_URL}/data/north-sea-sensors-latest.csv>; rel="describes"' always;\n`;
   headersConf += `}\n\n`;
 
   fs.writeFileSync(path.join(DIST_DIR, "nginx-headers.conf"), headersConf);

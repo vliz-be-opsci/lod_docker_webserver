@@ -232,7 +232,7 @@ export class HtmlPageRenderer {
           <select id="simScenario" onchange="loadScenario(this.value)" style="background: #1e293b; color: #ffffff; border: 1px solid #475569; border-radius: 4px; padding: 0.25rem 0.5rem; font-size: 0.78rem;">
             <option value="harvest">1. Standard EOSC Harvester (Discovery &rarr; Conneg &rarr; Turtle)</option>
             <option value="modular">2. Modular Index & Split Linksets (RT-P07 &rarr; RT-P08)</option>
-            <option value="direct">3. Direct Data Payloads & Offline Sidecars (RT-P04 &rarr; RT-P10)</option>
+            <option value="direct">3. Direct Data Payloads (RT-P04 Cite-As Solution)</option>
             <option value="api">4. Subsetting API Traversal (RT-P05)</option>
           </select>
           <button class="sim-btn" id="btnSimPlay" onclick="toggleSimulation()"><i class="fa-solid fa-play"></i> Run</button>
@@ -265,7 +265,6 @@ export class HtmlPageRenderer {
           <div class="toggle-pill" id="pill-RT_P06" onclick="filterPattern('RT_P06')">RT-P06</div>
           <div class="toggle-pill" id="pill-RT_P07" onclick="filterPattern('RT_P07')">RT-P07</div>
           <div class="toggle-pill" id="pill-RT_P08" onclick="filterPattern('RT_P08')">RT-P08</div>
-          <div class="toggle-pill" id="pill-RT_P10" onclick="filterPattern('RT_P10')">RT-P10</div>
         </div>
 
         <!-- Zoom HUD Controls -->
@@ -429,14 +428,6 @@ export class HtmlPageRenderer {
               <td style="padding: 0.6rem 0.8rem;"><code>dist/id/dataset/arms-mbon.*.linkset.json</code></td>
               <td style="padding: 0.6rem 0.8rem;"><a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/08-large-linksets.md" target="_blank">08-large-linksets.md</a></td>
             </tr>
-            <tr>
-              <td style="padding: 0.6rem 0.8rem; font-weight: 700; color: #15803d;">RT-P10: Detached Local Storage Sidecars</td>
-              <td style="padding: 0.6rem 0.8rem;"><span class="hero-tag" style="background:#f0fdf4; color:#16a34a;">Layer 4</span></td>
-              <td style="padding: 0.6rem 0.8rem;"><span class="hero-tag" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; font-size: 0.75rem;">✅ Verified Sidecars</span></td>
-              <td style="padding: 0.6rem 0.8rem;"><code>*.linkset.json</code>, <code>*.sha256</code></td>
-              <td style="padding: 0.6rem 0.8rem;"><code>dist/data/arms-mbon-rocrate.zip.linkset.json</code></td>
-              <td style="padding: 0.6rem 0.8rem;"><a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/10-detached-local-storage.md" target="_blank">10-detached-local-storage.md</a></td>
-            </tr>
           </tbody>
         </table>
       </div>
@@ -450,7 +441,7 @@ export class HtmlPageRenderer {
       </div>
       <div class="footer-links">
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" title="EOSC Radical Transparency Proposals on GitHub">🐙 EOSC RT Proposals (GitHub)</a>
-        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank" title="EOSC Linkset Usage Patterns (RT-P01 to RT-P10)">📋 RT Patterns</a>
+        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank" title="EOSC Linkset Usage Patterns (RT-P01 to RT-P08)">📋 RT Patterns</a>
         <a href="/id/profiles">📑 Profiles</a>
         <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" title="Radical Transparency Position Paper">📄 Position Paper</a>
         <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank" title="Presentation Slides">📊 Slides</a>
@@ -988,28 +979,21 @@ export class HtmlPageRenderer {
         ]
       },
       direct: {
-        title: "3. Direct Data Payloads & Offline Sidecars",
+        title: "3. Direct Data Payloads (No Landing Page Solution)",
         steps: [
           {
             uri: "/data/arms-mbon-rocrate.zip",
             req: "GET /data/arms-mbon-rocrate.zip HTTP/1.1",
-            res: "HTTP/1.1 200 OK | Link: </id/dataset/arms-mbon>; rel='cite-as'",
+            res: "HTTP/1.1 200 OK | Link: </id/dataset/arms-mbon>; rel='cite-as', </id/dataset/arms-mbon.linkset.json>; rel='linkset'",
             pattern: "RT-P04 Direct Payload Solution",
             reasoning: "Machine client bypasses landing page and cites parent dataset PID directly via rel='cite-as'."
           },
           {
-            uri: "/data/arms-mbon-rocrate.zip.linkset.json",
-            req: "GET /data/arms-mbon-rocrate.zip.linkset.json HTTP/1.1",
+            uri: "/id/dataset/arms-mbon.linkset.json",
+            req: "GET /id/dataset/arms-mbon.linkset.json HTTP/1.1",
             res: "HTTP/1.1 200 OK | Content-Type: application/linkset+json",
-            pattern: "RT-P10 Detached Local Storage",
-            reasoning: "Client preserves semantic provenance and profile binding locally without network access."
-          },
-          {
-            uri: "/data/arms-mbon-rocrate.zip.sha256",
-            req: "GET /data/arms-mbon-rocrate.zip.sha256 HTTP/1.1",
-            res: "HTTP/1.1 200 OK | Content-Type: text/plain",
-            pattern: "RT-P10 Integrity Checksum",
-            reasoning: "Cryptographic checksum verifies payload integrity during offline transfer and detached archiving."
+            pattern: "RFC 9264 Linkset Hub",
+            reasoning: "Client discovers complete profile declarations and alternate format representations from the cited dataset linkset."
           }
         ]
       },

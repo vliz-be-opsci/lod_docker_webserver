@@ -775,7 +775,7 @@ function renderFooter(): string {
       </div>
       <div class="footer-links">
         <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" title="EOSC Radical Transparency Proposals on GitHub">🐙 EOSC RT Proposals (GitHub)</a>
-        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank" title="EOSC Linkset Usage Patterns (RT-P01 to RT-P10)">📋 RT Patterns (RT-P01..10)</a>
+        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank" title="EOSC Linkset Usage Patterns (RT-P01 to RT-P08)">📋 RT Patterns (RT-P01..08)</a>
         <a href="/map.html">🗺️ Metro Map</a>
         <a href="/id/profiles">📑 Profiles</a>
         <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" title="Radical Transparency Position Paper">📄 Position Paper</a>
@@ -1029,13 +1029,7 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
                 <h4 class="dist-title">${d.title}</h4>
                 <p class="dist-desc">${d.description}</p>
               </div>
-              <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.75rem;">
-                <a href="${d.downloadUrl}" class="btn-download" download>Download ${d.format}</a>
-                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.25rem;">
-                  <a href="${d.downloadUrl}.linkset.json" class="author-pill" style="font-size: 0.75rem; text-decoration: none;" title="Detached RFC 9264 Linkset Sidecar (RT-P10)" download>📑 Linkset Sidecar</a>
-                  <a href="${d.downloadUrl}.sha256" class="author-pill" style="font-size: 0.75rem; text-decoration: none;" title="SHA-256 Checksum Sidecar (RT-P10)" download>🔒 SHA-256 Checksum</a>
-                </div>
-              </div>
+              <a href="${d.downloadUrl}" class="btn-download" download>Download ${d.format}</a>
             </div>
           `).join('')}
         </div>

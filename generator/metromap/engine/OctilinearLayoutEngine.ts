@@ -72,15 +72,15 @@ export class OctilinearLayoutEngine {
       patterns: ["RT_P01", "RT_P02"]
     },
     4: {
-      name: "LAYER 4: DIRECT DATA PAYLOADS, SUBSETTING APIS & OFFLINE SIDECARS",
-      title: "Machine Data Payloads & Sidecars",
-      subtitle: "No-Landing Direct Binary Downloads, RFC 9727 Subsetting API, Large Linkset Fragments & Offline Storage Sidecars",
+      name: "LAYER 4: DIRECT DATA PAYLOADS, SUBSETTING APIS & SPLIT LINKSETS",
+      title: "Machine Data Payloads & APIs",
+      subtitle: "No-Landing Direct Binary Downloads (rel=\"cite-as\"), RFC 9727 Subsetting API & Large Linkset Fragments",
       themeColor: "#16a34a",
       bgColor: "#f0fdf4",
       borderColor: "#bbf7d0",
       yStart: 1060,
       height: 420,
-      patterns: ["RT_P04", "RT_P05", "RT_P08", "RT_P10"]
+      patterns: ["RT_P04", "RT_P05", "RT_P08"]
     }
   };
 
