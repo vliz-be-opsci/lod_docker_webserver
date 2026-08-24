@@ -33,8 +33,65 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
     ];
   }
 
+  // Showcase RT-P08 (Large Linkset Split-Up) on arms-mbon
+  if (nameSlug === "arms-mbon") {
+    linkObj.item = [
+      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.conneg.linkset.json`, title: "Content Negotiation Variants Linkset" },
+      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.profiles.linkset.json`, title: "Profiles & Conformance Linkset" },
+      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.provenance.linkset.json`, title: "Provenance & Attribution Linkset" }
+    ];
+  }
+
   return {
     linkset: [linkObj]
+  };
+}
+
+export function generateSplitLinksets(resource: MarineEntity, baseUrl: string): Record<string, object> {
+  const resourceUri = expandUri(resource.id, baseUrl);
+  const typeSlug = getEntityTypeSlug(resource);
+  const nameSlug = getEntityNameSlug(resource);
+  const htmlPath = getEntityHtmlPath(resource);
+  const masterLinksetUri = `${baseUrl}/id/${typeSlug}/${nameSlug}.linkset.json`;
+
+  return {
+    conneg: {
+      linkset: [
+        {
+          anchor: resourceUri,
+          self: [{ href: `${baseUrl}/id/${typeSlug}/${nameSlug}.conneg.linkset.json` }],
+          collection: [{ href: masterLinksetUri }],
+          describedby: [{ href: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`, type: "text/turtle" }],
+          alternate: [
+            { href: `${baseUrl}${htmlPath}`, type: "text/html" },
+            { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`, type: "application/ld+json" },
+            { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`, type: "application/rdf+xml" }
+          ]
+        }
+      ]
+    },
+    profiles: {
+      linkset: [
+        {
+          anchor: resourceUri,
+          self: [{ href: `${baseUrl}/id/${typeSlug}/${nameSlug}.profiles.linkset.json` }],
+          collection: [{ href: masterLinksetUri }],
+          profile: resource.profileId ? [{ href: `${baseUrl}/id/profile/${resource.profileId}` }] : []
+        }
+      ]
+    },
+    provenance: {
+      linkset: [
+        {
+          anchor: resourceUri,
+          self: [{ href: `${baseUrl}/id/${typeSlug}/${nameSlug}.provenance.linkset.json` }],
+          collection: [{ href: masterLinksetUri }],
+          author: [{ href: `${baseUrl}/id/person/katrina` }],
+          publisher: [{ href: `${baseUrl}/id/institute/vliz` }],
+          "http://schema.org/isPartOf": [{ href: `${baseUrl}/id/project/maregraph` }]
+        }
+      ]
+    }
   };
 }
 

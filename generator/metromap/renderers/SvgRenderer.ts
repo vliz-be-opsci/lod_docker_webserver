@@ -52,6 +52,30 @@ export class SvgRenderer {
         publisher: s.publisher
       }))).replace(/"/g, '&quot;');
 
+      // Determine static file and source generator location
+      let staticFile = `dist${n.uri}`;
+      let sourceFile = "generator/index.ts";
+      let nginxLocation = `location = ${n.uri}`;
+
+      if (n.uri === "/") {
+        staticFile = "dist/index.html";
+        sourceFile = "generator/htmlTemplates.ts";
+      } else if (n.uri.endsWith(".ttl") || n.uri.endsWith(".jsonld") || n.uri.endsWith(".rdf")) {
+        sourceFile = n.uri.includes("/profile/") ? "generator/profileGenerator.ts" : "generator/rdfSerializer.ts";
+      } else if (n.uri.includes(".linkset.json")) {
+        sourceFile = n.uri.includes("/profile/") ? "generator/profileGenerator.ts" : (n.uri.includes("/data/") ? "generator/dataPayloads.ts" : "generator/linksetGenerator.ts");
+      } else if (n.uri.startsWith("/data/")) {
+        sourceFile = "generator/dataPayloads.ts";
+      } else if (n.uri.startsWith("/api/")) {
+        sourceFile = "generator/openApiGenerator.ts";
+        if (n.uri === "/api/v1/observations") staticFile = "dist/api/v1/observations.json";
+      } else if (n.uri.includes("/id/profile")) {
+        sourceFile = "generator/profileGenerator.ts";
+      } else if (n.uri.startsWith("/id/") && !n.uri.includes(".")) {
+        staticFile = `dist${n.uri}.html (Conneg 303 Hub)`;
+        sourceFile = "generator/resources.ts + nginx-coneg.conf";
+      }
+
       const escapedTitle = n.label.replace(/'/g, "\\'");
       const escapedDesc = n.description.replace(/'/g, "\\'").replace(/"/g, '&quot;');
       const liveUrl = n.liveUrl || "#";
@@ -60,9 +84,12 @@ export class SvgRenderer {
         <g class="station-node station-${n.category}" 
            data-node-id="${n.id}"
            data-uri="${n.uri}"
+           data-static-file="${staticFile}"
+           data-source-file="${sourceFile}"
+           data-nginx-loc="${nginxLocation}"
            data-patterns="${patternsJson}"
            data-specs="${specsJson}"
-           onclick="handleNodeClick(this, '${escapedTitle}', '${n.uri}', '${escapedDesc}', '${liveUrl}')">
+           onclick="handleNodeClick(this, '${escapedTitle}', '${n.uri}', '${escapedDesc}', '${liveUrl}', '${staticFile}', '${sourceFile}', '${nginxLocation}')">
           <circle class="station-circle" cx="${n.x}" cy="${n.y}" r="${n.isOrigin ? 9.5 : 7}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="${n.isOrigin ? 3.5 : 2.8}" />
           <text class="station-label" x="${n.x + 14}" y="${n.y + 4}" font-family="'Inter', sans-serif" font-size="11px" font-weight="600" fill="#1e293b" paint-order="stroke" stroke="#ffffff" stroke-width="3px">${n.label}</text>
           ${n.sublabel ? `<text class="station-sublabel" x="${n.x + 14}" y="${n.y + 16}" font-family="'Inter', sans-serif" font-size="9px" font-weight="500" fill="#64748b" paint-order="stroke" stroke="#ffffff" stroke-width="3px">${n.sublabel}</text>` : ''}

@@ -104,4 +104,76 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     expect(sitemapContent).not.toContain("xhtml:link");
     expect(sitemapContent).not.toContain('rel="dcat-catalog"');
   });
+
+  it("generates RT-P07 sitemap-index.xml delegating to modular sub-sitemaps", () => {
+    const sitemapIndexPath = path.join(distDir, "sitemap-index.xml");
+    const sitemapDatasetsPath = path.join(distDir, "sitemap-datasets.xml");
+    const sitemapProfilesPath = path.join(distDir, "sitemap-profiles.xml");
+    const sitemapCatalogPath = path.join(distDir, "sitemap-catalog.xml");
+    const robotsPath = path.join(distDir, "robots.txt");
+
+    expect(fs.existsSync(sitemapIndexPath)).toBe(true);
+    expect(fs.existsSync(sitemapDatasetsPath)).toBe(true);
+    expect(fs.existsSync(sitemapProfilesPath)).toBe(true);
+    expect(fs.existsSync(sitemapCatalogPath)).toBe(true);
+    expect(fs.existsSync(robotsPath)).toBe(true);
+
+    const indexXml = fs.readFileSync(sitemapIndexPath, "utf-8");
+    expect(indexXml).toContain("<sitemapindex");
+    expect(indexXml).toContain("<loc>http://localhost:8080/sitemap-datasets.xml</loc>");
+    expect(indexXml).toContain("<loc>http://localhost:8080/sitemap-profiles.xml</loc>");
+    expect(indexXml).toContain("<loc>http://localhost:8080/sitemap-catalog.xml</loc>");
+
+    const robotsTxt = fs.readFileSync(robotsPath, "utf-8");
+    expect(robotsTxt).toContain("Sitemap: http://localhost:8080/sitemap-index.xml");
+    expect(robotsTxt).toContain("Sitemap: http://localhost:8080/sitemap.xml");
+  });
+
+  it("generates RT-P08 split linksets with rel=item in master and rel=collection in child fragments", () => {
+    const masterLinksetPath = path.join(distDir, "id", "dataset", "arms-mbon.linkset.json");
+    const connegLinksetPath = path.join(distDir, "id", "dataset", "arms-mbon.conneg.linkset.json");
+    const profilesLinksetPath = path.join(distDir, "id", "dataset", "arms-mbon.profiles.linkset.json");
+    const provLinksetPath = path.join(distDir, "id", "dataset", "arms-mbon.provenance.linkset.json");
+
+    expect(fs.existsSync(masterLinksetPath)).toBe(true);
+    expect(fs.existsSync(connegLinksetPath)).toBe(true);
+    expect(fs.existsSync(profilesLinksetPath)).toBe(true);
+    expect(fs.existsSync(provLinksetPath)).toBe(true);
+
+    const master = JSON.parse(fs.readFileSync(masterLinksetPath, "utf-8"));
+    const masterItems = master.linkset[0].item;
+    expect(masterItems.length).toBe(3);
+    expect(masterItems[0].href).toContain("arms-mbon.conneg.linkset.json");
+    expect(masterItems[1].href).toContain("arms-mbon.profiles.linkset.json");
+    expect(masterItems[2].href).toContain("arms-mbon.provenance.linkset.json");
+
+    const conneg = JSON.parse(fs.readFileSync(connegLinksetPath, "utf-8"));
+    expect(conneg.linkset[0].collection[0].href).toBe("http://localhost:8080/id/dataset/arms-mbon.linkset.json");
+    expect(conneg.linkset[0].alternate.length).toBeGreaterThan(0);
+
+    const prov = JSON.parse(fs.readFileSync(provLinksetPath, "utf-8"));
+    expect(prov.linkset[0].collection[0].href).toBe("http://localhost:8080/id/dataset/arms-mbon.linkset.json");
+    expect(prov.linkset[0].author[0].href).toContain("/id/person/katrina");
+  });
+
+  it("generates RT-P10 physical sidecar files (.linkset.json and .sha256) in dist/data/", () => {
+    const zipSidecarJson = path.join(distDir, "data", "arms-mbon-rocrate.zip.linkset.json");
+    const zipSidecarSha = path.join(distDir, "data", "arms-mbon-rocrate.zip.sha256");
+    const csvSidecarJson = path.join(distDir, "data", "arms-mbon-18s.csv.linkset.json");
+    const csvSidecarSha = path.join(distDir, "data", "arms-mbon-18s.csv.sha256");
+
+    expect(fs.existsSync(zipSidecarJson)).toBe(true);
+    expect(fs.existsSync(zipSidecarSha)).toBe(true);
+    expect(fs.existsSync(csvSidecarJson)).toBe(true);
+    expect(fs.existsSync(csvSidecarSha)).toBe(true);
+
+    const zipLinkset = JSON.parse(fs.readFileSync(zipSidecarJson, "utf-8"));
+    expect(zipLinkset.linkset[0].anchor).toBe("http://localhost:8080/data/arms-mbon-rocrate.zip");
+    expect(zipLinkset.linkset[0]["cite-as"][0].href).toBe("http://localhost:8080/id/dataset/arms-mbon");
+    expect(zipLinkset.linkset[0].describedby[0].href).toContain("/id/dataset/arms-mbon.ttl");
+
+    const shaContent = fs.readFileSync(zipSidecarSha, "utf-8");
+    expect(shaContent).toContain("arms-mbon-rocrate.zip");
+    expect(shaContent.length).toBeGreaterThan(64);
+  });
 });

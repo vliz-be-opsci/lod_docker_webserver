@@ -18,13 +18,15 @@ export class DiscoveryCascadeEngine {
   public cascade(entrypointUri: string): DiscoveredSignal[] {
     const signals: DiscoveredSignal[] = [];
 
-    // 1. Domain Discovery Corridor
+    // 1. Domain Discovery Corridor & RT-P07 Catalogue Assistance
     signals.push(
       { sourceUri: "/", targetUri: "/.well-known/api-catalog", relation: 'rel="api-catalog"', category: "domain", label: "Domain Root", sublabel: "RFC 8288 Link Headers", specIds: ["RFC_8288", "RFC_9727"] },
       { sourceUri: "/", targetUri: "/robots.txt", relation: "directive", category: "domain", label: "Domain Root", sublabel: "Robots Directive", specIds: ["RFC_8288"] },
-      { sourceUri: "/robots.txt", targetUri: "/sitemap.xml", relation: "Sitemap:", category: "domain", label: "/robots.txt", sublabel: "Sitemap Bootstrap", specIds: ["RFC_8288"] },
-      { sourceUri: "/sitemap.xml", targetUri: "/.well-known/api-catalog", relation: "rs:ln (api-catalog)", category: "domain", label: "/sitemap.xml", sublabel: "Signmap Index", specIds: ["RESOURCESYNC", "RFC_9727"] },
-      { sourceUri: "/sitemap.xml", targetUri: "/catalog/dcat.ttl", relation: "rs:ln (describedby)", category: "domain", label: "/sitemap.xml", sublabel: "Signmap Index", specIds: ["RESOURCESYNC", "DCAT_3"] },
+      { sourceUri: "/robots.txt", targetUri: "/sitemap-index.xml", relation: "Sitemap:", category: "domain", label: "/robots.txt", sublabel: "Sitemap Index Bootstrap (RT-P07)", specIds: ["RESOURCESYNC", "RFC_8288"] },
+      { sourceUri: "/sitemap-index.xml", targetUri: "/sitemap.xml", relation: "sitemap", category: "domain", label: "/sitemap-index.xml", sublabel: "Main Signmap (RT-P06)", specIds: ["RESOURCESYNC"] },
+      { sourceUri: "/sitemap-index.xml", targetUri: "/sitemap-catalog.xml", relation: "sitemap", category: "domain", label: "/sitemap-index.xml", sublabel: "Catalog Sub-Sitemap (RT-P07)", specIds: ["RESOURCESYNC", "DCAT_3"] },
+      { sourceUri: "/sitemap-catalog.xml", targetUri: "/.well-known/api-catalog", relation: "rs:ln (profile)", category: "domain", label: "/sitemap-catalog.xml", sublabel: "API Catalog Hub", specIds: ["RESOURCESYNC", "RFC_9727"] },
+      { sourceUri: "/sitemap-catalog.xml", targetUri: "/catalog/dcat.ttl", relation: "rs:ln (alternate)", category: "domain", label: "/sitemap-catalog.xml", sublabel: "DCAT-3 Catalogue", specIds: ["RESOURCESYNC", "DCAT_3"] },
       { sourceUri: "/sitemap.xml", targetUri: "/id/profiles", relation: "rs:ln (type)", category: "profile", label: "/id/profiles", sublabel: "Semantic Profiles Registry", specIds: ["RESOURCESYNC", "RFC_6906"] }
     );
 
@@ -49,7 +51,7 @@ export class DiscoveryCascadeEngine {
       signals.push({
         sourceUri: "/sitemap.xml",
         targetUri: pidUri,
-        relation: "rs:ln (item)",
+        relation: "rs:ln (linkset)",
         category: (res.category as NodeCategory) || "dataset",
         label: res.title,
         sublabel: `${res.type} PID (303 Hub)`,
@@ -60,21 +62,21 @@ export class DiscoveryCascadeEngine {
       signals.push({
         sourceUri: pidUri,
         targetUri: htmlPath,
-        relation: "303 Conneg [HTML, TTL, JSON-LD]",
+        relation: "303 Conneg [HTML, TTL, JSON-LD, RDF]",
         category: (res.category as NodeCategory) || "dataset",
         label: htmlPath,
         sublabel: "Landing Page & Profiles",
         specIds: ["RFC_9110", "RFC_8288", "RFC_6906"]
       });
 
-      // Type Declaration (RT-P01) & Composition (RT-P02)
+      // Profile Declaration (RT-P01) & Composition (RT-P02)
       if (res.profileId) {
         const profileUri = `/id/profile/${res.profileId}.html`;
         const profileObj = getProfileById(res.profileId);
         signals.push({
           sourceUri: htmlPath,
           targetUri: profileUri,
-          relation: 'rel="type"',
+          relation: 'rel="profile"',
           category: "profile",
           label: profileObj?.title || res.profileId,
           sublabel: "Composite Profile (RT-P01)",
@@ -87,7 +89,7 @@ export class DiscoveryCascadeEngine {
             signals.push({
               sourceUri: profileUri,
               targetUri: `/id/profile/${subId}.html`,
-              relation: 'rel="item" (RT-P02)',
+              relation: 'rel="http://schema.org/hasPart" (RT-P02)',
               category: "profile",
               label: subProfile?.title || subId,
               sublabel: "Composed Sub-Profile",
@@ -97,7 +99,7 @@ export class DiscoveryCascadeEngine {
         }
       }
 
-      // Decoupled Co-located Linkset
+      // Decoupled Co-located Master Linkset
       signals.push({
         sourceUri: htmlPath,
         targetUri: `/id/${typeSlug}/${nameSlug}.linkset.json`,
@@ -108,18 +110,40 @@ export class DiscoveryCascadeEngine {
         specIds: ["RFC_9264", "RFC_8288", "RFC_6573"]
       });
 
-      // Physical Distributions & Payloads
+      // RT-P08 Large Linkset Split-Up (Showcase on arms-mbon)
+      if (res.id === "resource-arms-mbon") {
+        signals.push(
+          { sourceUri: `/id/${typeSlug}/${nameSlug}.linkset.json`, targetUri: `/id/${typeSlug}/${nameSlug}.conneg.linkset.json`, relation: 'rel="item"', category: "linkset", label: "Conneg Linkset Fragment", sublabel: "RT-P08 Split", specIds: ["RFC_9264", "RFC_6573"] },
+          { sourceUri: `/id/${typeSlug}/${nameSlug}.linkset.json`, targetUri: `/id/${typeSlug}/${nameSlug}.profiles.linkset.json`, relation: 'rel="item"', category: "linkset", label: "Profiles Linkset Fragment", sublabel: "RT-P08 Split", specIds: ["RFC_9264", "RFC_6573"] },
+          { sourceUri: `/id/${typeSlug}/${nameSlug}.linkset.json`, targetUri: `/id/${typeSlug}/${nameSlug}.provenance.linkset.json`, relation: 'rel="item"', category: "linkset", label: "Provenance Linkset Fragment", sublabel: "RT-P08 Split", specIds: ["RFC_9264", "RFC_6573"] }
+        );
+      }
+
+      // Physical Distributions & Payloads (RT-P04) & Offline Sidecars (RT-P10)
       if (res.distributions) {
         for (const dist of res.distributions) {
           signals.push({
             sourceUri: htmlPath,
             targetUri: dist.downloadUrl,
-            relation: `rel="item" (${dist.format})`,
+            relation: `rel="item" (RT-P04 ${dist.format})`,
             category: "distribution",
             label: dist.title,
             sublabel: `${dist.format} (${dist.mediaType})`,
-            specIds: dist.format === "RO-Crate" ? ["RO_CRATE", "RFC_8574", "RFC_6906"] : ["RFC_8574", "RFC_6573"]
+            specIds: ["RFC_8574", "RFC_8288"]
           });
+
+          // RT-P10 Sidecars for arms-mbon
+          if (res.id === "resource-arms-mbon" && dist.downloadUrl.endsWith(".zip")) {
+            signals.push({
+              sourceUri: dist.downloadUrl,
+              targetUri: `${dist.downloadUrl}.linkset.json`,
+              relation: "offline-sidecar (RT-P10)",
+              category: "linkset",
+              label: "Offline Linkset Sidecar",
+              sublabel: "RT-P10 Detached Sidecar",
+              specIds: ["RFC_9264", "RFC_6906"]
+            });
+          }
         }
       }
     }

@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import zlib from "zlib";
+import crypto from "crypto";
 
 // Simple CRC32 implementation for pure-JS zip creation
 function crc32(buf: Buffer): number {
@@ -87,7 +88,7 @@ export function createSimpleZip(files: { name: string; content: string | Buffer 
   return Buffer.concat([...localHeaders, ...centralHeaders, eocd]);
 }
 
-export async function generateDataPayloads(distDir: string): Promise<void> {
+export async function generateDataPayloads(distDir: string, baseUrl: string = "http://localhost:8080"): Promise<void> {
   const dataDir = path.join(distDir, "data");
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
@@ -338,5 +339,108 @@ startxref
 345
 %%EOF`;
     fs.writeFileSync(targetPdfPath, minimalPdf);
+  }
+
+  // ==========================================
+  // RT-P10 DETACHED LOCAL STORAGE SIDECARS
+  // ==========================================
+  // 10. ARMS-MBON RO-Crate ZIP Sidecars
+  const armsZipPath = path.join(dataDir, "arms-mbon-rocrate.zip");
+  if (fs.existsSync(armsZipPath)) {
+    const armsZipBuf = fs.readFileSync(armsZipPath);
+    const armsHash = crypto.createHash("sha256").update(armsZipBuf).digest("hex");
+    fs.writeFileSync(path.join(dataDir, "arms-mbon-rocrate.zip.sha256"), `${armsHash}  arms-mbon-rocrate.zip\n`);
+
+    const armsZipLinkset = {
+      linkset: [
+        {
+          anchor: `${baseUrl}/data/arms-mbon-rocrate.zip`,
+          self: [
+            { href: `${baseUrl}/data/arms-mbon-rocrate.zip` }
+          ],
+          "cite-as": [
+            { href: `${baseUrl}/id/dataset/arms-mbon` }
+          ],
+          profile: [
+            { href: `${baseUrl}/id/profile/marine-genomic-dataset-profile` },
+            { href: `${baseUrl}/id/profile/ro-crate-package-profile` }
+          ],
+          describedby: [
+            { href: `${baseUrl}/id/dataset/arms-mbon.ttl`, type: "text/turtle" },
+            { href: `${baseUrl}/id/dataset/arms-mbon.html`, type: "text/html" }
+          ],
+          linkset: [
+            { href: `${baseUrl}/id/dataset/arms-mbon.linkset.json`, type: "application/linkset+json" }
+          ]
+        }
+      ]
+    };
+    fs.writeFileSync(path.join(dataDir, "arms-mbon-rocrate.zip.linkset.json"), JSON.stringify(armsZipLinkset, null, 2));
+  }
+
+  // 11. ARMS-MBON 18S CSV Sidecars
+  const armsCsvPath = path.join(dataDir, "arms-mbon-18s.csv");
+  if (fs.existsSync(armsCsvPath)) {
+    const armsCsvBuf = fs.readFileSync(armsCsvPath);
+    const armsCsvHash = crypto.createHash("sha256").update(armsCsvBuf).digest("hex");
+    fs.writeFileSync(path.join(dataDir, "arms-mbon-18s.csv.sha256"), `${armsCsvHash}  arms-mbon-18s.csv\n`);
+
+    const armsCsvLinkset = {
+      linkset: [
+        {
+          anchor: `${baseUrl}/data/arms-mbon-18s.csv`,
+          self: [
+            { href: `${baseUrl}/data/arms-mbon-18s.csv` }
+          ],
+          "cite-as": [
+            { href: `${baseUrl}/id/dataset/arms-mbon` }
+          ],
+          profile: [
+            { href: `${baseUrl}/id/profile/marine-genomic-dataset-profile` }
+          ],
+          describedby: [
+            { href: `${baseUrl}/id/dataset/arms-mbon.ttl`, type: "text/turtle" },
+            { href: `${baseUrl}/id/dataset/arms-mbon.html`, type: "text/html" }
+          ],
+          linkset: [
+            { href: `${baseUrl}/id/dataset/arms-mbon.linkset.json`, type: "application/linkset+json" }
+          ]
+        }
+      ]
+    };
+    fs.writeFileSync(path.join(dataDir, "arms-mbon-18s.csv.linkset.json"), JSON.stringify(armsCsvLinkset, null, 2));
+  }
+
+  // 12. North Sea Sensors CSV Sidecars
+  const sensorCsvPath = path.join(dataDir, "north-sea-sensors-latest.csv");
+  if (fs.existsSync(sensorCsvPath)) {
+    const sensorCsvBuf = fs.readFileSync(sensorCsvPath);
+    const sensorHash = crypto.createHash("sha256").update(sensorCsvBuf).digest("hex");
+    fs.writeFileSync(path.join(dataDir, "north-sea-sensors-latest.csv.sha256"), `${sensorHash}  north-sea-sensors-latest.csv\n`);
+
+    const sensorLinkset = {
+      linkset: [
+        {
+          anchor: `${baseUrl}/data/north-sea-sensors-latest.csv`,
+          self: [
+            { href: `${baseUrl}/data/north-sea-sensors-latest.csv` }
+          ],
+          "cite-as": [
+            { href: `${baseUrl}/id/dataset/north-sea-sensors` }
+          ],
+          profile: [
+            { href: `${baseUrl}/id/profile/sensor-telemetry-profile` }
+          ],
+          describedby: [
+            { href: `${baseUrl}/id/dataset/north-sea-sensors.ttl`, type: "text/turtle" },
+            { href: `${baseUrl}/id/dataset/north-sea-sensors.html`, type: "text/html" }
+          ],
+          linkset: [
+            { href: `${baseUrl}/id/dataset/north-sea-sensors.linkset.json`, type: "application/linkset+json" }
+          ]
+        }
+      ]
+    };
+    fs.writeFileSync(path.join(dataDir, "north-sea-sensors-latest.csv.linkset.json"), JSON.stringify(sensorLinkset, null, 2));
   }
 }

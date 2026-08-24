@@ -160,7 +160,7 @@ export class HtmlPageRenderer {
       <div class="controls-row">
         <div class="controls-group">
           <span style="font-weight: 700; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Filter Pattern:</span>
-          <div class="toggle-pill active" id="pill-all" onclick="filterPattern('all')">All</div>
+          <div class="toggle-pill active" id="pill-all" onclick="filterPattern('all')">All Patterns</div>
           <div class="toggle-pill" id="pill-RT_P01" onclick="filterPattern('RT_P01')">RT-P01 Profile</div>
           <div class="toggle-pill" id="pill-RT_P02" onclick="filterPattern('RT_P02')">RT-P02 Composition</div>
           <div class="toggle-pill" id="pill-RT_P03" onclick="filterPattern('RT_P03')">RT-P03 Conneg</div>
@@ -168,7 +168,8 @@ export class HtmlPageRenderer {
           <div class="toggle-pill" id="pill-RT_P05" onclick="filterPattern('RT_P05')">RT-P05 Subsetting API</div>
           <div class="toggle-pill" id="pill-RT_P06" onclick="filterPattern('RT_P06')">RT-P06 Hostwide</div>
           <div class="toggle-pill" id="pill-RT_P07" onclick="filterPattern('RT_P07')">RT-P07 Catalog</div>
-          <div class="toggle-pill" id="pill-RT_P08" onclick="filterPattern('RT_P08')">RT-P08 Linkset</div>
+          <div class="toggle-pill" id="pill-RT_P08" onclick="filterPattern('RT_P08')">RT-P08 Large Linksets</div>
+          <div class="toggle-pill" id="pill-RT_P10" onclick="filterPattern('RT_P10')">RT-P10 Offline Sidecars</div>
         </div>
         <div class="controls-group">
           <button class="zoom-btn" onclick="zoomIn()" title="Zoom In (+)" style="width: 32px; height: 32px; border-radius: 4px; border: 1px solid var(--panel-border); cursor: pointer;"><i class="fa-solid fa-plus"></i></button>
@@ -182,9 +183,94 @@ export class HtmlPageRenderer {
     <div class="metro-canvas-container" id="metroCanvasContainer" tabindex="0">
       <div class="canvas-hint-pill">
         <i class="fa-solid fa-mouse" style="color: var(--marine-teal);"></i>
-        <span>Scroll to Zoom • Drag to Pan • Double-Click to Zoom In</span>
+        <span>Scroll to Zoom • Drag to Pan • Click Any Node to Inspect Location & Files</span>
       </div>
       ${svgContent}
+    </div>
+
+    <!-- Pattern Implementation Matrix -->
+    <div style="margin-top: 2rem; background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: var(--radius-lg); padding: 1.75rem; box-shadow: var(--shadow-sm);">
+      <h3 style="font-size: 1.3rem; margin: 0 0 0.5rem; color: var(--vliz-blue);"><i class="fa-solid fa-list-check" style="color: var(--marine-teal);"></i> Radical Transparency Patterns Implementation Status</h3>
+      <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Live audit of all official EOSC Radical Transparency patterns implemented in this Docker container reference server:</p>
+      
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+          <thead>
+            <tr style="background: var(--bg-subtle); border-bottom: 2px solid var(--panel-border); text-align: left;">
+              <th style="padding: 0.6rem 0.8rem;">Pattern</th>
+              <th style="padding: 0.6rem 0.8rem;">Status</th>
+              <th style="padding: 0.6rem 0.8rem;">Key Relation</th>
+              <th style="padding: 0.6rem 0.8rem;">Generated Files in /dist</th>
+              <th style="padding: 0.6rem 0.8rem;">Specification</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--panel-border);">
+              <td style="padding: 0.6rem 0.8rem; font-weight: 700; color: #0284c7;">RT-P01: Profile Conformity Declarations</td>
+              <td style="padding: 0.6rem 0.8rem;"><span class="hero-tag" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; font-size: 0.75rem;">✅ Verified</span></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>rel="profile"</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>dist/id/profile/*.ttl</code>, <code>dist/id/*/*.ttl</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/01-profile-declaration.md" target="_blank">01-profile-declaration.md</a></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--panel-border);">
+              <td style="padding: 0.6rem 0.8rem; font-weight: 700; color: #0369a1;">RT-P02: Profile Composition</td>
+              <td style="padding: 0.6rem 0.8rem;"><span class="hero-tag" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; font-size: 0.75rem;">✅ Verified</span></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>rel="http://schema.org/hasPart"</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>dist/id/profile/*.linkset.json</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/02-profile-composition.md" target="_blank">02-profile-composition.md</a></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--panel-border);">
+              <td style="padding: 0.6rem 0.8rem; font-weight: 700; color: #ea580c;">RT-P03: Content Negotiation Menu</td>
+              <td style="padding: 0.6rem 0.8rem;"><span class="hero-tag" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; font-size: 0.75rem;">✅ Verified</span></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>rel="alternate"</code>, <code>rel="self"</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>dist/nginx-coneg.conf</code>, <code>dist/id/*/*.linkset.json</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/03-content-negotiation-menu.md" target="_blank">03-content-negotiation-menu.md</a></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--panel-border);">
+              <td style="padding: 0.6rem 0.8rem; font-weight: 700; color: #16a34a;">RT-P04: No Landing Page Solution</td>
+              <td style="padding: 0.6rem 0.8rem;"><span class="hero-tag" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; font-size: 0.75rem;">✅ Verified</span></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>rel="cite-as"</code>, <code>rel="describedby"</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>dist/data/arms-mbon-darwin-core.zip</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/04-no-landing-page-solution.md" target="_blank">04-no-landing-page-solution.md</a></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--panel-border);">
+              <td style="padding: 0.6rem 0.8rem; font-weight: 700; color: #0d9488;">RT-P05: Subsetting API</td>
+              <td style="padding: 0.6rem 0.8rem;"><span class="hero-tag" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; font-size: 0.75rem;">✅ Verified</span></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>rel="cite-as"</code>, <code>rel="service-desc"</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>dist/api/openapi.json</code>, <code>dist/api/v1/observations.json</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/05-subsetting-api.md" target="_blank">05-subsetting-api.md</a></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--panel-border);">
+              <td style="padding: 0.6rem 0.8rem; font-weight: 700; color: #0284c7;">RT-P06: Hostwide Resource Discovery</td>
+              <td style="padding: 0.6rem 0.8rem;"><span class="hero-tag" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; font-size: 0.75rem;">✅ Verified</span></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>rs:ln rel="linkset"</code>, <code>rel="profile"</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>dist/robots.txt</code>, <code>dist/sitemap.xml</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/06-hostwide-discovery.md" target="_blank">06-hostwide-discovery.md</a></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--panel-border);">
+              <td style="padding: 0.6rem 0.8rem; font-weight: 700; color: #0284c7;">RT-P07: Catalogue Assisted Exposure</td>
+              <td style="padding: 0.6rem 0.8rem;"><span class="hero-tag" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; font-size: 0.75rem;">✅ Verified</span></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>rel="api-catalog"</code>, <code>sitemap-index</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>dist/sitemap-index.xml</code>, <code>dist/sitemap-catalog.xml</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/07-catalog-assistance.md" target="_blank">07-catalog-assistance.md</a></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--panel-border);">
+              <td style="padding: 0.6rem 0.8rem; font-weight: 700; color: #ca8a04;">RT-P08: Large Linkset Split-Up</td>
+              <td style="padding: 0.6rem 0.8rem;"><span class="hero-tag" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; font-size: 0.75rem;">✅ Verified Showcase</span></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>rel="item"</code>, <code>rel="collection"</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>dist/id/dataset/arms-mbon.*.linkset.json</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/08-large-linksets.md" target="_blank">08-large-linksets.md</a></td>
+            </tr>
+            <tr>
+              <td style="padding: 0.6rem 0.8rem; font-weight: 700; color: #15803d;">RT-P10: Detached Local Storage Sidecars</td>
+              <td style="padding: 0.6rem 0.8rem;"><span class="hero-tag" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; font-size: 0.75rem;">✅ Verified Sidecars</span></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>*.linkset.json</code>, <code>*.sha256</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>dist/data/arms-mbon-darwin-core.zip.linkset.json</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/10-detached-local-storage.md" target="_blank">10-detached-local-storage.md</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </main>
 
@@ -208,7 +294,7 @@ export class HtmlPageRenderer {
     </div>
   </footer>
 
-  <!-- Enhanced Inspector Modal -->
+  <!-- Enhanced Inspector Modal with File & Location Matrix -->
   <div class="modal-overlay" id="modalOverlay" onclick="closeStationModal()"></div>
   <div class="station-modal" id="stationModal">
     <button class="modal-close" onclick="closeStationModal()">&times;</button>
@@ -217,6 +303,14 @@ export class HtmlPageRenderer {
     <p style="font-size: 0.85rem; font-family: monospace; background: var(--bg-subtle); padding: 0.4rem 0.6rem; border-radius: var(--radius-sm); color: var(--vliz-blue);" id="modalPath">/path</p>
     <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); margin: 0.8rem 0;" id="modalDesc">Description text goes here.</p>
     
+    <!-- Files & Locations Matrix -->
+    <div class="modal-section" style="background: var(--bg-subtle); padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--panel-border);">
+      <div class="modal-section-title" style="margin-bottom: 0.4rem;"><i class="fa-solid fa-folder-tree" style="color: var(--vliz-blue);"></i> Physical Files & Nginx Location:</div>
+      <div style="font-size: 0.8rem; margin-bottom: 0.3rem;"><strong>Static File in /dist:</strong> <code id="modalStaticFile" style="color: #0369a1;">dist/...</code></div>
+      <div style="font-size: 0.8rem; margin-bottom: 0.3rem;"><strong>Source Generator:</strong> <code id="modalSourceFile" style="color: #047857;">generator/...</code></div>
+      <div style="font-size: 0.8rem;"><strong>Nginx Config:</strong> <code id="modalNginxLoc" style="color: #b45309;">location = ...</code></div>
+    </div>
+
     <!-- Applicable RT Patterns -->
     <div class="modal-section">
       <div class="modal-section-title"><i class="fa-solid fa-layer-group" style="color: var(--marine-teal);"></i> Applicable Radical Transparency Patterns:</div>
@@ -384,14 +478,25 @@ export class HtmlPageRenderer {
       });
     }
 
-    function handleNodeClick(el, title, uri, desc, liveUrl) {
+    function handleNodeClick(el, title, uri, desc, liveUrl, staticFile, sourceFile, nginxLocation) {
       const patternsData = JSON.parse(el.getAttribute('data-patterns') || '[]');
       const specsData = JSON.parse(el.getAttribute('data-specs') || '[]');
+      const staticFilePath = staticFile || el.getAttribute('data-static-file') || 'dist' + uri;
+      const sourceFilePath = sourceFile || el.getAttribute('data-source-file') || 'generator/index.ts';
+      const nginxLoc = nginxLocation || el.getAttribute('data-nginx-loc') || 'location = ' + uri;
 
       document.getElementById('modalTitle').textContent = title;
       document.getElementById('modalPath').textContent = uri;
       document.getElementById('modalDesc').textContent = desc || 'Node endpoint participating in Radical Transparency linked data transit graph.';
       document.getElementById('modalActionBtn').href = liveUrl;
+
+      // Populate File & Location Matrix
+      const staticFileEl = document.getElementById('modalStaticFile');
+      if (staticFileEl) staticFileEl.textContent = staticFilePath;
+      const sourceFileEl = document.getElementById('modalSourceFile');
+      if (sourceFileEl) sourceFileEl.textContent = sourceFilePath;
+      const nginxLocEl = document.getElementById('modalNginxLoc');
+      if (nginxLocEl) nginxLocEl.textContent = nginxLoc;
 
       // Render RT Patterns
       const patternsListEl = document.getElementById('modalPatternsList');

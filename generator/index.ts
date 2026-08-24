@@ -4,7 +4,7 @@ import { RESOURCES, getResourceById } from "./resources";
 import { PROFILES, getProfileById } from "./profiles";
 import { serializeJsonLd, serializeTurtle, serializeRDFXML, expandUri } from "./rdfSerializer";
 import { generateDcatCatalog } from "./dcatGenerator";
-import { generateLinkset, generateApiCatalog } from "./linksetGenerator";
+import { generateLinkset, generateSplitLinksets, generateApiCatalog } from "./linksetGenerator";
 import { generateDataPayloads } from "./dataPayloads";
 import { generateOpenApiSpec, generateApiDocsHtml, generateApiSampleResponses } from "./openApiGenerator";
 import {
@@ -70,9 +70,9 @@ async function main() {
   // 1. Write Shared CSS
   fs.writeFileSync(path.join(DIST_DIR, "style.css"), getCssContent());
 
-  // 2. Generate Physical Download Payloads (CSV, GeoJSON, RO-Crate ZIP)
-  console.log(`Generating downloadable data payloads in /data/...`);
-  await generateDataPayloads(DIST_DIR);
+  // 2. Generate Physical Download Payloads (CSV, GeoJSON, RO-Crate ZIP) & RT-P10 Sidecars
+  console.log(`Generating downloadable data payloads and RT-P10 sidecars in /data/...`);
+  await generateDataPayloads(DIST_DIR, BASE_URL);
 
   // 3. Serialize all entities into RDF (Turtle, JSON-LD, RDF/XML) and Linksets in dist/id/{type}/
   console.log(`Serializing RDF graphs and RFC 9264 Linksets in dist/id/...`);
@@ -93,6 +93,14 @@ async function main() {
     fs.writeFileSync(path.join(targetDir, `${nameSlug}.ttl`), ttl);
     fs.writeFileSync(path.join(targetDir, `${nameSlug}.rdf`), rdf);
     fs.writeFileSync(path.join(targetDir, `${nameSlug}.linkset.json`), JSON.stringify(linkset, null, 2));
+
+    // Showcase RT-P08: Large Linkset Split-Up on arms-mbon
+    if (resource.id === "resource-arms-mbon") {
+      const splitLinksets = generateSplitLinksets(resource, BASE_URL);
+      fs.writeFileSync(path.join(targetDir, `${nameSlug}.conneg.linkset.json`), JSON.stringify(splitLinksets.conneg, null, 2));
+      fs.writeFileSync(path.join(targetDir, `${nameSlug}.profiles.linkset.json`), JSON.stringify(splitLinksets.profiles, null, 2));
+      fs.writeFileSync(path.join(targetDir, `${nameSlug}.provenance.linkset.json`), JSON.stringify(splitLinksets.provenance, null, 2));
+    }
   }
 
   // 4. Generate DCAT-3 Catalogue (Turtle, JSON-LD, HTML)
@@ -217,7 +225,55 @@ async function main() {
   sitemapXml += `</urlset>\n`;
   fs.writeFileSync(path.join(DIST_DIR, "sitemap.xml"), sitemapXml);
 
-  const robotsTxt = `User-agent: *\nAllow: /\nSitemap: ${BASE_URL}/sitemap.xml\n`;
+  // RT-P07 Catalogue Assistance: Generate Sub-Sitemaps & Sitemap Index
+  console.log(`Generating sitemap-index.xml and sub-sitemaps for RT-P07...`);
+  
+  // 1. sitemap-datasets.xml
+  let sitemapDatasets = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n        xmlns:rs="http://www.openarchives.org/rs/terms/">\n`;
+  for (const res of RESOURCES) {
+    const typeSlug = getEntityTypeSlug(res);
+    const nameSlug = getEntityNameSlug(res);
+    sitemapDatasets += `  <url>\n    <loc>${BASE_URL}/id/${typeSlug}/${nameSlug}</loc>\n`;
+    if (res.profileId) {
+      sitemapDatasets += `    <rs:ln rel="profile" href="${BASE_URL}/id/profile/${res.profileId}" />\n`;
+    }
+    sitemapDatasets += `    <rs:ln rel="linkset" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json" type="application/linkset+json" />\n`;
+    sitemapDatasets += `  </url>\n`;
+  }
+  sitemapDatasets += `</urlset>\n`;
+  fs.writeFileSync(path.join(DIST_DIR, "sitemap-datasets.xml"), sitemapDatasets);
+
+  // 2. sitemap-profiles.xml
+  let sitemapProfiles = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n        xmlns:rs="http://www.openarchives.org/rs/terms/">\n`;
+  sitemapProfiles += `  <url>\n    <loc>${BASE_URL}/id/profiles</loc>\n    <rs:ln rel="type" href="http://www.w3.org/ns/dx/prof/Profile" />\n  </url>\n`;
+  for (const prof of PROFILES) {
+    sitemapProfiles += `  <url>\n    <loc>${BASE_URL}/id/profile/${prof.id}</loc>\n`;
+    sitemapProfiles += `    <rs:ln rel="type" href="http://www.w3.org/ns/dx/prof/Profile" />\n`;
+    sitemapProfiles += `    <rs:ln rel="linkset" href="${BASE_URL}/id/profile/${prof.id}.linkset.json" type="application/linkset+json" />\n`;
+    sitemapProfiles += `  </url>\n`;
+  }
+  sitemapProfiles += `</urlset>\n`;
+  fs.writeFileSync(path.join(DIST_DIR, "sitemap-profiles.xml"), sitemapProfiles);
+
+  // 3. sitemap-catalog.xml
+  let sitemapCatalog = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n        xmlns:rs="http://www.openarchives.org/rs/terms/">\n`;
+  sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/catalog/</loc>\n    <rs:ln rel="type" href="https://www.w3.org/TR/vocab-dcat/" />\n    <rs:ln rel="alternate" href="${BASE_URL}/catalog/dcat.ttl" type="text/turtle" />\n  </url>\n`;
+  sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/.well-known/api-catalog</loc>\n    <rs:ln rel="profile" href="https://www.rfc-editor.org/info/rfc9727" />\n  </url>\n`;
+  sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/api/v1/observations</loc>\n    <rs:ln rel="cite-as" href="${BASE_URL}/id/dataset/arms-mbon" />\n  </url>\n`;
+  sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/api/docs/</loc>\n    <rs:ln rel="service-desc" href="${BASE_URL}/api/openapi.json" />\n  </url>\n`;
+  sitemapCatalog += `</urlset>\n`;
+  fs.writeFileSync(path.join(DIST_DIR, "sitemap-catalog.xml"), sitemapCatalog);
+
+  // 4. sitemap-index.xml
+  let sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  sitemapIndex += `  <sitemap>\n    <loc>${BASE_URL}/sitemap.xml</loc>\n  </sitemap>\n`;
+  sitemapIndex += `  <sitemap>\n    <loc>${BASE_URL}/sitemap-datasets.xml</loc>\n  </sitemap>\n`;
+  sitemapIndex += `  <sitemap>\n    <loc>${BASE_URL}/sitemap-profiles.xml</loc>\n  </sitemap>\n`;
+  sitemapIndex += `  <sitemap>\n    <loc>${BASE_URL}/sitemap-catalog.xml</loc>\n  </sitemap>\n`;
+  sitemapIndex += `</sitemapindex>\n`;
+  fs.writeFileSync(path.join(DIST_DIR, "sitemap-index.xml"), sitemapIndex);
+
+  const robotsTxt = `User-agent: *\nAllow: /\nSitemap: ${BASE_URL}/sitemap-index.xml\nSitemap: ${BASE_URL}/sitemap.xml\n`;
   fs.writeFileSync(path.join(DIST_DIR, "robots.txt"), robotsTxt);
 
   // 10. Generate Nginx Content-Negotiation Map (nginx-coneg.conf)
@@ -373,6 +429,74 @@ async function main() {
     // 3. Headers for Linkset (.linkset.json)
     headersConf += `location = /id/${typeSlug}/${nameSlug}.linkset.json {\n`;
     headersConf += `    add_header Link '<${entityPid}>; rel="describes", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
+    headersConf += `}\n\n`;
+
+    // 4. Headers for RT-P08 Child Split Linksets (arms-mbon showcase)
+    if (res.id === "resource-arms-mbon") {
+      const masterLinksetUri = `${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json`;
+      for (const splitKind of ["conneg", "profiles", "provenance"]) {
+        headersConf += `location = /id/${typeSlug}/${nameSlug}.${splitKind}.linkset.json {\n`;
+        headersConf += `    add_header Link '<${entityPid}>; rel="describes", <${masterLinksetUri}>; rel="collection", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
+        headersConf += `}\n\n`;
+      }
+    }
+  }
+
+  // Headers for RT-P04 Data Payloads & RT-P10 Offline Sidecars
+  const armsZipLinks = [
+    `<${BASE_URL}/id/dataset/arms-mbon>; rel="cite-as"`,
+    `<${BASE_URL}/id/profile/marine-genomic-dataset-profile>; rel="profile"`,
+    `<${BASE_URL}/id/profile/ro-crate-package-profile>; rel="profile"`,
+    `<${BASE_URL}/id/dataset/arms-mbon.ttl>; rel="describedby"; type="text/turtle"`,
+    `<${BASE_URL}/id/dataset/arms-mbon.html>; rel="describedby"; type="text/html"`,
+    `<${BASE_URL}/id/dataset/arms-mbon.linkset.json>; rel="linkset"; type="application/linkset+json"`
+  ];
+  headersConf += `location = /data/arms-mbon-rocrate.zip {\n`;
+  headersConf += `    add_header Link '${armsZipLinks.join(", ")}' always;\n`;
+  headersConf += `}\n\n`;
+
+  headersConf += `location = /data/arms-mbon-rocrate.zip.linkset.json {\n`;
+  headersConf += `    default_type application/linkset+json;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/data/arms-mbon-rocrate.zip>; rel="describes", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
+  headersConf += `}\n\n`;
+
+  const armsCsvLinks = [
+    `<${BASE_URL}/id/dataset/arms-mbon>; rel="cite-as"`,
+    `<${BASE_URL}/id/profile/marine-genomic-dataset-profile>; rel="profile"`,
+    `<${BASE_URL}/id/dataset/arms-mbon.ttl>; rel="describedby"; type="text/turtle"`,
+    `<${BASE_URL}/id/dataset/arms-mbon.html>; rel="describedby"; type="text/html"`,
+    `<${BASE_URL}/id/dataset/arms-mbon.linkset.json>; rel="linkset"; type="application/linkset+json"`
+  ];
+  headersConf += `location = /data/arms-mbon-18s.csv {\n`;
+  headersConf += `    add_header Link '${armsCsvLinks.join(", ")}' always;\n`;
+  headersConf += `}\n\n`;
+
+  headersConf += `location = /data/arms-mbon-18s.csv.linkset.json {\n`;
+  headersConf += `    default_type application/linkset+json;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/data/arms-mbon-18s.csv>; rel="describes", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
+  headersConf += `}\n\n`;
+
+  const sensorCsvLinks = [
+    `<${BASE_URL}/id/dataset/north-sea-sensors>; rel="cite-as"`,
+    `<${BASE_URL}/id/profile/sensor-telemetry-profile>; rel="profile"`,
+    `<${BASE_URL}/id/dataset/north-sea-sensors.ttl>; rel="describedby"; type="text/turtle"`,
+    `<${BASE_URL}/id/dataset/north-sea-sensors.html>; rel="describedby"; type="text/html"`,
+    `<${BASE_URL}/id/dataset/north-sea-sensors.linkset.json>; rel="linkset"; type="application/linkset+json"`
+  ];
+  headersConf += `location = /data/north-sea-sensors-latest.csv {\n`;
+  headersConf += `    add_header Link '${sensorCsvLinks.join(", ")}' always;\n`;
+  headersConf += `}\n\n`;
+
+  headersConf += `location = /data/north-sea-sensors-latest.csv.linkset.json {\n`;
+  headersConf += `    default_type application/linkset+json;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/data/north-sea-sensors-latest.csv>; rel="describes", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
+  headersConf += `}\n\n`;
+
+  // Headers for Sitemaps (RT-P06 & RT-P07)
+  const sitemapFiles = ["sitemap.xml", "sitemap-index.xml", "sitemap-datasets.xml", "sitemap-profiles.xml", "sitemap-catalog.xml"];
+  for (const sFile of sitemapFiles) {
+    headersConf += `location = /${sFile} {\n`;
+    headersConf += `    default_type application/xml;\n`;
     headersConf += `}\n\n`;
   }
 
