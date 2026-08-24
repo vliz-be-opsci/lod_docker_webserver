@@ -112,6 +112,10 @@ export function serializeJsonLd(resource: Resource, baseUri: string): string {
   if (resource.licenseUrl) {
     expandedProperties["schema:license"] = resource.licenseUrl;
   }
+  if (resource.profileId) {
+    expandedProperties["schema:conformsTo"] = { "@id": `${baseUri}/id/profile/${resource.profileId}` };
+    expandedProperties["dcterms:conformsTo"] = { "@id": `${baseUri}/id/profile/${resource.profileId}` };
+  }
 
   for (const [key, value] of Object.entries(resource.properties)) {
     const isRel = isRelationProperty(key);
@@ -164,6 +168,20 @@ export function serializeTurtle(resource: Resource, baseUri: string): string {
       namedNode(resUri),
       namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
       namedNode("http://www.w3.org/ns/dcat#Dataset")
+    );
+  }
+
+  // Add conformsTo triple if profile attached
+  if (resource.profileId) {
+    writer.addQuad(
+      namedNode(resUri),
+      namedNode("https://schema.org/conformsTo"),
+      namedNode(`${baseUri}/id/profile/${resource.profileId}`)
+    );
+    writer.addQuad(
+      namedNode(resUri),
+      namedNode("http://purl.org/dc/terms/conformsTo"),
+      namedNode(`${baseUri}/id/profile/${resource.profileId}`)
     );
   }
 
@@ -286,6 +304,10 @@ export function serializeRDFXML(resource: Resource, baseUri: string): string {
   xml += `    <dcterms:title>${escapeXml(resource.title)}</dcterms:title>\n`;
   xml += `    <schema:description>${escapeXml(resource.description)}</schema:description>\n`;
   xml += `    <dcterms:description>${escapeXml(resource.description)}</dcterms:description>\n`;
+  if (resource.profileId) {
+    xml += `    <schema:conformsTo rdf:resource="${escapeXml(`${baseUri}/id/profile/${resource.profileId}`)}"/>\n`;
+    xml += `    <dcterms:conformsTo rdf:resource="${escapeXml(`${baseUri}/id/profile/${resource.profileId}`)}"/>\n`;
+  }
 
   for (const [key, value] of Object.entries(resource.properties)) {
     const isRel = isRelationProperty(key);

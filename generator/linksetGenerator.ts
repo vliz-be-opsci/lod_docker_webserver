@@ -7,22 +7,16 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
   const nameSlug = getEntityNameSlug(resource);
   const htmlPath = getEntityHtmlPath(resource);
 
-  const typeEntries: { href: string }[] = [];
-  if (resource.profileId) {
-    typeEntries.push({ href: `${baseUrl}/id/profile/${resource.profileId}` });
-  }
-  if (resource.type === "Dataset") {
-    typeEntries.push({ href: "https://schema.org/Dataset" });
-  } else {
-    typeEntries.push({ href: `https://schema.org/${resource.type}` });
-  }
+  const typeUri = resource.type === "Dataset" ? "https://schema.org/Dataset" : `https://schema.org/${resource.type}`;
 
   const linkObj: any = {
     anchor: resourceUri,
     self: [
       { href: resource.sourceUri || resourceUri }
     ],
-    type: typeEntries,
+    type: [
+      { href: typeUri }
+    ],
     describedby: [
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`, type: "text/turtle" }
     ],
@@ -32,6 +26,12 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`, type: "application/rdf+xml" }
     ]
   };
+
+  if (resource.profileId) {
+    linkObj.profile = [
+      { href: `${baseUrl}/id/profile/${resource.profileId}` }
+    ];
+  }
 
   return {
     linkset: [linkObj]

@@ -1048,7 +1048,7 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
   <link rel="type" href="https://schema.org/Dataset">
-  ${dataset.profileId ? `<link rel="type" href="/id/profile/${dataset.profileId}">` : ''}
+  ${dataset.profileId ? `<link rel="profile" href="/id/profile/${dataset.profileId}">` : ''}
   <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
   <link rel="alternate" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
   <link rel="alternate" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">

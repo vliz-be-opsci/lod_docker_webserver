@@ -202,7 +202,7 @@ async function main() {
     const nameSlug = getEntityNameSlug(res);
     sitemapXml += `  <url>\n    <loc>${BASE_URL}/id/${typeSlug}/${nameSlug}</loc>\n`;
     if (res.profileId) {
-      sitemapXml += `    <rs:ln rel="type" href="${BASE_URL}/id/profile/${res.profileId}" />\n`;
+      sitemapXml += `    <rs:ln rel="profile" href="${BASE_URL}/id/profile/${res.profileId}" />\n`;
     }
     if (res.type === "Dataset") {
       sitemapXml += `    <rs:ln rel="type" href="https://schema.org/Dataset" />\n`;
@@ -309,7 +309,7 @@ async function main() {
     const profileUri = res.profileId ? `${BASE_URL}/id/profile/${res.profileId}` : undefined;
     const typeUri = res.type === "Dataset" ? "https://schema.org/Dataset" : `https://schema.org/${res.type}`;
 
-    const profileHeaders = profileUri ? [`<${profileUri}>; rel="type"`] : [];
+    const profileHeaders = profileUri ? [`<${profileUri}>; rel="profile"`] : [];
     const typeHeader = `<${typeUri}>; rel="type"`;
 
     // 1. Headers for .html landing page

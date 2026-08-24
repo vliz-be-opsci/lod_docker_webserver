@@ -15,7 +15,7 @@ describe("HTML Template Rendering", () => {
     expect(html).toContain('href="/id/person/katrina.html"');
     expect(html).toContain('href="/id/profiles"');
     expect(html).toContain('rel="type" href="https://schema.org/Dataset"');
-    expect(html).not.toContain('rel="profile"');
+    expect(html).toContain('rel="profile" href="/id/profile/marine-genomic-dataset-profile"');
   });
 
   it("renders institute HTML with /id/ links", () => {
