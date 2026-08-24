@@ -330,14 +330,15 @@ export const RESOURCES: MarineEntity[] = [
     id: "resource-marineinfo-api",
     type: "DataService",
     category: "service",
-    title: "MarineInfo Subsetting & Observation API",
-    description: "An OpenAPI 3.0-compliant data service supporting parameterized subsetting queries for marine biodiversity, ARMS genomic monitoring, and buoy telemetry observations.",
+    title: "ARMS-MBON Subsetting & Observation API",
+    description: "An OpenAPI 3.0-compliant data service supporting parameterized subsetting queries for the ARMS-MBON Metagenomic 18S Observations dataset.",
     sourceUri: "https://marineinfo.org/api",
     properties: {
-      "schema:name": "MarineInfo API",
+      "schema:name": "ARMS-MBON Subsetting API",
       "schema:endpointUrl": "http://localhost:8080/api/v1/observations",
       "schema:potentialAction": "QueryObservations",
       "dcat:endpointDescription": "http://localhost:8080/api/openapi.json",
+      "dcat:servesDataset": "resource-arms-mbon",
       "owl:sameAs": "https://marineinfo.org/api"
     }
   },

@@ -257,12 +257,20 @@ async function main() {
 
   headersConf += `location = /api/v1/observations {\n`;
   headersConf += `    default_type application/json;\n`;
+  headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
+  headersConf += `    add_header Access-Control-Allow-Methods "GET, OPTIONS" always;\n`;
+  headersConf += `    add_header Access-Control-Allow-Headers "Range, DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Accept, Link" always;\n`;
+  headersConf += `    add_header Access-Control-Expose-Headers "Link, Content-Type, Location" always;\n`;
   headersConf += `    add_header Link '${apiLinks.join(", ")}' always;\n`;
   headersConf += `    try_files /api/v1/observations.json /api/v1/observations =404;\n`;
   headersConf += `}\n\n`;
 
   headersConf += `location = /api/v1/observations.json {\n`;
   headersConf += `    default_type application/json;\n`;
+  headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
+  headersConf += `    add_header Access-Control-Allow-Methods "GET, OPTIONS" always;\n`;
+  headersConf += `    add_header Access-Control-Allow-Headers "Range, DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Accept, Link" always;\n`;
+  headersConf += `    add_header Access-Control-Expose-Headers "Link, Content-Type, Location" always;\n`;
   headersConf += `    add_header Link '${apiLinks.join(", ")}' always;\n`;
   headersConf += `}\n\n`;
 
