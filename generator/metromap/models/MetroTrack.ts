@@ -10,6 +10,9 @@ export class MetroTrack {
     public readonly lineType: NodeCategory,
     public readonly relationLabel?: string,
     public readonly strokeColor?: string,
-    public readonly isDashed: boolean = false
+    public readonly isDashed: boolean = false,
+    public readonly rfcRelation?: string,
+    public readonly curlCommand?: string,
+    public readonly httpHeader?: string
   ) {}
 }

@@ -26,6 +26,10 @@ export class MetroNode {
     public readonly specs: Specification[] = [],
     public readonly description: string = "",
     public readonly liveUrl?: string,
-    public readonly isOrigin: boolean = false
+    public readonly isOrigin: boolean = false,
+    public readonly layer: 1 | 2 | 3 | 4 = 1,
+    public readonly staticFilePath?: string,
+    public readonly sourceGenerator?: string,
+    public readonly nginxConfigLocation?: string
   ) {}
 }

@@ -21,6 +21,20 @@ describe("MetroGraphBuilder & Discovery Cascade", () => {
 
     const armsPidNode = graph.nodes.find(n => n.id === "node-_id_dataset_arms-mbon");
     expect(armsPidNode).toBeDefined();
+
+    // Verify 4 layers assignment
+    expect(rootNode?.layer).toBe(1);
+    expect(armsPidNode?.layer).toBe(2);
+    const profileNode = graph.nodes.find(n => n.uri.includes("/id/profile/"));
+    if (profileNode) expect(profileNode.layer).toBe(3);
+    const payloadNode = graph.nodes.find(n => n.uri.includes("/data/"));
+    if (payloadNode) expect(payloadNode.layer).toBe(4);
+
+    // Verify track metadata
+    const apiTrack = graph.tracks.find(t => t.relationLabel?.includes("rel="));
+    expect(apiTrack).toBeDefined();
+    expect(apiTrack?.curlCommand).toContain("curl -I");
+    expect(apiTrack?.httpHeader).toContain("Link:");
   });
 
   it("builds focused subgraph when specific dataset PID is given as entrypoint", () => {
@@ -31,6 +45,7 @@ describe("MetroGraphBuilder & Discovery Cascade", () => {
     const armsPidNode = graph.nodes.find(n => n.uri === "/id/dataset/arms-mbon");
     expect(armsPidNode).toBeDefined();
     expect(armsPidNode?.isOrigin).toBe(true);
+    expect(armsPidNode?.layer).toBe(2);
 
     // Should include its distributions, formats, and linkset
     expect(graph.nodes.some(n => n.uri.includes("arms-mbon.linkset.json"))).toBe(true);
