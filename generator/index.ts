@@ -286,7 +286,7 @@ async function main() {
   const robotsTxt = `User-agent: *\nAllow: /\nSitemap: ${BASE_URL}/sitemap-index.xml\nSitemap: ${BASE_URL}/sitemap.xml\n`;
   fs.writeFileSync(path.join(DIST_DIR, "robots.txt"), robotsTxt);
 
-  // 10. Generate Nginx Content-Negotiation Map (nginx-coneg.conf)
+  // 10. Generate Nginx Content-Negotiation Map & DOI-to-Payload Map (nginx-coneg.conf)
   console.log(`Generating nginx-coneg.conf...`);
   let conegConf = `# Dynamic Content-Negotiation Map\n`;
   conegConf += `map $http_accept $conneg_suffix {\n`;
@@ -296,6 +296,20 @@ async function main() {
   conegConf += `    "~application/ld\\+json"          jsonld;\n`;
   conegConf += `    "~application/rdf\\+xml"          rdf;\n`;
   conegConf += `    "~application/linkset\\+json"     linkset.json;\n`;
+  conegConf += `}\n\n`;
+
+  conegConf += `# RT-P04 Local DOI Direct-to-Payload Resolution Map\n`;
+  conegConf += `map $uri $doi_payload_uri {\n`;
+  conegConf += `    default "";\n`;
+  for (const res of RESOURCES) {
+    if (res.doi && res.doi.startsWith("https://doi.org/")) {
+      const doiSuffix = res.doi.replace("https://doi.org/", "");
+      const primaryPayload = res.distributions && res.distributions.length > 0 ? res.distributions[0].downloadUrl : null;
+      if (primaryPayload) {
+        conegConf += `    "/doi/${doiSuffix}" "${primaryPayload}";\n`;
+      }
+    }
+  }
   conegConf += `}\n`;
 
   fs.writeFileSync(path.join(DIST_DIR, "nginx-coneg.conf"), conegConf);

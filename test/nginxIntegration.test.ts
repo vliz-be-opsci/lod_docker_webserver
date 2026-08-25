@@ -195,4 +195,18 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     expect(headersConf).toContain('location = /data/arms-mbon-rocrate.zip');
     expect(headersConf).toContain('rel="cite-as"');
   });
+
+  it("generates DOI-to-payload redirect map in nginx-coneg.conf", () => {
+    const conegConf = fs.readFileSync(path.join(distDir, "nginx-coneg.conf"), "utf-8");
+    expect(conegConf).toContain("map $uri $doi_payload_uri {");
+    expect(conegConf).toContain('"/doi/10.3897/biss.6.94630" "/data/ro-crate-paper.pdf";');
+    expect(conegConf).toContain('"/doi/10.14284/578" "/data/arms-mbon-18s.csv";');
+    expect(conegConf).toContain('"/doi/10.14284/412" "/data/arms-2018-samples.csv";');
+  });
+
+  it("configures /doi/ routing block in nginx.conf", () => {
+    const nginxConf = fs.readFileSync(path.resolve(process.cwd(), "nginx.conf"), "utf-8");
+    expect(nginxConf).toContain("location ~ ^/doi/");
+    expect(nginxConf).toContain("return 303 $scheme://$http_host$doi_payload_uri;");
+  });
 });
