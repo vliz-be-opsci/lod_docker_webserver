@@ -209,4 +209,19 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     expect(nginxConf).toContain("location ~ ^/doi/");
     expect(nginxConf).toContain("return 303 $scheme://$http_host$doi_payload_uri;");
   });
+
+  it("generates RT-P04 signposting headers for ro-crate-paper.pdf in nginx-headers.conf", () => {
+    const headersConf = fs.readFileSync(path.join(distDir, "nginx-headers.conf"), "utf-8");
+    expect(headersConf).toContain("location = /data/ro-crate-paper.pdf");
+    expect(headersConf).toContain('<http://localhost:8080/doi/10.3897/biss.6.94630>; rel="cite-as"');
+    expect(headersConf).toContain('<http://localhost:8080/id/publication/ro-crate-paper.ttl>; rel="describedby"; type="text/turtle"');
+    expect(headersConf).toContain('<http://localhost:8080/id/publication/ro-crate-paper.html>; rel="describedby"; type="text/html"');
+    expect(headersConf).toContain('<http://localhost:8080/id/publication/ro-crate-paper.linkset.json>; rel="linkset"; type="application/linkset+json"');
+  });
+
+  it("anchors dataset payloads back to local DOI in cite-as header", () => {
+    const headersConf = fs.readFileSync(path.join(distDir, "nginx-headers.conf"), "utf-8");
+    expect(headersConf).toContain('<http://localhost:8080/doi/10.14284/578>; rel="cite-as"');
+    expect(headersConf).toContain('<http://localhost:8080/doi/10.14284/412>; rel="cite-as"');
+  });
 });

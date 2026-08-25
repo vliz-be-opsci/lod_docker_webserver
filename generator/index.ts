@@ -483,6 +483,7 @@ async function main() {
 
   // Headers for RT-P04 Direct Data Payloads (No Landing Page Solution)
   const armsZipLinks = [
+    `<${BASE_URL}/doi/10.14284/578>; rel="cite-as"`,
     `<${BASE_URL}/id/dataset/arms-mbon>; rel="cite-as"`,
     `<${BASE_URL}/id/profile/marine-genomic-dataset-profile>; rel="profile"`,
     `<${BASE_URL}/id/profile/ro-crate-package-profile>; rel="profile"`,
@@ -495,6 +496,7 @@ async function main() {
   headersConf += `}\n\n`;
 
   const armsCsvLinks = [
+    `<${BASE_URL}/doi/10.14284/578>; rel="cite-as"`,
     `<${BASE_URL}/id/dataset/arms-mbon>; rel="cite-as"`,
     `<${BASE_URL}/id/profile/marine-genomic-dataset-profile>; rel="profile"`,
     `<${BASE_URL}/id/dataset/arms-mbon.ttl>; rel="describedby"; type="text/turtle"`,
@@ -503,6 +505,30 @@ async function main() {
   ];
   headersConf += `location = /data/arms-mbon-18s.csv {\n`;
   headersConf += `    add_header Link '${armsCsvLinks.join(", ")}' always;\n`;
+  headersConf += `}\n\n`;
+
+  const arms2018CsvLinks = [
+    `<${BASE_URL}/doi/10.14284/412>; rel="cite-as"`,
+    `<${BASE_URL}/id/dataset/arms-2018>; rel="cite-as"`,
+    `<${BASE_URL}/id/profile/marine-ecological-baseline-profile>; rel="profile"`,
+    `<${BASE_URL}/id/dataset/arms-2018.ttl>; rel="describedby"; type="text/turtle"`,
+    `<${BASE_URL}/id/dataset/arms-2018.html>; rel="describedby"; type="text/html"`,
+    `<${BASE_URL}/id/dataset/arms-2018.linkset.json>; rel="linkset"; type="application/linkset+json"`
+  ];
+  headersConf += `location = /data/arms-2018-samples.csv {\n`;
+  headersConf += `    add_header Link '${arms2018CsvLinks.join(", ")}' always;\n`;
+  headersConf += `}\n\n`;
+
+  const paperPdfLinks = [
+    `<${BASE_URL}/doi/10.3897/biss.6.94630>; rel="cite-as"`,
+    `<${BASE_URL}/id/publication/ro-crate-paper>; rel="cite-as"`,
+    `<${BASE_URL}/id/publication/ro-crate-paper.ttl>; rel="describedby"; type="text/turtle"`,
+    `<${BASE_URL}/id/publication/ro-crate-paper.jsonld>; rel="describedby"; type="application/ld+json"`,
+    `<${BASE_URL}/id/publication/ro-crate-paper.html>; rel="describedby"; type="text/html"`,
+    `<${BASE_URL}/id/publication/ro-crate-paper.linkset.json>; rel="linkset"; type="application/linkset+json"`
+  ];
+  headersConf += `location = /data/ro-crate-paper.pdf {\n`;
+  headersConf += `    add_header Link '${paperPdfLinks.join(", ")}' always;\n`;
   headersConf += `}\n\n`;
 
   const sensorCsvLinks = [
