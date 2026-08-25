@@ -184,16 +184,17 @@ const AUDIT_DOCS: ComplianceDoc[] = [
     rtEnhancements: {
       headers: [
         "Link: <https://schema.org/ScholarlyArticle>; rel=\"profile\"",
+        "Link: </doi/10.3897/biss.6.94630>; rel=\"cite-as\"",
         "Link: </id/publication/ro-crate-paper.ttl>; rel=\"describedby\"; type=\"text/turtle\"",
         "Link: </id/publication/ro-crate-paper.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\"",
         "Link: </data/ro-crate-paper.pdf>; rel=\"alternate\"; type=\"application/pdf\""
       ],
       linkset: "/id/publication/ro-crate-paper.linkset.json",
       distributions: [
-        "PDF: /data/ro-crate-paper.pdf (Full open access article)"
+        "PDF: /data/ro-crate-paper.pdf (Direct RT-P04 resolution from /doi/10.3897/biss.6.94630 with rel=\"cite-as\")"
       ],
       rdf: ["/id/publication/ro-crate-paper.ttl", "/id/publication/ro-crate-paper.jsonld"],
-      conneg: "GET /id/publication/ro-crate-paper returns 303."
+      conneg: "GET /doi/10.3897/biss.6.94630 returns 303 to PDF payload; GET /id/publication/ro-crate-paper returns 303 to negotiated RDF/HTML."
     }
   },
   {

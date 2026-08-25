@@ -112,9 +112,9 @@ export const RESOURCE_GAP_SPECS: ResourceGapSpec[] = [
     missingPatterns: ["RT-P04 (Cite-As)"],
     compliantPatterns: ["RT-P03", "RT-P07"],
     description: "PDF file is served, but omits Link: <PID>; rel='cite-as'. Machines cannot trace downloaded PDF to its conceptual PID.",
-    testCommand8080: "curl -I http://localhost:8080/data/ro-crate-paper.pdf",
-    testCommand8081: "curl -I http://localhost:8081/data/ro-crate-paper.pdf",
-    expectedDiff: "8080 includes Link: </id/publication/ro-crate-paper>; rel='cite-as'; 8081 omits cite-as header."
+    testCommand8080: "curl -I http://localhost:8080/doi/10.3897/biss.6.94630 && curl -I http://localhost:8080/data/ro-crate-paper.pdf",
+    testCommand8081: "curl -I http://localhost:8081/doi/10.3897/biss.6.94630 && curl -I http://localhost:8081/data/ro-crate-paper.pdf",
+    expectedDiff: "8080 DOI 303s directly to PDF payload with rel='cite-as' to DOI; 8081 DOI redirects to HTML landing page and PDF omits cite-as."
   },
   {
     resourceId: "resource-marineinfo-api",

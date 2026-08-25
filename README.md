@@ -218,12 +218,14 @@ curl -s http://localhost:8080/id/dataset/eurobis-occurrences.ttl | grep conforms
 curl -s http://localhost:8081/id/dataset/eurobis-occurrences.ttl | grep conformsTo
 ```
 
-#### 5. Data Payload PID Uplink (`ro-crate-paper`)
+#### 5. RT-P04 DOI Direct Payload Resolution & PID Uplink (`ro-crate-paper`)
 ```bash
-# On 8080 (Reference): Includes Link: <http://localhost:8080/id/publication/ro-crate-paper>; rel="cite-as"
+# On 8080 (Reference): DOI resolves directly (303) to PDF payload, and PDF includes rel="cite-as" pointing to the DOI
+curl -I http://localhost:8080/doi/10.3897/biss.6.94630
 curl -I http://localhost:8080/data/ro-crate-paper.pdf
 
-# On 8081 (Gapped): Serves binary PDF without rel="cite-as" uplink header
+# On 8081 (Gapped): DOI forces redirect (303) to HTML landing page silo, and PDF serves without rel="cite-as" header
+curl -I http://localhost:8081/doi/10.3897/biss.6.94630
 curl -I http://localhost:8081/data/ro-crate-paper.pdf
 ```
 
