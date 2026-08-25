@@ -55,6 +55,7 @@ function ensureDirs() {
     path.join(DIST_DIR, "catalog"),
     path.join(DIST_DIR, "data"),
     path.join(DIST_DIR, "api", "docs"),
+    path.join(DIST_DIR, "api", "v1"),
     path.join(DIST_DIR, ".well-known")
   ];
   for (const dir of dirs) {
@@ -132,6 +133,11 @@ async function main() {
   fs.writeFileSync(path.join(DIST_DIR, "api", "openapi.json"), JSON.stringify(openApiSpec, null, 2));
   fs.writeFileSync(path.join(DIST_DIR, "api", "docs", "index.html"), generateApiDocsHtml(BASE_URL));
   generateApiSampleResponses(DIST_DIR);
+
+  // Generate dedicated RT-P05 API Linkset
+  const apiResource = RESOURCES.find(r => r.id === "resource-marineinfo-api")!;
+  const apiLinksetJson = generateLinkset(apiResource, BASE_URL);
+  fs.writeFileSync(path.join(DIST_DIR, "api", "v1", "observations.linkset.json"), JSON.stringify(apiLinksetJson, null, 2));
 
   // 7. Generate RFC 9727 API Catalog & Resource Map in /.well-known/
   console.log(`Generating RFC 9727 API Catalog in /.well-known/...`);
@@ -298,9 +304,15 @@ async function main() {
   console.log(`Generating nginx-headers.conf with RFC 8288 Link headers...`);
   let headersConf = `# Dynamically generated RFC 8288 Link headers\n`;
 
-  // Headers for root and catalog
+  // Headers for root, catalog, and api-catalog
   headersConf += `location = / {\n`;
   headersConf += `    add_header Link '<${BASE_URL}/.well-known/api-catalog>; rel="api-catalog", <${BASE_URL}/catalog/dcat.ttl>; rel="describedby"; type="text/turtle"' always;\n`;
+  headersConf += `}\n\n`;
+
+  headersConf += `location = /.well-known/api-catalog {\n`;
+  headersConf += `    default_type application/linkset+json;\n`;
+  headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/.well-known/api-catalog>; rel="api-catalog"' always;\n`;
   headersConf += `}\n\n`;
 
   headersConf += `location = /catalog/ {\n`;
@@ -309,11 +321,10 @@ async function main() {
 
   // Headers for Subsetting API (RT-P05)
   const apiLinks = [
-    `<${BASE_URL}/id/dataset/arms-mbon>; rel="cite-as"`,
-    `<${BASE_URL}/api/openapi.json>; rel="service-desc"; type="application/json"`,
-    `<${BASE_URL}/api/docs/>; rel="service-doc"; type="text/html"`,
-    `<${BASE_URL}/id/service/marineinfo-api.ttl>; rel="service-meta"; type="text/turtle"`,
-    `<${BASE_URL}/.well-known/api-catalog>; rel="linkset"`
+    `<${BASE_URL}/.well-known/api-catalog>; rel="api-catalog"`,
+    `<${BASE_URL}/api/v1/observations>; rel="collection"`,
+    `<${BASE_URL}/api/v1/observations.linkset.json>; rel="linkset"`,
+    `<${BASE_URL}/id/dataset/arms-mbon>; rel="cite-as"`
   ];
 
   headersConf += `location = /api/v1/observations {\n`;
@@ -333,6 +344,12 @@ async function main() {
   headersConf += `    add_header Access-Control-Allow-Headers "Range, DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Accept, Link" always;\n`;
   headersConf += `    add_header Access-Control-Expose-Headers "Link, Content-Type, Location" always;\n`;
   headersConf += `    add_header Link '${apiLinks.join(", ")}' always;\n`;
+  headersConf += `}\n\n`;
+
+  headersConf += `location = /api/v1/observations.linkset.json {\n`;
+  headersConf += `    default_type application/linkset+json;\n`;
+  headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/api/v1/observations>; rel="describes", <${BASE_URL}/.well-known/api-catalog>; rel="collection"' always;\n`;
   headersConf += `}\n\n`;
 
   // Headers for Profiles Catalog
@@ -382,7 +399,7 @@ async function main() {
     headersConf += `}\n\n`;
 
     headersConf += `location = /id/profile/${prof.id}.linkset.json {\n`;
-    headersConf += `    add_header Link '<${BASE_URL}/id/profile/${prof.id}>; rel="describes", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
+    headersConf += `    add_header Link '<${BASE_URL}/id/profile/${prof.id}>; rel="describes"' always;\n`;
     headersConf += `}\n\n`;
   }
 
@@ -433,7 +450,7 @@ async function main() {
 
     // 3. Headers for Linkset (.linkset.json)
     headersConf += `location = /id/${typeSlug}/${nameSlug}.linkset.json {\n`;
-    headersConf += `    add_header Link '<${entityPid}>; rel="describes", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
+    headersConf += `    add_header Link '<${entityPid}>; rel="describes"' always;\n`;
     headersConf += `}\n\n`;
 
     // 4. Headers for RT-P08 Child Split Linksets (arms-mbon showcase)
@@ -441,7 +458,7 @@ async function main() {
       const masterLinksetUri = `${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json`;
       for (const splitKind of ["conneg", "profiles", "provenance"]) {
         headersConf += `location = /id/${typeSlug}/${nameSlug}.${splitKind}.linkset.json {\n`;
-        headersConf += `    add_header Link '<${entityPid}>; rel="describes", <${masterLinksetUri}>; rel="collection", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
+        headersConf += `    add_header Link '<${entityPid}>; rel="describes", <${masterLinksetUri}>; rel="collection"' always;\n`;
         headersConf += `}\n\n`;
       }
     }

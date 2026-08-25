@@ -93,9 +93,8 @@ export async function generateGappedSite(distGappedDir: string, baseUrl: string)
     const emptyCatalog = {
       linkset: [
         {
-          anchor: `${baseUrl}/catalog/`,
-          "api-catalog": [{ href: `${baseUrl}/.well-known/api-catalog` }],
-          profile: [{ href: "https://www.rfc-editor.org/info/rfc9727" }]
+          anchor: `${baseUrl}/.well-known/api-catalog`,
+          item: []
         }
       ]
     };
@@ -149,6 +148,12 @@ export async function generateGappedSite(distGappedDir: string, baseUrl: string)
   gappedHeadersConf += `    add_header Link '<${baseUrl}/.well-known/api-catalog>; rel="api-catalog", <${baseUrl}/catalog/dcat.ttl>; rel="describedby"; type="text/turtle"' always;\n`;
   gappedHeadersConf += `}\n\n`;
 
+  gappedHeadersConf += `location = /.well-known/api-catalog {\n`;
+  gappedHeadersConf += `    default_type application/linkset+json;\n`;
+  gappedHeadersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
+  gappedHeadersConf += `    add_header Link '<${baseUrl}/.well-known/api-catalog>; rel="api-catalog"' always;\n`;
+  gappedHeadersConf += `}\n\n`;
+
   gappedHeadersConf += `location = /catalog/ {\n`;
   gappedHeadersConf += `    add_header Link '<https://www.w3.org/TR/vocab-dcat/>; rel="type", <${baseUrl}/catalog/dcat.ttl>; rel="alternate"; type="text/turtle"' always;\n`;
   gappedHeadersConf += `}\n\n`;
@@ -180,7 +185,7 @@ export async function generateGappedSite(distGappedDir: string, baseUrl: string)
     gappedHeadersConf += `}\n\n`;
 
     gappedHeadersConf += `location = /id/profile/${prof.id}.linkset.json {\n`;
-    gappedHeadersConf += `    add_header Link '<${baseUrl}/id/profile/${prof.id}>; rel="describes", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
+    gappedHeadersConf += `    add_header Link '<${baseUrl}/id/profile/${prof.id}>; rel="describes"' always;\n`;
     gappedHeadersConf += `}\n\n`;
   }
 
@@ -240,7 +245,7 @@ export async function generateGappedSite(distGappedDir: string, baseUrl: string)
 
     // GAP 4: vliz linkset location still declared so Nginx serves 404 when file is missing
     gappedHeadersConf += `location = /id/${typeSlug}/${nameSlug}.linkset.json {\n`;
-    gappedHeadersConf += `    add_header Link '<${entityPid}>; rel="describes", <https://www.rfc-editor.org/info/rfc9264>; rel="type"' always;\n`;
+    gappedHeadersConf += `    add_header Link '<${entityPid}>; rel="describes"' always;\n`;
     gappedHeadersConf += `}\n\n`;
   }
 

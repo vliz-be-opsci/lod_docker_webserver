@@ -1,7 +1,50 @@
 import { MarineEntity, getEntityTypeSlug, getEntityNameSlug, getEntityHtmlPath } from "./types";
 import { expandUri } from "./rdfSerializer";
 
+export function generateApiServiceLinkset(resource: MarineEntity, baseUrl: string): object {
+  const datasetPid = resource.properties?.["dcat:servesDataset"]
+    ? expandUri(resource.properties["dcat:servesDataset"], baseUrl)
+    : `${baseUrl}/id/dataset/arms-mbon`;
+
+  return {
+    linkset: [
+      {
+        anchor: `${baseUrl}/api/v1/observations`,
+        "cite-as": [
+          { href: datasetPid }
+        ],
+        "api-catalog": [
+          { href: `${baseUrl}/.well-known/api-catalog` }
+        ],
+        "service-desc": [
+          {
+            href: `${baseUrl}/api/openapi.json`,
+            type: "application/json",
+            profile: "https://www.openapis.org/#profile"
+          }
+        ],
+        "service-doc": [
+          {
+            href: `${baseUrl}/api/docs/`,
+            type: "text/html"
+          }
+        ],
+        "service-meta": [
+          {
+            href: `${baseUrl}/id/service/marineinfo-api.ttl`,
+            type: "text/turtle"
+          }
+        ]
+      }
+    ]
+  };
+}
+
 export function generateLinkset(resource: MarineEntity, baseUrl: string): object {
+  if (resource.category === "service" || resource.category === "api") {
+    return generateApiServiceLinkset(resource, baseUrl);
+  }
+
   const resourceUri = expandUri(resource.id, baseUrl);
   const typeSlug = getEntityTypeSlug(resource);
   const nameSlug = getEntityNameSlug(resource);
@@ -127,39 +170,10 @@ export function generateApiCatalog(baseUrl: string): object {
   return {
     linkset: [
       {
-        anchor: `${baseUrl}/api/v1/observations`,
-        "cite-as": [
-          { href: `${baseUrl}/id/dataset/arms-mbon` }
-        ],
-        "api-catalog": [
-          { href: `${baseUrl}/.well-known/api-catalog` }
-        ],
-        profile: [
-          { href: "https://www.rfc-editor.org/info/rfc9727" }
-        ],
-        "service-desc": [
+        anchor: `${baseUrl}/.well-known/api-catalog`,
+        item: [
           {
-            href: `${baseUrl}/api/openapi.json`,
-            type: "application/json",
-            profile: "https://www.openapis.org/#profile"
-          }
-        ],
-        "service-doc": [
-          {
-            href: `${baseUrl}/api/docs/`,
-            type: "text/html"
-          }
-        ],
-        "service-meta": [
-          {
-            href: `${baseUrl}/id/service/marineinfo-api.ttl`,
-            type: "text/turtle"
-          }
-        ],
-        collection: [
-          {
-            href: `${baseUrl}/catalog/`,
-            type: "text/html"
+            href: `${baseUrl}/api/v1/observations`
           }
         ]
       }
