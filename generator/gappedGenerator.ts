@@ -137,6 +137,20 @@ export async function generateGappedSite(distGappedDir: string, baseUrl: string)
   gappedConegConf += `    "~application/ld\\+json"          jsonld;\n`;
   gappedConegConf += `    "~application/rdf\\+xml"          rdf;\n`;
   gappedConegConf += `    "~application/linkset\\+json"     linkset.json;\n`;
+  gappedConegConf += `}\n\n`;
+
+  // Gapped DOI Map: forces redirect to HTML landing page (chokepoint)
+  gappedConegConf += `# Gapped Simulation: DOI forces redirect to HTML Landing Page\n`;
+  gappedConegConf += `map $uri $doi_payload_uri {\n`;
+  gappedConegConf += `    default "";\n`;
+  for (const res of RESOURCES) {
+    if (res.doi && res.doi.startsWith("https://doi.org/")) {
+      const doiSuffix = res.doi.replace("https://doi.org/", "");
+      const typeSlug = res.category || res.type.toLowerCase();
+      const nameSlug = res.id.replace("resource-", "");
+      gappedConegConf += `    "/doi/${doiSuffix}" "/id/${typeSlug}/${nameSlug}.html";\n`;
+    }
+  }
   gappedConegConf += `}\n`;
   fs.writeFileSync(path.join(distGappedDir, "nginx-coneg.conf"), gappedConegConf);
 

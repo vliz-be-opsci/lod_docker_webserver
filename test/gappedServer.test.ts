@@ -98,4 +98,17 @@ describe("Gapped LOD Server & Gap Simulation Engine", () => {
     expect(linkset.linkset.length).toBe(1);
     expect(linkset.linkset[0].anchor).toContain("/id/person/katrina");
   });
+
+  it("Scenario 10: gapped DOI forces redirect to HTML landing page instead of payload", () => {
+    const gappedConeg = fs.readFileSync(path.join(distGappedDir, "nginx-coneg.conf"), "utf-8");
+    expect(gappedConeg).toContain("map $uri $doi_payload_uri {");
+    expect(gappedConeg).toContain('"/doi/10.3897/biss.6.94630" "/id/publication/ro-crate-paper.html";');
+    expect(gappedConeg).toContain('"/doi/10.14284/578" "/id/dataset/arms-mbon.html";');
+  });
+
+  it("configures gapped /doi/ routing block in nginx-gapped.conf", () => {
+    const nginxGappedConf = fs.readFileSync(path.resolve(process.cwd(), "nginx-gapped.conf"), "utf-8");
+    expect(nginxGappedConf).toContain("location ~ ^/doi/");
+    expect(nginxGappedConf).toContain("return 303 $scheme://$http_host$doi_payload_uri;");
+  });
 });
