@@ -25,10 +25,10 @@ export function generateOpenApiSpec(baseUrl: string): any {
       }
     ],
     paths: {
-      "/api/v1/observations": {
+      "/api/observations/v1": {
         get: {
           summary: "Subset ARMS-MBON Observations",
-          description: "Retrieve subsetted marine genomic observation records from the ARMS-MBON dataset. Response headers include rel=\"collection\" (pointing to /api/v1/observations), rel=\"cite-as\" (pointing to /id/dataset/arms-mbon), and rel=\"linkset\" per RT-P05.",
+          description: "Retrieve subsetted marine genomic observation records from the ARMS-MBON dataset. Response headers include rel=\"collection\" (pointing to /api/observations/v1), rel=\"cite-as\" (pointing to /id/dataset/arms-mbon), and rel=\"linkset\" per RT-P05.",
           operationId: "getObservations",
           parameters: [
             {
@@ -174,12 +174,12 @@ export function generateApiDocsHtml(baseUrl: string): string {
 }
 
 export function generateApiSampleResponses(distDir: string): void {
-  const apiV1Dir = path.join(distDir, "api", "v1");
-  if (!fs.existsSync(apiV1Dir)) {
-    fs.mkdirSync(apiV1Dir, { recursive: true });
+  const apiObsDir = path.join(distDir, "api", "observations");
+  if (!fs.existsSync(apiObsDir)) {
+    fs.mkdirSync(apiObsDir, { recursive: true });
   }
 
-  // 1. /api/v1/observations default response (and as observations.json)
+  // 1. /api/observations/v1 default response (and as v1.json)
   const observationsResponse = {
     dataset: "http://localhost:8080/id/dataset/arms-mbon",
     title: "ARMS-MBON data on long-term monitoring of hard-bottom communities: 18S results from 2018-2020",
@@ -205,6 +205,6 @@ export function generateApiSampleResponses(distDir: string): void {
     ]
   };
 
-  fs.writeFileSync(path.join(apiV1Dir, "observations"), JSON.stringify(observationsResponse, null, 2));
-  fs.writeFileSync(path.join(apiV1Dir, "observations.json"), JSON.stringify(observationsResponse, null, 2));
+  fs.writeFileSync(path.join(apiObsDir, "v1"), JSON.stringify(observationsResponse, null, 2));
+  fs.writeFileSync(path.join(apiObsDir, "v1.json"), JSON.stringify(observationsResponse, null, 2));
 }

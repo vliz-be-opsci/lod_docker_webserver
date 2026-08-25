@@ -128,8 +128,8 @@ export const RESOURCE_GAP_SPECS: ResourceGapSpec[] = [
     missingPatterns: ["RT-P05", "RT-P06"],
     compliantPatterns: [],
     description: "API returns observations, but omits rel='cite-as', rel='service-desc', and is unindexed in /.well-known/api-catalog.",
-    testCommand8080: "curl -s http://localhost:8080/.well-known/api-catalog | grep /api/v1/observations",
-    testCommand8081: "curl -s http://localhost:8081/.well-known/api-catalog | grep /api/v1/observations",
+    testCommand8080: "curl -s http://localhost:8080/.well-known/api-catalog | grep /api/observations/v1",
+    testCommand8081: "curl -s http://localhost:8081/.well-known/api-catalog | grep /api/observations/v1",
     expectedDiff: "8080 catalog registers the observations endpoint; 8081 catalog does not register the API."
   },
   {

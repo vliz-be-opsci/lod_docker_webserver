@@ -55,7 +55,7 @@ function ensureDirs() {
     path.join(DIST_DIR, "catalog"),
     path.join(DIST_DIR, "data"),
     path.join(DIST_DIR, "api", "docs"),
-    path.join(DIST_DIR, "api", "v1"),
+    path.join(DIST_DIR, "api", "observations"),
     path.join(DIST_DIR, ".well-known")
   ];
   for (const dir of dirs) {
@@ -137,7 +137,7 @@ async function main() {
   // Generate dedicated RT-P05 API Linkset
   const apiResource = RESOURCES.find(r => r.id === "resource-marineinfo-api")!;
   const apiLinksetJson = generateLinkset(apiResource, BASE_URL);
-  fs.writeFileSync(path.join(DIST_DIR, "api", "v1", "observations.linkset.json"), JSON.stringify(apiLinksetJson, null, 2));
+  fs.writeFileSync(path.join(DIST_DIR, "api", "observations", "v1.linkset.json"), JSON.stringify(apiLinksetJson, null, 2));
 
   // 7. Generate RFC 9727 API Catalog & Resource Map in /.well-known/
   console.log(`Generating RFC 9727 API Catalog in /.well-known/...`);
@@ -269,7 +269,7 @@ async function main() {
   let sitemapCatalog = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n        xmlns:rs="http://www.openarchives.org/rs/terms/">\n`;
   sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/catalog/</loc>\n    <rs:ln rel="type" href="https://www.w3.org/TR/vocab-dcat/" />\n    <rs:ln rel="alternate" href="${BASE_URL}/catalog/dcat.ttl" type="text/turtle" />\n  </url>\n`;
   sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/.well-known/api-catalog</loc>\n    <rs:ln rel="profile" href="https://www.rfc-editor.org/info/rfc9727" />\n  </url>\n`;
-  sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/api/v1/observations</loc>\n    <rs:ln rel="cite-as" href="${BASE_URL}/id/dataset/arms-mbon" />\n  </url>\n`;
+  sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/api/observations/v1</loc>\n    <rs:ln rel="cite-as" href="${BASE_URL}/id/dataset/arms-mbon" />\n  </url>\n`;
   sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/api/docs/</loc>\n    <rs:ln rel="service-desc" href="${BASE_URL}/api/openapi.json" />\n  </url>\n`;
   sitemapCatalog += `</urlset>\n`;
   fs.writeFileSync(path.join(DIST_DIR, "sitemap-catalog.xml"), sitemapCatalog);
@@ -312,7 +312,6 @@ async function main() {
   headersConf += `location = /.well-known/api-catalog {\n`;
   headersConf += `    default_type application/linkset+json;\n`;
   headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
-  headersConf += `    add_header Link '<${BASE_URL}/.well-known/api-catalog>; rel="api-catalog"' always;\n`;
   headersConf += `}\n\n`;
 
   headersConf += `location = /catalog/ {\n`;
@@ -322,34 +321,38 @@ async function main() {
   // Headers for Subsetting API (RT-P05)
   const apiLinks = [
     `<${BASE_URL}/.well-known/api-catalog>; rel="api-catalog"`,
-    `<${BASE_URL}/api/v1/observations>; rel="collection"`,
-    `<${BASE_URL}/api/v1/observations.linkset.json>; rel="linkset"`,
+    `<${BASE_URL}/api/observations/v1>; rel="collection"`,
+    `<${BASE_URL}/api/observations/v1.linkset.json>; rel="linkset"`,
     `<${BASE_URL}/id/dataset/arms-mbon>; rel="cite-as"`
   ];
 
-  headersConf += `location = /api/v1/observations {\n`;
+  headersConf += `location = /api/observations/v1 {\n`;
   headersConf += `    default_type application/json;\n`;
   headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
   headersConf += `    add_header Access-Control-Allow-Methods "GET, OPTIONS" always;\n`;
   headersConf += `    add_header Access-Control-Allow-Headers "Range, DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Accept, Link" always;\n`;
   headersConf += `    add_header Access-Control-Expose-Headers "Link, Content-Type, Location" always;\n`;
   headersConf += `    add_header Link '${apiLinks.join(", ")}' always;\n`;
-  headersConf += `    try_files /api/v1/observations.json /api/v1/observations =404;\n`;
+  headersConf += `    if ($args = "") {\n`;
+  headersConf += `        return 307 $scheme://$http_host/api/observations/v1?marker_gene=18S&limit=20;\n`;
+  headersConf += `    }\n`;
+  headersConf += `    try_files /api/observations/v1.json /api/observations/v1 =404;\n`;
   headersConf += `}\n\n`;
 
-  headersConf += `location = /api/v1/observations.json {\n`;
+  headersConf += `location = /api/observations/v1.json {\n`;
   headersConf += `    default_type application/json;\n`;
   headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
   headersConf += `    add_header Access-Control-Allow-Methods "GET, OPTIONS" always;\n`;
   headersConf += `    add_header Access-Control-Allow-Headers "Range, DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Accept, Link" always;\n`;
   headersConf += `    add_header Access-Control-Expose-Headers "Link, Content-Type, Location" always;\n`;
   headersConf += `    add_header Link '${apiLinks.join(", ")}' always;\n`;
+  headersConf += `    try_files /api/observations/v1.json /api/observations/v1 =404;\n`;
   headersConf += `}\n\n`;
 
-  headersConf += `location = /api/v1/observations.linkset.json {\n`;
+  headersConf += `location = /api/observations/v1.linkset.json {\n`;
   headersConf += `    default_type application/linkset+json;\n`;
   headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
-  headersConf += `    add_header Link '<${BASE_URL}/api/v1/observations>; rel="describes", <${BASE_URL}/.well-known/api-catalog>; rel="collection"' always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/api/observations/v1>; rel="describes", <${BASE_URL}/.well-known/api-catalog>; rel="collection"' always;\n`;
   headersConf += `}\n\n`;
 
   // Headers for Profiles Catalog

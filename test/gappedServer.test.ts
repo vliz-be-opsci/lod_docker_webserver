@@ -77,11 +77,11 @@ describe("Gapped LOD Server & Gap Simulation Engine", () => {
 
   it("Scenario 7: marineinfo-api is omitted from api-catalog and omits cite-as in dist-gapped", () => {
     const apiCatalog = JSON.parse(fs.readFileSync(path.join(distGappedDir, ".well-known", "api-catalog"), "utf-8"));
-    expect(JSON.stringify(apiCatalog)).not.toContain("/api/v1/observations");
+    expect(JSON.stringify(apiCatalog)).not.toContain("/api/observations/v1");
 
     const headersConf = fs.readFileSync(path.join(distGappedDir, "nginx-headers.conf"), "utf-8");
-    expect(headersConf).toContain("location = /api/v1/observations");
-    const obsBlock = headersConf.substring(headersConf.indexOf("location = /api/v1/observations"), headersConf.indexOf("}", headersConf.indexOf("location = /api/v1/observations")));
+    expect(headersConf).toContain("location = /api/observations/v1");
+    const obsBlock = headersConf.substring(headersConf.indexOf("location = /api/observations/v1"), headersConf.indexOf("}", headersConf.indexOf("location = /api/observations/v1")));
     expect(obsBlock).not.toContain('rel="cite-as"');
   });
 

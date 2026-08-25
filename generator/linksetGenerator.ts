@@ -9,7 +9,7 @@ export function generateApiServiceLinkset(resource: MarineEntity, baseUrl: strin
   return {
     linkset: [
       {
-        anchor: `${baseUrl}/api/v1/observations`,
+        anchor: `${baseUrl}/api/observations/v1`,
         "cite-as": [
           { href: datasetPid }
         ],
@@ -173,7 +173,7 @@ export function generateApiCatalog(baseUrl: string): object {
         anchor: `${baseUrl}/.well-known/api-catalog`,
         item: [
           {
-            href: `${baseUrl}/api/v1/observations`
+            href: `${baseUrl}/api/observations/v1`
           }
         ]
       }

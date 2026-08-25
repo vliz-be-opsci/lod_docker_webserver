@@ -151,7 +151,6 @@ export async function generateGappedSite(distGappedDir: string, baseUrl: string)
   gappedHeadersConf += `location = /.well-known/api-catalog {\n`;
   gappedHeadersConf += `    default_type application/linkset+json;\n`;
   gappedHeadersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
-  gappedHeadersConf += `    add_header Link '<${baseUrl}/.well-known/api-catalog>; rel="api-catalog"' always;\n`;
   gappedHeadersConf += `}\n\n`;
 
   gappedHeadersConf += `location = /catalog/ {\n`;
@@ -159,13 +158,13 @@ export async function generateGappedSite(distGappedDir: string, baseUrl: string)
   gappedHeadersConf += `}\n\n`;
 
   // GAP 7: marineinfo-api -> Omit rel="cite-as" and rel="service-desc"
-  gappedHeadersConf += `location = /api/v1/observations {\n`;
+  gappedHeadersConf += `location = /api/observations/v1 {\n`;
   gappedHeadersConf += `    default_type application/json;\n`;
   gappedHeadersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
-  gappedHeadersConf += `    try_files /api/v1/observations.json /api/v1/observations =404;\n`;
+  gappedHeadersConf += `    try_files /api/observations/v1.json /api/observations/v1 =404;\n`;
   gappedHeadersConf += `}\n\n`;
 
-  gappedHeadersConf += `location = /api/v1/observations.json {\n`;
+  gappedHeadersConf += `location = /api/observations/v1.json {\n`;
   gappedHeadersConf += `    default_type application/json;\n`;
   gappedHeadersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
   gappedHeadersConf += `}\n\n`;

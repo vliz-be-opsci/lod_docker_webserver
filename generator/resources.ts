@@ -335,7 +335,7 @@ export const RESOURCES: MarineEntity[] = [
     sourceUri: "https://marineinfo.org/api",
     properties: {
       "schema:name": "ARMS-MBON Subsetting API",
-      "schema:endpointUrl": "http://localhost:8080/api/v1/observations",
+      "schema:endpointUrl": "http://localhost:8080/api/observations/v1",
       "schema:potentialAction": "QueryObservations",
       "dcat:endpointDescription": "http://localhost:8080/api/openapi.json",
       "dcat:servesDataset": "resource-arms-mbon",

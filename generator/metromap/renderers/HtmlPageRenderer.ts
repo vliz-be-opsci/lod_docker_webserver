@@ -208,7 +208,7 @@ export class HtmlPageRenderer {
             <option value="/id/dataset/north-sea-sensors">🟠 Layer 2: Sensors PID</option>
             <option value="/id/profile/marine-genomic-dataset-profile.html">📑 Layer 3: Composite Profile</option>
             <option value="/data/arms-mbon-rocrate.zip">📦 Layer 4: RO-Crate ZIP Payload</option>
-            <option value="/api/v1/observations">⚡ Layer 4: Subsetting API</option>
+            <option value="/api/observations/v1">⚡ Layer 4: Subsetting API</option>
           </select>
           <button class="btn-download" onclick="executeSearch()" style="padding: 0.35rem 0.75rem; font-size: 0.82rem;">Spotlight &rarr;</button>
         </div>
@@ -388,7 +388,7 @@ export class HtmlPageRenderer {
               <td style="padding: 0.6rem 0.8rem;"><span class="hero-tag" style="background:#f0fdf4; color:#16a34a;">Layer 4</span></td>
               <td style="padding: 0.6rem 0.8rem;"><span class="hero-tag" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; font-size: 0.75rem;">✅ Verified</span></td>
               <td style="padding: 0.6rem 0.8rem;"><code>rel="cite-as"</code>, <code>rel="service-desc"</code></td>
-              <td style="padding: 0.6rem 0.8rem;"><code>dist/api/openapi.json</code>, <code>dist/api/v1/observations.json</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>dist/api/openapi.json</code>, <code>dist/api/observations/v1.json</code></td>
               <td style="padding: 0.6rem 0.8rem;"><a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/05-subsetting-api.md" target="_blank">05-subsetting-api.md</a></td>
             </tr>
             <tr style="border-bottom: 1px solid var(--panel-border);">
@@ -977,8 +977,8 @@ export class HtmlPageRenderer {
             reasoning: "Harvester discovers dynamic Subsetting API for ARMS-MBON."
           },
           {
-            uri: "/api/v1/observations",
-            req: "GET /api/v1/observations HTTP/1.1",
+            uri: "/api/observations/v1",
+            req: "GET /api/observations/v1 HTTP/1.1",
             res: "HTTP/1.1 200 OK | Link: </id/dataset/arms-mbon>; rel='cite-as', </api/openapi.json>; rel='service-desc'",
             pattern: "RT-P05 Subsetting API",
             reasoning: "API response returns dynamic observations anchored to dataset PID and OpenAPI documentation."
