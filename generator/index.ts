@@ -426,14 +426,20 @@ async function main() {
     const typeSlug = getEntityTypeSlug(res);
     const nameSlug = getEntityNameSlug(res);
     const entityPid = `${BASE_URL}/id/${typeSlug}/${nameSlug}`;
+    const localDoiUri = res.doi && res.doi.startsWith("https://doi.org/")
+      ? `${BASE_URL}/doi/${res.doi.replace("https://doi.org/", "")}`
+      : undefined;
     const profileUri = res.profileId ? `${BASE_URL}/id/profile/${res.profileId}` : undefined;
     const typeUri = res.type === "Dataset" ? "https://schema.org/Dataset" : `https://schema.org/${res.type}`;
 
     const profileHeaders = profileUri ? [`<${profileUri}>; rel="profile"`] : [];
     const typeHeader = `<${typeUri}>; rel="type"`;
+    const doiDescribesHeader = localDoiUri ? [`<${localDoiUri}>; rel="describes"`] : [];
 
     // 1. Headers for .html landing page
     const htmlLinks: string[] = [
+      `<${entityPid}>; rel="describes"`,
+      ...doiDescribesHeader,
       ...profileHeaders,
       typeHeader,
       `<${BASE_URL}/id/${typeSlug}/${nameSlug}.ttl>; rel="describedby"; type="text/turtle"`,
@@ -448,6 +454,7 @@ async function main() {
     // 2. Headers for RDF representations (.ttl, .jsonld, .rdf)
     const rdfLinks: string[] = [
       `<${entityPid}>; rel="describes"`,
+      ...doiDescribesHeader,
       ...profileHeaders,
       typeHeader,
       `<${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json>; rel="linkset"; type="application/linkset+json"`
@@ -466,8 +473,12 @@ async function main() {
     headersConf += `}\n\n`;
 
     // 3. Headers for Linkset (.linkset.json)
+    const linksetDescribes = [
+      `<${entityPid}>; rel="describes"`,
+      ...doiDescribesHeader
+    ];
     headersConf += `location = /id/${typeSlug}/${nameSlug}.linkset.json {\n`;
-    headersConf += `    add_header Link '<${entityPid}>; rel="describes"' always;\n`;
+    headersConf += `    add_header Link '${linksetDescribes.join(", ")}' always;\n`;
     headersConf += `}\n\n`;
 
     // 4. Headers for RT-P08 Child Split Linksets (arms-mbon showcase)

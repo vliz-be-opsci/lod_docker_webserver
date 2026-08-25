@@ -44,4 +44,18 @@ describe("RDF Serialization & Linkset Generation", () => {
     expect(linkset.linkset.some((entry: any) => entry.anchor === "http://localhost:8080/id/dataset/arms-mbon.jsonld" && entry.self[0].href === "http://localhost:8080/id/dataset/arms-mbon")).toBe(true);
     expect(linkset.linkset.some((entry: any) => entry.anchor === "http://localhost:8080/id/dataset/arms-mbon.html" && entry.self[0].href === "http://localhost:8080/id/dataset/arms-mbon")).toBe(true);
   });
+
+  it("generates linkset for publication containing describes pointing to DOI across primary and alternate anchors", () => {
+    const paper = getResourceById("resource-ro-crate-paper")!;
+    const linkset = generateLinkset(paper, "http://localhost:8080") as any;
+
+    expect(linkset.linkset[0].describes[0].href).toBe("http://localhost:8080/doi/10.3897/biss.6.94630");
+    expect(linkset.linkset[0].item[0].href).toBe("http://localhost:8080/data/ro-crate-paper.pdf");
+
+    const ttlEntry = linkset.linkset.find((e: any) => e.anchor === "http://localhost:8080/id/publication/ro-crate-paper.ttl");
+    expect(ttlEntry.describes[0].href).toBe("http://localhost:8080/doi/10.3897/biss.6.94630");
+
+    const htmlEntry = linkset.linkset.find((e: any) => e.anchor === "http://localhost:8080/id/publication/ro-crate-paper.html");
+    expect(htmlEntry.describes[0].href).toBe("http://localhost:8080/doi/10.3897/biss.6.94630");
+  });
 });

@@ -51,6 +51,10 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
 
   const typeUri = resource.type === "Dataset" ? "https://schema.org/Dataset" : `https://schema.org/${resource.type}`;
 
+  const localDoiUri = resource.doi && resource.doi.startsWith("https://doi.org/")
+    ? `${baseUrl}/doi/${resource.doi.replace("https://doi.org/", "")}`
+    : undefined;
+
   const primaryObj: any = {
     anchor: resourceUri,
     alternate: [
@@ -58,7 +62,8 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`, type: "application/ld+json" },
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.html`, type: "text/html; charset=utf-8" },
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`, type: "application/rdf+xml" }
-    ]
+    ],
+    ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
   };
 
   if (resource.type) {
@@ -78,6 +83,12 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.profiles.linkset.json`, title: "Profiles & Conformance Linkset" },
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.provenance.linkset.json`, title: "Provenance & Attribution Linkset" }
     ];
+  } else if (resource.distributions && resource.distributions.length > 0) {
+    primaryObj.item = resource.distributions.map(d => ({
+      href: d.downloadUrl.startsWith("http") ? d.downloadUrl : `${baseUrl}${d.downloadUrl}`,
+      type: d.mediaType,
+      title: d.title
+    }));
   }
 
   return {
@@ -85,19 +96,23 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
       primaryObj,
       {
         anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`,
-        self: [{ href: resourceUri }]
+        self: [{ href: resourceUri }],
+        ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
       },
       {
         anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`,
-        self: [{ href: resourceUri }]
+        self: [{ href: resourceUri }],
+        ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
       },
       {
         anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.html`,
-        self: [{ href: resourceUri }]
+        self: [{ href: resourceUri }],
+        ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
       },
       {
         anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`,
-        self: [{ href: resourceUri }]
+        self: [{ href: resourceUri }],
+        ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
       }
     ]
   };
@@ -108,6 +123,9 @@ export function generateSplitLinksets(resource: MarineEntity, baseUrl: string): 
   const typeSlug = getEntityTypeSlug(resource);
   const nameSlug = getEntityNameSlug(resource);
   const masterLinksetUri = `${baseUrl}/id/${typeSlug}/${nameSlug}.linkset.json`;
+  const localDoiUri = resource.doi && resource.doi.startsWith("https://doi.org/")
+    ? `${baseUrl}/doi/${resource.doi.replace("https://doi.org/", "")}`
+    : undefined;
 
   return {
     conneg: {
@@ -121,23 +139,28 @@ export function generateSplitLinksets(resource: MarineEntity, baseUrl: string): 
             { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`, type: "application/ld+json" },
             { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.html`, type: "text/html; charset=utf-8" },
             { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`, type: "application/rdf+xml" }
-          ]
+          ],
+          ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
         },
         {
           anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`,
-          self: [{ href: resourceUri }]
+          self: [{ href: resourceUri }],
+          ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
         },
         {
           anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`,
-          self: [{ href: resourceUri }]
+          self: [{ href: resourceUri }],
+          ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
         },
         {
           anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.html`,
-          self: [{ href: resourceUri }]
+          self: [{ href: resourceUri }],
+          ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
         },
         {
           anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`,
-          self: [{ href: resourceUri }]
+          self: [{ href: resourceUri }],
+          ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
         }
       ]
     },
