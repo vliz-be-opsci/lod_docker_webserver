@@ -22,14 +22,16 @@ bun install
 bun run generate
 ```
 
-### 2. Run the Dockerized Server
-Spin up the Dockerized Nginx webserver:
+### 2. Run the Dockerized Server Stack
+Spin up the dual-container stack:
 ```bash
 docker compose up --build -d
 ```
 
-The portal will be accessible at:
-👉 **[http://localhost:8080](http://localhost:8080)**
+The stack exposes two independent webservers:
+* 🟢 **Reference Implementation (Port 8080)**: 👉 **[http://localhost:8080](http://localhost:8080)** (100% RT-P01..08 Compliant Gold Standard)
+* 🟡 **Gapped Simulation Server (Port 8081)**: 👉 **[http://localhost:8081](http://localhost:8081)** (Simulated legacy/flawed repository)
+* 📊 **Interactive Gap Audit Dashboard**: 👉 **[http://localhost:8080/audit.html](http://localhost:8080/audit.html)** or **`/compliance.json`**
 
 ---
 
@@ -131,13 +133,127 @@ Detailed audit documents are generated under [`docs/compliance/`](docs/complianc
 
 ---
 
+---
+
+## ⚖️ Dual-Container Testing Topology: Port 8080 vs. Port 8081
+
+This repository builds and runs a **dual-container topology** in [`docker-compose.yml`](docker-compose.yml) designed for crawler development, semantic harvesting evaluation, and compliance testing:
+
+1. **`lod-reference-webserver` (Port 8080)**: The **Gold Standard** reference implementation (100% compliant with EOSC RT-P01 through RT-P08).
+2. **`lod-gapped-webserver` (Port 8081)**: The **Simulated Gapped Repository** exhibiting deliberate, real-world semantic defects across catalog entities.
+
+```
+                   ┌────────────────────────────────────────┐
+                   │          docker compose stack          │
+                   └────────────────────────────────────────┘
+                               /                 \
+                              /                   \
+        Port 8080            /                     \            Port 8081
+   ┌─────────────────────────────┐             ┌─────────────────────────────┐
+   │ lod-reference-webserver     │             │ lod-gapped-webserver        │
+   │ (100% RT-P01..08 Compliant) │             │ (Simulated Gaps & Lacks)    │
+   ├─────────────────────────────┤             ├─────────────────────────────┤
+   │ • Full RFC 8288 Signposting │             │ • Missing Link headers      │
+   │ • RFC 9264 JSON Linksets    │             │ • No 303 Conneg (HTML only) │
+   │ • W3C DX-PROF Profiles      │             │ • Missing Profile mappings  │
+   │ • RFC 9727 API Catalog      │             │ • No standalone Linksets    │
+   │ • ResourceSync Sitemaps     │             │ • Missing cite-as on APIs   │
+   └─────────────────────────────┘             └─────────────────────────────┘
+```
+
+### Resource Gap & Maturity Matrix
+
+| Resource & Category | Port 8080 (Reference Server) | Port 8081 (Gapped Simulation) | Missing Patterns | Crawler Diagnostic |
+| :--- | :--- | :--- | :--- | :--- |
+| **`arms-mbon`** *(Dataset)* | 100% Full RT-P01..08 | **100% Full RT-P01..08** | *None* | Control baseline on both servers. |
+| **`arms-2018`** *(Dataset)* | 303 Conneg + RDF + Linksets | **Legacy HTML Silo** | `RT-P01`, `RT-P03`, `RT-P04`, `RT-P08` | 404 on `.ttl`/`.jsonld`/`.linkset.json`, no 303 redirect, no Link headers. |
+| **`north-sea-sensors`** *(Dataset)* | Full RFC 8288 Signposting | **Silent Server** | `RT-P01`, `RT-P03 (Headers)` | 303 conneg works, but **zero `Link:` response headers** emitted. |
+| **`eurobis-occurrences`** *(Dataset)* | DX-PROF Profile Shapes | **Missing Profiles** | `RT-P01`, `RT-P02` | Omits `rel="profile"` headers and `schema:conformsTo` in RDF. |
+| **`vliz`** *(Institute)* | Valid `.linkset.json` | **Missing Linkset** | `RT-P03 (Linkset)`, `RT-P08` | Advertises linkset in headers, but `/id/institute/vliz.linkset.json` returns **404**. |
+| **`ro-crate-paper`** *(Publication)* | `Link: <PID>; rel="cite-as"` | **Unanchored Payload** | `RT-P04 (Cite-As)` | Download serves PDF without `rel="cite-as"` Link header. |
+| **`marineinfo-api`** *(API Service)* | RFC 9727 API Catalog | **Orphan API Endpoint** | `RT-P05`, `RT-P06` | Omits `rel="cite-as"`, `rel="service-desc"`, and is unindexed in api-catalog. |
+| **`maregraph`** *(Project)* | Modular `sitemap-index.xml` | **Flat Legacy Sitemap** | `RT-P07` | Omitted from modular sub-sitemaps; in flat `sitemap.xml` without `rs:ln`. |
+| **`katrina`** *(Person)* | 2-Way Conneg Linkset | **Broken Inverse Selfs** | `RT-P03 (Inverse Bindings)` | Linkset omits reverse format anchor entries (`anchor: ...ttl`, `self: PID`). |
+
+---
+
+### Verifying Differences with `curl`
+
+#### 1. Content Negotiation vs. Plain HTML Silo (`arms-2018`)
+```bash
+# On 8080 (Reference): Returns 303 See Other redirecting to arms-2018.ttl with Link headers
+curl -I -H "Accept: text/turtle" http://localhost:8080/id/dataset/arms-2018
+
+# On 8081 (Gapped): Returns 200 OK with text/html directly, ignoring Accept header
+curl -I -H "Accept: text/turtle" http://localhost:8081/id/dataset/arms-2018
+
+# On 8081 (Gapped): RDF serializations return 404 Not Found
+curl -I http://localhost:8081/id/dataset/arms-2018.ttl
+```
+
+#### 2. HTTP Signposting vs. Silent Server (`north-sea-sensors`)
+```bash
+# On 8080 (Reference): Response includes full RFC 8288 Link headers (rel="describes", rel="profile", rel="linkset")
+curl -I http://localhost:8080/id/dataset/north-sea-sensors.ttl
+
+# On 8081 (Gapped): Returns 200 OK with text/turtle, but ZERO Link headers are emitted
+curl -I http://localhost:8081/id/dataset/north-sea-sensors.ttl
+```
+
+#### 3. Working Linkset vs. Dead Linkset (`vliz`)
+```bash
+# On 8080 (Reference): Returns 200 OK with full RFC 9264 linkset document
+curl -I http://localhost:8080/id/institute/vliz.linkset.json
+
+# On 8081 (Gapped): Returns 404 Not Found (simulating broken advertised signpost)
+curl -I http://localhost:8081/id/institute/vliz.linkset.json
+```
+
+#### 4. Profile Conformance Assertions (`eurobis-occurrences`)
+```bash
+# On 8080 (Reference): Output contains schema:conformsTo and dcterms:conformsTo
+curl -s http://localhost:8080/id/dataset/eurobis-occurrences.ttl | grep conformsTo
+
+# On 8081 (Gapped): Returns empty output (no profile conformance assertions in graph)
+curl -s http://localhost:8081/id/dataset/eurobis-occurrences.ttl | grep conformsTo
+```
+
+#### 5. Data Payload PID Uplink (`ro-crate-paper`)
+```bash
+# On 8080 (Reference): Includes Link: <http://localhost:8080/id/publication/ro-crate-paper>; rel="cite-as"
+curl -I http://localhost:8080/data/ro-crate-paper.pdf
+
+# On 8081 (Gapped): Serves binary PDF without rel="cite-as" uplink header
+curl -I http://localhost:8081/data/ro-crate-paper.pdf
+```
+
+#### 6. Hostwide API Catalog Registration (`marineinfo-api`)
+```bash
+# On 8080 (Reference): API endpoint is registered in RFC 9727 hostwide api-catalog
+curl -s http://localhost:8080/.well-known/api-catalog | grep /api/v1/observations
+
+# On 8081 (Gapped): Empty output (orphan API not registered in api-catalog)
+curl -s http://localhost:8081/.well-known/api-catalog | grep /api/v1/observations
+```
+
+#### 7. Bidirectional vs. Unidirectional Linkset (`katrina`)
+```bash
+# On 8080 (Reference): Contains 5 anchor blocks (primary + reverse self bindings for .ttl, .jsonld, .html, .rdf)
+curl -s http://localhost:8080/id/person/katrina.linkset.json
+
+# On 8081 (Gapped): Contains only 1 anchor block (missing reverse self anchors)
+curl -s http://localhost:8081/id/person/katrina.linkset.json
+```
+
+---
+
 ## 📚 References & Standards
 
 * **IANA Link Relations Registry**: [https://www.iana.org/assignments/link-relations](https://www.iana.org/assignments/link-relations)
 * **Radical Transparency Position Paper**: [https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf](https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf)
-* **Radical Transparency Slides**: [Google Slides Presentation](https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit)
 * **EOSC Semantic Interoperability Proposals**: [GitHub Repository](https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency)
 * **RFC 8288** — Web Linking
 * **RFC 9264** — Linkset: Media Types and a Link Relation Type for Link Sets
 * **RFC 9727** — The API Catalog Link Relation Type
 * **RFC 6906** — The 'profile' Link Relation Type
+

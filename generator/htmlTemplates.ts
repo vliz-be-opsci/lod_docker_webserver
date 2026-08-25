@@ -713,15 +713,141 @@ footer {
   .cards-grid {
     grid-template-columns: 1fr;
   }
-  header {
-    flex-direction: column;
-    gap: 1rem;
-  }
+/* Server Cards & Audit Matrix */
+.server-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.server-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.server-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.server-card.ref {
+  border-top: 4px solid var(--success);
+}
+
+.server-card.gapped {
+  border-top: 4px solid var(--accent-gold);
+}
+
+.server-card h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.badge-port {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  border: 1px solid var(--panel-border);
+  margin-bottom: 0.75rem;
+}
+
+.matrix-table-wrap {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2.5rem;
+}
+
+table.matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+table.matrix-table th {
+  background: var(--bg-subtle);
+  padding: 0.9rem 1rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--panel-border);
+}
+
+table.matrix-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--panel-border);
+  vertical-align: top;
+  color: var(--text-secondary);
+}
+
+table.matrix-table tr:hover {
+  background: rgba(13, 148, 136, 0.03);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.status-badge.pass {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.status-badge.fail {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.status-badge.gap {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.code-box {
+  background: var(--code-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.85rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: #38bdf8;
+  margin-top: 0.5rem;
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.5;
+}
 }
 `;
 }
 
-function renderHeader(activeNav: string): string {
+export function renderHeader(activeNav: string): string {
   return `
   <header>
     <div class="logo-container">
@@ -735,9 +861,35 @@ function renderHeader(activeNav: string): string {
       <a href="/api/docs/" class="${activeNav === 'api' ? 'active' : ''}">Subsetting API</a>
       <a href="/id/publication/ro-crate-paper.html" class="${activeNav === 'publications' ? 'active' : ''}">Publications</a>
       <a href="/map.html" class="${activeNav === 'map' ? 'active' : ''}">Metro Map</a>
+      <a href="/audit.html" class="${activeNav === 'audit' ? 'active' : ''}">Gap Audit</a>
       <a href="/id/institute/vliz.html" class="${activeNav === 'institutes' ? 'active' : ''}">Institute</a>
     </nav>
   </header>`;
+}
+
+export function renderFooter(): string {
+  return `
+  <footer>
+    <div class="footer-container">
+      <div>
+        <strong>VLIZ Marine Linked Data Portal</strong> — Live Reference Implementation implementing the <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" style="color: #ffffff; text-decoration: underline;">EOSC Radical Transparency (RT) Proposals</a> & Linkset Usage Patterns (RFC 8288, RFC 9264, RFC 9727, RFC 6906, RFC 6573, RFC 8574).
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" title="EOSC Radical Transparency Proposals on GitHub">🐙 EOSC RT Proposals (GitHub)</a>
+        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank" title="EOSC Linkset Usage Patterns (RT-P01 to RT-P08)">📋 RT Patterns (RT-P01..08)</a>
+        <a href="/map.html">🗺️ Metro Map</a>
+        <a href="/audit.html">📊 Gap Audit</a>
+        <a href="/id/profiles">📑 Profiles</a>
+        <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" title="Radical Transparency Position Paper">📄 Position Paper</a>
+        <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank" title="Presentation Slides">📊 Slides</a>
+        <a href="https://www.iana.org/assignments/link-relations" target="_blank" title="IANA Link Relations Registry">🌐 IANA Link Relations</a>
+        <a href="/catalog/dcat.ttl">DCAT Turtle</a>
+        <a href="/.well-known/api-catalog">API Catalog</a>
+        <a href="/sitemap.xml">Sitemap (rs:ln)</a>
+        <a href="https://github.com/vliz-be-opsci/lod_docker_webserver">GitHub Repo</a>
+      </div>
+    </div>
+  </footer>`;
 }
 
 function renderRtBox(resourceId: string, isDataset = false): string {
@@ -764,30 +916,6 @@ function renderRtBox(resourceId: string, isDataset = false): string {
             <li>🌐 <a href="https://www.iana.org/assignments/link-relations" target="_blank">IANA Link Relations Registry</a></li>
           </ul>
         </div>`;
-}
-
-function renderFooter(): string {
-  return `
-  <footer>
-    <div class="footer-container">
-      <div>
-        <strong>VLIZ Marine Linked Data Portal</strong> — Live Reference Implementation implementing the <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" style="color: #ffffff; text-decoration: underline;">EOSC Radical Transparency (RT) Proposals</a> & Linkset Usage Patterns (RFC 8288, RFC 9264, RFC 9727, RFC 6906, RFC 6573, RFC 8574).
-      </div>
-      <div class="footer-links">
-        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" title="EOSC Radical Transparency Proposals on GitHub">🐙 EOSC RT Proposals (GitHub)</a>
-        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank" title="EOSC Linkset Usage Patterns (RT-P01 to RT-P08)">📋 RT Patterns (RT-P01..08)</a>
-        <a href="/map.html">🗺️ Metro Map</a>
-        <a href="/id/profiles">📑 Profiles</a>
-        <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank" title="Radical Transparency Position Paper">📄 Position Paper</a>
-        <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank" title="Presentation Slides">📊 Slides</a>
-        <a href="https://www.iana.org/assignments/link-relations" target="_blank" title="IANA Link Relations Registry">🌐 IANA Link Relations</a>
-        <a href="/catalog/dcat.ttl">DCAT Turtle</a>
-        <a href="/.well-known/api-catalog">API Catalog</a>
-        <a href="/sitemap.xml">Sitemap (rs:ln)</a>
-        <a href="https://github.com/vliz-be-opsci/lod_docker_webserver">GitHub Repo</a>
-      </div>
-    </div>
-  </footer>`;
 }
 
 export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string): string {

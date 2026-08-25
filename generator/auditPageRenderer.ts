@@ -1,5 +1,6 @@
 import { MarineEntity, getEntityTypeSlug, getEntityNameSlug } from "./types";
 import { RESOURCES } from "./resources";
+import { renderHeader, renderFooter } from "./htmlTemplates";
 
 export interface ResourceGapSpec {
   resourceId: string;
@@ -213,200 +214,61 @@ export function generateAuditHtml(baseUrl8080: string, baseUrl8081: string): str
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Radical Transparency Compliance & Gap Audit</title>
+  <title>Radical Transparency Compliance & Gap Audit - VLIZ Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <style>
-    :root {
-      --bg-dark: #0f172a;
-      --bg-panel: #1e293b;
-      --panel-border: #334155;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent-blue: #38bdf8;
-      --accent-teal: #2dd4bf;
-      --accent-green: #4ade80;
-      --accent-red: #f87171;
-      --accent-amber: #fbbf24;
-    }
-    body {
-      background: var(--bg-dark);
-      color: var(--text-main);
-      font-family: 'Inter', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    .audit-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 2.5rem 1.5rem;
-    }
-    .audit-header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-    .audit-header h1 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 2.75rem;
-      font-weight: 900;
-      margin: 0 0 0.75rem;
-      background: linear-gradient(135deg, #38bdf8 0%, #2dd4bf 50%, #4ade80 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .audit-header p {
-      font-size: 1.15rem;
-      color: var(--text-muted);
-      max-width: 800px;
-      margin: 0 auto 1.5rem;
-      line-height: 1.6;
-    }
-    .server-cards {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-bottom: 3rem;
-    }
-    .server-card {
-      background: var(--bg-panel);
-      border: 1px solid var(--panel-border);
-      border-radius: 12px;
-      padding: 1.75rem;
-    }
-    .server-card.ref {
-      border-top: 4px solid var(--accent-green);
-    }
-    .server-card.gapped {
-      border-top: 4px solid var(--accent-amber);
-    }
-    .server-card h3 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.4rem;
-      margin: 0 0 0.5rem;
-    }
-    .badge-port {
-      display: inline-block;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-      font-weight: 700;
-      padding: 0.25rem 0.6rem;
-      border-radius: 6px;
-      background: #0f172a;
-      border: 1px solid var(--panel-border);
-      margin-bottom: 1rem;
-    }
-    .matrix-table-wrap {
-      background: var(--bg-panel);
-      border: 1px solid var(--panel-border);
-      border-radius: 12px;
-      overflow-x: auto;
-      margin-bottom: 3rem;
-    }
-    table.matrix-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 0.9rem;
-    }
-    table.matrix-table th {
-      background: #0f172a;
-      padding: 1rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      font-size: 0.78rem;
-      border-bottom: 1px solid var(--panel-border);
-    }
-    table.matrix-table td {
-      padding: 1rem;
-      border-bottom: 1px solid var(--panel-border);
-      vertical-align: top;
-    }
-    table.matrix-table tr:hover {
-      background: rgba(255, 255, 255, 0.02);
-    }
-    .status-badge {
-      display: inline-block;
-      font-size: 0.78rem;
-      font-weight: 700;
-      padding: 0.25rem 0.6rem;
-      border-radius: 9999px;
-    }
-    .status-badge.pass {
-      background: #14532d;
-      color: #86efac;
-    }
-    .status-badge.fail {
-      background: #7f1d1d;
-      color: #fca5a5;
-    }
-    .status-badge.gap {
-      background: #78350f;
-      color: #fde68a;
-    }
-    .code-box {
-      background: #090d16;
-      border: 1px solid #1e293b;
-      border-radius: 6px;
-      padding: 0.5rem 0.75rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      color: #38bdf8;
-      margin-top: 0.4rem;
-      overflow-x: auto;
-      white-space: pre;
-    }
-  </style>
+  <link rel="alternate" type="application/json" href="/compliance.json">
 </head>
 <body>
-  <header style="background: #090d16; border-bottom: 1px solid #1e293b; padding: 1rem 1.5rem;">
-    <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
-      <a href="/" style="color: #ffffff; text-decoration: none; font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 800;">
-        ⚓ VLIZ Marine LOD Portal
-      </a>
-      <div style="display: flex; gap: 1rem; font-size: 0.9rem;">
-        <a href="/" style="color: #94a3b8; text-decoration: none;">Catalogue</a>
-        <a href="/map.html" style="color: #94a3b8; text-decoration: none;">🗺️ Metro Map</a>
-        <a href="/id/profiles" style="color: #94a3b8; text-decoration: none;">Profiles</a>
-        <a href="/audit.html" style="color: #38bdf8; font-weight: 700; text-decoration: none;">📊 Gap Audit</a>
+  ${renderHeader('audit')}
+
+  <section class="hero">
+    <div class="hero-container">
+      <span class="hero-tag">Radical Transparency &bull; Dual-Container Audit</span>
+      <h2>Radical Transparency Compliance & Gap Audit</h2>
+      <p>Side-by-side verification matrix comparing the <strong>Gold Standard Reference Implementation (Port 8080)</strong> against the <strong>Simulated Gapped Repository (Port 8081)</strong> exhibiting real-world semantic deficiencies across all catalog resources.</p>
+      
+      <div class="rt-proposal-bar" style="margin-top: 1.5rem;">
+        <div class="rt-proposal-info">
+          <h4>Dual-Container Verification & Compliance API</h4>
+          <p>Automated parity diagnostics and machine-readable JSON evaluating RT-P01 through RT-P08 specifications.</p>
+        </div>
+        <div class="rt-proposal-buttons">
+          <a href="/compliance.json" target="_blank" class="rt-btn primary">
+            <i class="fa-solid fa-download"></i> Machine-Readable JSON (/compliance.json)
+          </a>
+          <a href="/map.html" class="rt-btn" style="background: rgba(13, 148, 136, 0.5); border-color: #0d9488;">
+            🗺️ RT Metro Map
+          </a>
+          <a href="/id/profiles" class="rt-btn" style="background: rgba(99, 102, 241, 0.4); border-color: #6366f1;">
+            📑 Semantic Profiles
+          </a>
+        </div>
       </div>
     </div>
-  </header>
+  </section>
 
-  <main class="audit-container">
-    <div class="audit-header">
-      <h1>Radical Transparency Compliance & Gap Audit</h1>
-      <p>
-        Side-by-side verification matrix comparing the <strong>Gold Standard Reference Implementation (Port 8080)</strong> against the <strong>Simulated Gapped Repository (Port 8081)</strong> implementing real-world semantic deficiencies across all catalog resources.
-      </p>
-      <a href="/compliance.json" target="_blank" class="author-pill" style="background: #0284c7; color: #ffffff; padding: 0.5rem 1rem; text-decoration: none; font-weight: 600;">
-        <i class="fa-solid fa-download"></i> Download Machine-Readable Audit JSON (/compliance.json)
-      </a>
-    </div>
-
+  <main class="main-container">
     <div class="server-cards">
       <div class="server-card ref">
-        <span class="badge-port" style="color: #4ade80;"><i class="fa-solid fa-server"></i> REFERENCE CONTAINER (PORT 8080)</span>
+        <span class="badge-port" style="color: #16a34a; background: #f0fdf4; border-color: #bbf7d0;"><i class="fa-solid fa-server"></i> REFERENCE CONTAINER (PORT 8080)</span>
         <h3>Gold Standard Reference Instance</h3>
-        <p style="color: #94a3b8; font-size: 0.92rem; line-height: 1.5;">
+        <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.5; margin: 0 0 1rem;">
           100% compliant implementation featuring all 8 EOSC Radical Transparency patterns (RT-P01 through RT-P08), bidirectional RFC 9264 JSON Linksets, W3C DX-PROF validation shapes, RFC 9727 API catalogs, and ResourceSync sitemaps.
         </p>
-        <div style="font-size: 0.85rem; font-weight: 700; color: #86efac;">
+        <div style="font-size: 0.85rem; font-weight: 700; color: #16a34a;">
           ✅ Compliance Score: 100% (All 9 Resources Pass)
         </div>
       </div>
 
       <div class="server-card gapped">
-        <span class="badge-port" style="color: #fbbf24;"><i class="fa-solid fa-triangle-exclamation"></i> GAPPED CONTAINER (PORT 8081)</span>
+        <span class="badge-port" style="color: #d97706; background: #fffbeb; border-color: #fde68a;"><i class="fa-solid fa-triangle-exclamation"></i> GAPPED CONTAINER (PORT 8081)</span>
         <h3>Simulated Gapped Repository Instance</h3>
-        <p style="color: #94a3b8; font-size: 0.92rem; line-height: 1.5;">
+        <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.5; margin: 0 0 1rem;">
           Deliberately injects distinct semantic gaps across 8 resources (missing 303 conneg, silent server lacking HTTP link headers, 404 on linksets, missing profile assertions, orphan APIs, and broken reverse format anchors).
         </p>
-        <div style="font-size: 0.85rem; font-weight: 700; color: #fde68a;">
+        <div style="font-size: 0.85rem; font-weight: 700; color: #b45309;">
           ⚠️ Simulated Maturity Score: 33% (8 Resources Gapped, 1 Control Baseline)
         </div>
       </div>
@@ -428,9 +290,9 @@ export function generateAuditHtml(baseUrl8080: string, baseUrl8081: string): str
           ${RESOURCE_GAP_SPECS.map(spec => `
             <tr>
               <td>
-                <div style="font-weight: 700; color: #f8fafc;">${spec.title}</div>
-                <div style="font-size: 0.8rem; color: #38bdf8; font-family: monospace;">/id/${spec.typeSlug}/${spec.nameSlug}</div>
-                <span class="status-badge" style="background: #1e293b; color: #94a3b8; margin-top: 0.3rem;">${spec.category}</span>
+                <div style="font-weight: 700; color: var(--text-primary);"><a href="/id/${spec.typeSlug}/${spec.nameSlug}.html" style="color: var(--text-primary); text-decoration: none;">${spec.title}</a></div>
+                <div style="font-size: 0.8rem; color: var(--marine-teal); font-family: monospace; margin: 0.2rem 0;">/id/${spec.typeSlug}/${spec.nameSlug}</div>
+                <span class="card-badge ${spec.category.toLowerCase()}" style="font-size: 0.72rem; padding: 0.15rem 0.5rem;">${spec.category}</span>
               </td>
               <td>
                 <span class="status-badge gap">${spec.archetype}</span>
@@ -445,13 +307,13 @@ export function generateAuditHtml(baseUrl8080: string, baseUrl8081: string): str
               </td>
               <td>
                 ${spec.missingPatterns.length === 0
-                  ? '<span style="color: #4ade80; font-size: 0.8rem; font-weight: 600;">None (100% OK)</span>'
+                  ? '<span style="color: #16a34a; font-size: 0.82rem; font-weight: 600;">None (100% OK)</span>'
                   : spec.missingPatterns.map(p => `<span class="status-badge fail" style="margin-right: 0.25rem; margin-bottom: 0.25rem;">${p}</span>`).join('')
                 }
               </td>
               <td>
-                <div style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 0.35rem;">${spec.description}</div>
-                <div style="font-size: 0.75rem; color: #94a3b8;">Expected Diff: ${spec.expectedDiff}</div>
+                <div style="font-size: 0.88rem; color: var(--text-primary); margin-bottom: 0.35rem;">${spec.description}</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 500;">Expected Diff: ${spec.expectedDiff}</div>
                 <div class="code-box"># Test 8080: ${spec.testCommand8080}\n# Test 8081: ${spec.testCommand8081}</div>
               </td>
             </tr>
@@ -461,9 +323,7 @@ export function generateAuditHtml(baseUrl8080: string, baseUrl8081: string): str
     </div>
   </main>
 
-  <footer style="background: #090d16; border-top: 1px solid #1e293b; padding: 2rem 1.5rem; text-align: center; color: #64748b; font-size: 0.85rem;">
-    <div><strong>VLIZ Marine Linked Data Portal</strong> — Dual-Container Radical Transparency Test Topology</div>
-  </footer>
+  ${renderFooter()}
 </body>
 </html>`;
 }

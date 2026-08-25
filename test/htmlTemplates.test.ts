@@ -1,6 +1,7 @@
 import { describe, it, expect } from "bun:test";
 import { RESOURCES, getResourceById } from "../generator/resources";
-import { renderDatasetPageHtml, renderInstitutePageHtml, renderCatalogHomeHtml } from "../generator/htmlTemplates";
+import { renderDatasetPageHtml, renderInstitutePageHtml, renderCatalogHomeHtml, renderHeader, renderFooter } from "../generator/htmlTemplates";
+import { generateAuditHtml } from "../generator/auditPageRenderer";
 
 describe("HTML Template Rendering", () => {
   const dataset = getResourceById("resource-arms-mbon")!;
@@ -29,5 +30,30 @@ describe("HTML Template Rendering", () => {
     expect(html).toContain('href="/id/dataset/arms-mbon.html"');
     expect(html).toContain('href="/id/institute/vliz.html"');
     expect(html).toContain('href="/id/profiles"');
+  });
+
+  it("renders shared header with audit nav item active when specified", () => {
+    const headerHtml = renderHeader("audit");
+    expect(headerHtml).toContain('href="/audit.html" class="active"');
+    expect(headerHtml).toContain('VLIZ Marine Data Portal');
+  });
+
+  it("renders audit page with homepage css styles, shared header, hero, and footer", () => {
+    const auditHtml = generateAuditHtml("http://localhost:8080", "http://localhost:8081");
+    // Link to shared stylesheet
+    expect(auditHtml).toContain('<link rel="stylesheet" href="/style.css">');
+    // Uses shared header with active audit nav
+    expect(auditHtml).toContain('VLIZ Marine Data Portal');
+    expect(auditHtml).toContain('href="/audit.html" class="active"');
+    // Uses homepage hero section styling
+    expect(auditHtml).toContain('class="hero"');
+    expect(auditHtml).toContain('class="hero-tag"');
+    expect(auditHtml).toContain('class="main-container"');
+    // Uses shared footer
+    expect(auditHtml).toContain('<footer>');
+    expect(auditHtml).toContain('footer-container');
+    // Must NOT contain old hardcoded dark header or old inline styles
+    expect(auditHtml).not.toContain('<header style="background: #090d16;');
+    expect(auditHtml).not.toContain('--bg-dark: #0f172a');
   });
 });

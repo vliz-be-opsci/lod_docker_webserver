@@ -1,4 +1,5 @@
 import { Profile, PROFILES, getProfileById } from "./profiles";
+import { renderHeader, renderFooter } from "./htmlTemplates";
 
 export function generateProfileLinkset(profile: Profile, baseUrl: string) {
   const profileUri = `${baseUrl}/id/profile/${profile.id}`;
@@ -150,19 +151,7 @@ export function generateProfileHtml(profile: Profile, baseUrl: string): string {
   <link rel="linkset" type="application/linkset+json" href="/id/profile/${profile.id}.linkset.json">
 </head>
 <body>
-  <header>
-    <div class="logo-container">
-      <span class="logo-badge">LOD</span>
-      <h1 class="site-title"><a href="/" style="color: #ffffff; text-decoration: none;">VLIZ Marine Data Portal</a></h1>
-    </div>
-    <nav class="nav-links">
-      <a href="/">Datasets</a>
-      <a href="/catalog/">DCAT Catalog</a>
-      <a href="/id/profiles">Semantic Profiles</a>
-      <a href="/api/docs/">Subsetting API</a>
-      <a href="/map.html">Metro Map</a>
-    </nav>
-  </header>
+  ${renderHeader('profiles')}
 
   <div class="detail-header">
     <div class="detail-header-inner">
@@ -213,19 +202,7 @@ export function generateProfileHtml(profile: Profile, baseUrl: string): string {
     </div>
   </main>
 
-  <footer>
-    <div class="footer-container">
-      <div><strong>VLIZ Marine Linked Data Portal</strong> — Live Reference Implementation for <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" style="color: #ffffff; text-decoration: underline;">EOSC Radical Transparency Proposals</a> (RFC 6906, RFC 6573, W3C DX-PROF).</div>
-      <div class="footer-links">
-        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank">🐙 EOSC RT Proposals</a>
-        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank">📋 RT Patterns</a>
-        <a href="/id/profiles">Profiles Registry</a>
-        <a href="/map.html">Metro Map</a>
-        <a href="/catalog/dcat.ttl">DCAT Catalog</a>
-        <a href="https://github.com/vliz-be-opsci/lod_docker_webserver">GitHub Repo</a>
-      </div>
-    </div>
-  </footer>
+  ${renderFooter()}
 </body>
 </html>`;
 }
@@ -244,21 +221,7 @@ export function generateProfileCatalogHtml(profiles: Profile[], baseUrl: string)
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <header>
-    <div class="logo-container">
-      <span class="logo-badge">LOD</span>
-      <h1 class="site-title"><a href="/" style="color: #ffffff; text-decoration: none;">VLIZ Marine Data Portal</a></h1>
-    </div>
-    <nav class="nav-links">
-      <a href="/">Datasets</a>
-      <a href="/catalog/">DCAT Catalog</a>
-      <a href="/id/profiles" class="active">Semantic Profiles</a>
-      <a href="/api/docs/">Subsetting API</a>
-      <a href="/id/publication/ro-crate-paper.html">Publications</a>
-      <a href="/map.html">Metro Map</a>
-      <a href="/id/institute/vliz.html">Institute</a>
-    </nav>
-  </header>
+  ${renderHeader('profiles')}
 
   <div class="detail-header">
     <div class="detail-header-inner">
@@ -318,19 +281,7 @@ export function generateProfileCatalogHtml(profiles: Profile[], baseUrl: string)
     </section>
   </main>
 
-  <footer>
-    <div class="footer-container">
-      <div><strong>VLIZ Marine Linked Data Portal</strong> — Live Reference Implementation for <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank" style="color: #ffffff; text-decoration: underline;">EOSC Radical Transparency Proposals</a> (RFC 6906, RFC 6573, W3C DX-PROF).</div>
-      <div class="footer-links">
-        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency" target="_blank">🐙 EOSC RT Proposals</a>
-        <a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/tree/main/proposals/radical-transparency/linkset-usage-patterns" target="_blank">📋 RT Patterns</a>
-        <a href="/id/profiles">Profiles Registry</a>
-        <a href="/map.html">Metro Map</a>
-        <a href="/catalog/dcat.ttl">DCAT Catalog</a>
-        <a href="https://github.com/vliz-be-opsci/lod_docker_webserver">GitHub Repo</a>
-      </div>
-    </div>
-  </footer>
+  ${renderFooter()}
 </body>
 </html>`;
 }
