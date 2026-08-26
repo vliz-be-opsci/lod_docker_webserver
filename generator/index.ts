@@ -434,12 +434,12 @@ async function main() {
 
     const profileHeaders = profileUri ? [`<${profileUri}>; rel="profile"`] : [];
     const typeHeader = `<${typeUri}>; rel="type"`;
-    const doiDescribesHeader = localDoiUri ? [`<${localDoiUri}>; rel="describes"`] : [];
+    const doiCiteAsHeader = localDoiUri ? [`<${localDoiUri}>; rel="cite-as"`] : [];
 
     // 1. Headers for .html landing page
     const htmlLinks: string[] = [
       `<${entityPid}>; rel="describes"`,
-      ...doiDescribesHeader,
+      ...doiCiteAsHeader,
       ...profileHeaders,
       typeHeader,
       `<${BASE_URL}/id/${typeSlug}/${nameSlug}.ttl>; rel="describedby"; type="text/turtle"`,
@@ -454,7 +454,7 @@ async function main() {
     // 2. Headers for RDF representations (.ttl, .jsonld, .rdf)
     const rdfLinks: string[] = [
       `<${entityPid}>; rel="describes"`,
-      ...doiDescribesHeader,
+      ...doiCiteAsHeader,
       ...profileHeaders,
       typeHeader,
       `<${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json>; rel="linkset"; type="application/linkset+json"`
@@ -473,12 +473,21 @@ async function main() {
     headersConf += `}\n\n`;
 
     // 3. Headers for Linkset (.linkset.json)
-    const linksetDescribes = [
+    const splitItemHeaders = (res.id === "resource-arms-mbon")
+      ? [
+          `<${BASE_URL}/id/${typeSlug}/${nameSlug}.conneg.linkset.json>; rel="item"`,
+          `<${BASE_URL}/id/${typeSlug}/${nameSlug}.profiles.linkset.json>; rel="item"`,
+          `<${BASE_URL}/id/${typeSlug}/${nameSlug}.provenance.linkset.json>; rel="item"`
+        ]
+      : [];
+
+    const linksetHeaders = [
       `<${entityPid}>; rel="describes"`,
-      ...doiDescribesHeader
+      ...doiCiteAsHeader,
+      ...splitItemHeaders
     ];
     headersConf += `location = /id/${typeSlug}/${nameSlug}.linkset.json {\n`;
-    headersConf += `    add_header Link '${linksetDescribes.join(", ")}' always;\n`;
+    headersConf += `    add_header Link '${linksetHeaders.join(", ")}' always;\n`;
     headersConf += `}\n\n`;
 
     // 4. Headers for RT-P08 Child Split Linksets (arms-mbon showcase)

@@ -33,11 +33,16 @@ describe("RDF Serialization & Linkset Generation", () => {
     expect(jsonld["dcterms:conformsTo"]["@id"]).toBe("http://localhost:8080/id/profile/marine-genomic-dataset-profile");
   });
 
-  it("generates RFC 9264 Linkset with RT-P03 conneg menu and reverse self bindings", () => {
+  it("generates RFC 9264 Linkset with RT-P03 conneg menu, reverse self bindings, cite-as DOI, and split linksets", () => {
     const linkset = generateLinkset(dataset, "http://localhost:8080") as any;
     expect(linkset.linkset[0].anchor).toBe("http://localhost:8080/id/dataset/arms-mbon");
     expect(linkset.linkset[0].type[0].href).toBe("https://schema.org/Dataset");
     expect(linkset.linkset[0].profile[0].href).toBe("http://localhost:8080/id/profile/marine-genomic-dataset-profile");
+    expect(linkset.linkset[0]["cite-as"][0].href).toBe("http://localhost:8080/doi/10.14284/578");
+    expect(linkset.linkset[0].linkset.length).toBe(3);
+    expect(linkset.linkset[0].linkset[0].href).toBe("http://localhost:8080/id/dataset/arms-mbon.conneg.linkset.json");
+    expect(linkset.linkset[0].linkset[1].href).toBe("http://localhost:8080/id/dataset/arms-mbon.profiles.linkset.json");
+    expect(linkset.linkset[0].linkset[2].href).toBe("http://localhost:8080/id/dataset/arms-mbon.provenance.linkset.json");
     expect(linkset.linkset[0].alternate.some((a: any) => a.href === "http://localhost:8080/id/dataset/arms-mbon.ttl" && a.type.includes("text/turtle"))).toBe(true);
     expect(linkset.linkset[0].alternate.some((a: any) => a.href === "http://localhost:8080/id/dataset/arms-mbon.html")).toBe(true);
     expect(linkset.linkset.some((entry: any) => entry.anchor === "http://localhost:8080/id/dataset/arms-mbon.ttl" && entry.self[0].href === "http://localhost:8080/id/dataset/arms-mbon")).toBe(true);
@@ -45,17 +50,17 @@ describe("RDF Serialization & Linkset Generation", () => {
     expect(linkset.linkset.some((entry: any) => entry.anchor === "http://localhost:8080/id/dataset/arms-mbon.html" && entry.self[0].href === "http://localhost:8080/id/dataset/arms-mbon")).toBe(true);
   });
 
-  it("generates linkset for publication containing describes pointing to DOI across primary and alternate anchors", () => {
+  it("generates linkset for publication containing cite-as pointing to DOI across primary and alternate anchors", () => {
     const paper = getResourceById("resource-ro-crate-paper")!;
     const linkset = generateLinkset(paper, "http://localhost:8080") as any;
 
-    expect(linkset.linkset[0].describes[0].href).toBe("http://localhost:8080/doi/10.3897/biss.6.94630");
+    expect(linkset.linkset[0]["cite-as"][0].href).toBe("http://localhost:8080/doi/10.3897/biss.6.94630");
     expect(linkset.linkset[0].item[0].href).toBe("http://localhost:8080/data/ro-crate-paper.pdf");
 
     const ttlEntry = linkset.linkset.find((e: any) => e.anchor === "http://localhost:8080/id/publication/ro-crate-paper.ttl");
-    expect(ttlEntry.describes[0].href).toBe("http://localhost:8080/doi/10.3897/biss.6.94630");
+    expect(ttlEntry["cite-as"][0].href).toBe("http://localhost:8080/doi/10.3897/biss.6.94630");
 
     const htmlEntry = linkset.linkset.find((e: any) => e.anchor === "http://localhost:8080/id/publication/ro-crate-paper.html");
-    expect(htmlEntry.describes[0].href).toBe("http://localhost:8080/doi/10.3897/biss.6.94630");
+    expect(htmlEntry["cite-as"][0].href).toBe("http://localhost:8080/doi/10.3897/biss.6.94630");
   });
 });

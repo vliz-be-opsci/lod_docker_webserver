@@ -63,7 +63,7 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.html`, type: "text/html; charset=utf-8" },
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`, type: "application/rdf+xml" }
     ],
-    ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
+    ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
   };
 
   if (resource.type) {
@@ -78,7 +78,7 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
 
   // Showcase RT-P08 (Large Linkset Split-Up) on arms-mbon
   if (nameSlug === "arms-mbon") {
-    primaryObj.item = [
+    primaryObj.linkset = [
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.conneg.linkset.json`, title: "Content Negotiation Variants Linkset" },
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.profiles.linkset.json`, title: "Profiles & Conformance Linkset" },
       { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.provenance.linkset.json`, title: "Provenance & Attribution Linkset" }
@@ -97,22 +97,22 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
       {
         anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`,
         self: [{ href: resourceUri }],
-        ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
+        ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
       },
       {
         anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`,
         self: [{ href: resourceUri }],
-        ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
+        ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
       },
       {
         anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.html`,
         self: [{ href: resourceUri }],
-        ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
+        ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
       },
       {
         anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`,
         self: [{ href: resourceUri }],
-        ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
+        ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
       }
     ]
   };
@@ -140,27 +140,27 @@ export function generateSplitLinksets(resource: MarineEntity, baseUrl: string): 
             { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.html`, type: "text/html; charset=utf-8" },
             { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`, type: "application/rdf+xml" }
           ],
-          ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
+          ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
         },
         {
           anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`,
           self: [{ href: resourceUri }],
-          ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
+          ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
         },
         {
           anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`,
           self: [{ href: resourceUri }],
-          ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
+          ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
         },
         {
           anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.html`,
           self: [{ href: resourceUri }],
-          ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
+          ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
         },
         {
           anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`,
           self: [{ href: resourceUri }],
-          ...(localDoiUri ? { describes: [{ href: localDoiUri }] } : {})
+          ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
         }
       ]
     },

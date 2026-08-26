@@ -155,7 +155,7 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     expect(robotsTxt).toContain("Sitemap: http://localhost:8080/sitemap.xml");
   });
 
-  it("generates RT-P08 split linksets with rel=item in master and rel=collection in child fragments", () => {
+  it("generates RT-P08 split linksets with rel=linkset in JSON master and rel=item in master HTTP headers", () => {
     const masterLinksetPath = path.join(distDir, "id", "dataset", "arms-mbon.linkset.json");
     const connegLinksetPath = path.join(distDir, "id", "dataset", "arms-mbon.conneg.linkset.json");
     const profilesLinksetPath = path.join(distDir, "id", "dataset", "arms-mbon.profiles.linkset.json");
@@ -167,11 +167,26 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     expect(fs.existsSync(provLinksetPath)).toBe(true);
 
     const master = JSON.parse(fs.readFileSync(masterLinksetPath, "utf-8"));
-    const masterItems = master.linkset[0].item;
-    expect(masterItems.length).toBe(3);
-    expect(masterItems[0].href).toContain("arms-mbon.conneg.linkset.json");
-    expect(masterItems[1].href).toContain("arms-mbon.profiles.linkset.json");
-    expect(masterItems[2].href).toContain("arms-mbon.provenance.linkset.json");
+    const masterLinksets = master.linkset[0].linkset;
+    expect(masterLinksets.length).toBe(3);
+    expect(masterLinksets[0].href).toContain("arms-mbon.conneg.linkset.json");
+    expect(masterLinksets[1].href).toContain("arms-mbon.profiles.linkset.json");
+    expect(masterLinksets[2].href).toContain("arms-mbon.provenance.linkset.json");
+
+    // Master linkset anchor has cite-as pointing to DOI
+    expect(master.linkset[0]["cite-as"][0].href).toBe("http://localhost:8080/doi/10.14284/578");
+
+    // Master linkset HTTP headers contain child fragments as rel="item" and DOI as rel="cite-as"
+    const headersConf = fs.readFileSync(path.join(distDir, "nginx-headers.conf"), "utf-8");
+    const masterBlock = headersConf.substring(
+      headersConf.indexOf("location = /id/dataset/arms-mbon.linkset.json"),
+      headersConf.indexOf("}", headersConf.indexOf("location = /id/dataset/arms-mbon.linkset.json"))
+    );
+    expect(masterBlock).toContain('<http://localhost:8080/id/dataset/arms-mbon.conneg.linkset.json>; rel="item"');
+    expect(masterBlock).toContain('<http://localhost:8080/id/dataset/arms-mbon.profiles.linkset.json>; rel="item"');
+    expect(masterBlock).toContain('<http://localhost:8080/id/dataset/arms-mbon.provenance.linkset.json>; rel="item"');
+    expect(masterBlock).toContain('<http://localhost:8080/doi/10.14284/578>; rel="cite-as"');
+    expect(masterBlock).toContain('<http://localhost:8080/id/dataset/arms-mbon>; rel="describes"');
 
     const conneg = JSON.parse(fs.readFileSync(connegLinksetPath, "utf-8"));
     expect(conneg.linkset[0].collection[0].href).toBe("http://localhost:8080/id/dataset/arms-mbon.linkset.json");
