@@ -142,6 +142,26 @@ export function serializeJsonLd(resource: Resource, baseUri: string): string {
     }));
   }
 
+  // RT-P09 Versioning & Lifecycle Properties
+  if (resource.seriesId) {
+    const seriesRes = getResourceById(resource.seriesId);
+    if (seriesRes) {
+      expandedProperties["dcterms:isVersionOf"] = { "@id": expandUri(seriesRes.id, baseUri) };
+    }
+    if (resource.predecessorVersionId) {
+      const predRes = getResourceById(resource.predecessorVersionId);
+      if (predRes) {
+        expandedProperties["prov:wasRevisionOf"] = { "@id": expandUri(predRes.id, baseUri) };
+      }
+    }
+  }
+  if (resource.latestVersionId) {
+    const latestRes = getResourceById(resource.latestVersionId);
+    if (latestRes) {
+      expandedProperties["dcterms:hasVersion"] = { "@id": expandUri(latestRes.id, baseUri) };
+    }
+  }
+
   return JSON.stringify(expandedProperties, null, 2);
 }
 
@@ -266,6 +286,26 @@ export function serializeTurtle(resource: Resource, baseUri: string): string {
       if (dist.byteSize) {
         writer.addQuad(namedNode(distUri), namedNode("http://www.w3.org/ns/dcat#byteSize"), literal(dist.byteSize.toString(), namedNode("http://www.w3.org/2001/XMLSchema#integer")));
       }
+    }
+  }
+
+  // RT-P09 Versioning & Lifecycle Triples
+  if (resource.seriesId) {
+    const seriesRes = getResourceById(resource.seriesId);
+    if (seriesRes) {
+      writer.addQuad(namedNode(resUri), namedNode("http://purl.org/dc/terms/isVersionOf"), namedNode(expandUri(seriesRes.id, baseUri)));
+    }
+    if (resource.predecessorVersionId) {
+      const predRes = getResourceById(resource.predecessorVersionId);
+      if (predRes) {
+        writer.addQuad(namedNode(resUri), namedNode("http://www.w3.org/ns/prov#wasRevisionOf"), namedNode(expandUri(predRes.id, baseUri)));
+      }
+    }
+  }
+  if (resource.latestVersionId) {
+    const latestRes = getResourceById(resource.latestVersionId);
+    if (latestRes) {
+      writer.addQuad(namedNode(resUri), namedNode("http://purl.org/dc/terms/hasVersion"), namedNode(expandUri(latestRes.id, baseUri)));
     }
   }
 

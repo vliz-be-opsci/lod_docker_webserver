@@ -1168,6 +1168,51 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
     <a href="${getEntityHtmlPath(c)}" class="author-pill">👤 ${c.title}</a>
   `).join('');
 
+  const entityIdPath = getEntityIdPath(dataset);
+
+  // RT-P09 Version Navigation Banners
+  let versionBannerHtml = "";
+  if (dataset.latestVersionId) {
+    const latestRes = getResourceById(dataset.latestVersionId);
+    const latestPath = latestRes ? getEntityHtmlPath(latestRes) : `/id/${typeSlug}/${slug}/v2.1.html`;
+    const historyPath = `/id/${typeSlug}/${slug}/history.html`;
+    versionBannerHtml = `
+      <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span style="background: #2563eb; color: #fff; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 9999px; text-transform: uppercase;">Conceptual Series (RT-P09)</span>
+          <h4 style="margin: 0.4rem 0 0.2rem; font-size: 1.05rem; color: #1e3a8a;">Latest Authoritative Release Available</h4>
+          <p style="margin: 0; font-size: 0.85rem; color: #1e40af;">This URI represents the evolving dataset series. For persistent citation and reproducible analysis, refer to specific releases.</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <a href="${latestPath}" class="btn-download" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: #2563eb;">View Latest (${latestRes?.version ? 'v' + latestRes.version : 'v2.1'}) &rarr;</a>
+          <a href="${historyPath}" class="btn-download" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: #475569;"><i class="fa-solid fa-clock-rotate-left"></i> Version History Archive</a>
+        </div>
+      </div>
+    `;
+  } else if (dataset.seriesId) {
+    const seriesRes = getResourceById(dataset.seriesId);
+    const seriesPath = seriesRes ? getEntityHtmlPath(seriesRes) : `/id/${typeSlug}/${getEntityNameSlug(dataset.seriesId)}.html`;
+    const historyPath = `/id/${typeSlug}/${getEntityNameSlug(dataset.seriesId)}/history.html`;
+    const predRes = dataset.predecessorVersionId ? getResourceById(dataset.predecessorVersionId) : undefined;
+    const succRes = dataset.successorVersionId ? getResourceById(dataset.successorVersionId) : undefined;
+    versionBannerHtml = `
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <span style="background: #0d9488; color: #fff; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 9999px; text-transform: uppercase;">Immutable Snapshot Release v${dataset.version || ''}</span>
+            <h4 style="margin: 0.4rem 0 0.2rem; font-size: 1.05rem; color: #0f172a;">Part of Series: <a href="${seriesPath}" style="color: var(--vliz-blue); text-decoration: none;">${seriesRes?.title || 'Dataset Series'}</a></h4>
+            <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary);">Released on ${dataset.releaseDate || 'N/A'} with permanent Release DOI: <code>${dataset.doi || ''}</code></p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            ${predRes ? `<a href="${getEntityHtmlPath(predRes)}" class="btn-download" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: #64748b;">&larr; Predecessor Version (v${predRes.version})</a>` : ''}
+            ${succRes ? `<a href="${getEntityHtmlPath(succRes)}" class="btn-download" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: #0284c7;">Successor Version (v${succRes.version}) &rarr;</a>` : ''}
+            <a href="${historyPath}" class="btn-download" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: #475569;"><i class="fa-solid fa-clock-rotate-left"></i> All Releases</a>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1177,10 +1222,10 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
   <link rel="stylesheet" href="/style.css">
   <link rel="type" href="https://schema.org/Dataset">
   ${dataset.profileId ? `<link rel="profile" href="/id/profile/${dataset.profileId}">` : ''}
-  <link rel="describedby" type="text/turtle" href="/id/${typeSlug}/${slug}.ttl">
-  <link rel="alternate" type="application/ld+json" href="/id/${typeSlug}/${slug}.jsonld">
-  <link rel="alternate" type="application/rdf+xml" href="/id/${typeSlug}/${slug}.rdf">
-  <link rel="linkset" type="application/linkset+json" href="/id/${typeSlug}/${slug}.linkset.json">
+  <link rel="describedby" type="text/turtle" href="${entityIdPath}.ttl">
+  <link rel="alternate" type="application/ld+json" href="${entityIdPath}.jsonld">
+  <link rel="alternate" type="application/rdf+xml" href="${entityIdPath}.rdf">
+  <link rel="linkset" type="application/linkset+json" href="${entityIdPath}.linkset.json">
 </head>
 <body>
   ${renderHeader('datasets')}
@@ -1203,6 +1248,8 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
   <main class="main-container">
     <div class="detail-grid">
       <div>
+        ${versionBannerHtml}
+
         <div class="content-section">
           <h3 class="section-heading">📝 Abstract & Description</h3>
           <p style="font-size: 1.05rem; line-height: 1.7; color: var(--text-secondary); margin: 0;">
@@ -1233,7 +1280,7 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
           <div class="meta-group">
             <div class="meta-label">Permanent Persistent Identifier</div>
             <div class="meta-value" style="word-break: break-all;">
-              <code>${baseUrl}/id/${typeSlug}/${slug}</code>
+              <code>${baseUrl}${entityIdPath}</code>
             </div>
           </div>
 
@@ -1248,6 +1295,83 @@ export function renderDatasetPageHtml(dataset: MarineEntity, baseUrl: string): s
 
         ${renderRtBox(dataset.id, true)}
       </aside>
+    </div>
+  </main>
+
+  ${renderFooter()}
+</body>
+</html>`;
+}
+
+export function renderHistoryPageHtml(series: MarineEntity, releases: MarineEntity[], baseUrl: string): string {
+  const typeSlug = getEntityTypeSlug(series);
+  const nameSlug = getEntityNameSlug(series);
+  const seriesPath = getEntityHtmlPath(series);
+  const historyPath = `${getEntityIdPath(series)}/history`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Version History Archive - ${series.title} - VLIZ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="describedby" href="${seriesPath}">
+  <link rel="profile" href="https://www.rfc-editor.org/info/rfc5829">
+  <link rel="linkset" type="application/linkset+json" href="${historyPath}.linkset.json">
+</head>
+<body>
+  ${renderHeader('datasets')}
+
+  <div class="detail-header">
+    <div class="detail-header-inner">
+      <a href="${seriesPath}" style="color: var(--vliz-blue); text-decoration: none; font-weight: 600; font-size: 0.9rem;">&larr; Back to Series Overview</a>
+      <span class="hero-tag" style="display: block; margin-top: 0.5rem; background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe;">Lifecycle Navigation & RFC 5829 History Archive</span>
+      <h2 class="detail-title">🕰️ Version History Archive: ${series.title}</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary); margin: 0.5rem 0 0; max-width: 900px;">
+        Chronological archive of all immutable snapshot releases, associated persistent identifiers (PIDs), and data download matrices.
+      </p>
+    </div>
+  </div>
+
+  <main class="main-container" style="max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem;">
+    <div style="background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-md);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 1rem; margin-bottom: 2rem;">
+        <div>
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">History Resource Endpoint</div>
+          <code style="font-size: 0.95rem; color: var(--vliz-blue); background: var(--bg-subtle); padding: 0.2rem 0.5rem; border-radius: var(--radius-sm); margin-top: 0.35rem; display: inline-block;">${baseUrl}${historyPath}</code>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <a href="${historyPath}.linkset.json" class="btn-download" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;"><i class="fa-solid fa-link"></i> RFC 9264 History Linkset</a>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        ${releases.map(rel => {
+          const relPath = getEntityHtmlPath(rel);
+          const isLatest = rel.id === series.latestVersionId;
+          return `
+            <div style="border: 1px solid ${isLatest ? '#3b82f6' : 'var(--panel-border)'}; background: ${isLatest ? '#f8fafc' : '#ffffff'}; border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                  <span style="background: ${isLatest ? '#2563eb' : '#64748b'}; color: #fff; font-weight: 700; font-size: 0.85rem; padding: 0.2rem 0.6rem; border-radius: 9999px;">v${rel.version} (${rel.releaseDate})</span>
+                  ${isLatest ? '<span style="background: #dbeafe; color: #1e40af; font-weight: 600; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; text-transform: uppercase;">Latest Authoritative Release</span>' : ''}
+                </div>
+                ${rel.doi ? `<div><span style="font-size: 0.8rem; color: var(--text-muted);">Release DOI:</span> <a href="${rel.doi}" target="_blank" style="font-family: monospace; font-size: 0.85rem; color: var(--vliz-blue); font-weight: 600;">${rel.doi.replace('https://doi.org/', '')}</a></div>` : ''}
+              </div>
+              <h4 style="font-size: 1.15rem; margin: 0 0 0.5rem;"><a href="${relPath}" style="color: var(--text-primary); text-decoration: none;">${rel.title}</a></h4>
+              <p style="font-size: 0.95rem; color: var(--text-secondary); margin: 0 0 1rem;">${rel.description}</p>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <a href="${relPath}" class="btn-download" style="padding: 0.35rem 0.75rem; font-size: 0.85rem;">View Snapshot &rarr;</a>
+                ${rel.distributions && rel.distributions.length > 0 ? `<a href="${rel.distributions[0].downloadUrl}" class="btn-download" style="padding: 0.35rem 0.75rem; font-size: 0.85rem; background: #0d9488;"><i class="fa-solid fa-download"></i> Download CSV</a>` : ''}
+                <a href="${getEntityIdPath(rel)}.ttl" class="btn-download" style="padding: 0.35rem 0.75rem; font-size: 0.85rem; background: #475569;">Turtle RDF</a>
+                <a href="${getEntityIdPath(rel)}.linkset.json" class="btn-download" style="padding: 0.35rem 0.75rem; font-size: 0.85rem; background: #475569;">Linkset JSON</a>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
     </div>
   </main>
 
