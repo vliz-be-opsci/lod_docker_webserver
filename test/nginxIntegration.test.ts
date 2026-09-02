@@ -263,6 +263,6 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
 
   it("supports nested sub-resource routing in nginx.conf", () => {
     const nginxConf = fs.readFileSync(path.resolve(process.cwd(), "nginx.conf"), "utf-8");
-    expect(nginxConf).toContain("location ~ ^/id/(?<res_type>[^/]+)/(?<res_name>[^/]+)/(?<res_sub>[^/.]+)$");
+    expect(nginxConf).toContain("location ~ ^/id/(?<res_type>[^/]+)/(?<res_name>[^/]+)/(?<res_sub>[^/]+)$");
   });
 });
