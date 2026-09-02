@@ -28,6 +28,10 @@ describe("HTML Template Rendering", () => {
   it("renders home page cards pointing to /id/{type}/{name}.html", () => {
     const html = renderCatalogHomeHtml(RESOURCES, "http://localhost:8080");
     expect(html).toContain('href="/id/dataset/arms-mbon.html"');
+    expect(html).toContain('href="/id/dataset/dataset-90.html"');
+    expect(html).toContain('href="/id/dataset/dataset-90/v2.1.html"');
+    expect(html).toContain('Macrobenthos of the Belgian Part of the North Sea (Dataset 90)');
+    expect(html).toContain('RT-P09 Series');
     expect(html).toContain('href="/id/institute/vliz.html"');
     expect(html).toContain('href="/id/profiles"');
   });

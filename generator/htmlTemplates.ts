@@ -930,13 +930,27 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
     const typeSlug = getEntityTypeSlug(res);
     const nameSlug = getEntityNameSlug(res);
     const href = getEntityHtmlPath(res);
+    const pidUri = getEntityIdPath(res);
+
+    let badgeText = res.category || res.type;
+    let seriesBadge = "";
+    if (res.latestVersionId) {
+      badgeText = "Dataset Series";
+      seriesBadge = `<span class="tag" style="background:#7c3aed;color:#fff;font-weight:600;">RT-P09 Series</span>`;
+    } else if (res.seriesId && res.version) {
+      badgeText = `Release v${res.version}`;
+      if (res.version === "2.1") {
+        seriesBadge = `<span class="tag" style="background:#059669;color:#fff;font-weight:600;">Latest Release</span>`;
+      }
+    }
 
     const tagFormats = res.distributions ? res.distributions.map(d => `<span class="tag">${d.format}</span>`).join(" ") : `<span class="tag">RDF / HTML</span>`;
 
     cardsHtml += `
       <div class="card" data-category="${res.category || 'other'}">
         <div class="card-header">
-          <span class="card-badge ${res.category || 'other'}">${res.category || res.type}</span>
+          <span class="card-badge ${res.category || 'other'}">${badgeText}</span>
+          ${seriesBadge}
           ${res.doi ? `<span class="tag">DOI</span>` : ''}
         </div>
         <h3 class="card-title"><a href="${href}">${res.title}</a></h3>
@@ -945,7 +959,7 @@ export function renderCatalogHomeHtml(resources: MarineEntity[], baseUrl: string
           ${tagFormats}
         </div>
         <div class="card-footer">
-          <span style="color: var(--text-muted); font-size: 0.8rem;">URI: /id/${typeSlug}/${nameSlug}</span>
+          <span style="color: var(--text-muted); font-size: 0.8rem;">URI: ${pidUri}</span>
           <a href="${href}" class="card-link">Explore Resource &rarr;</a>
         </div>
       </div>`;
