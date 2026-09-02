@@ -29,7 +29,7 @@ docker compose up --build -d
 ```
 
 The stack exposes two independent webservers:
-* 🟢 **Reference Implementation (Port 8080)**: 👉 **[http://localhost:8080](http://localhost:8080)** (100% RT-P01..08 Compliant Gold Standard)
+* 🟢 **Reference Implementation (Port 8080)**: 👉 **[http://localhost:8080](http://localhost:8080)** (100% RT-P01..09 Compliant Gold Standard)
 * 🟡 **Gapped Simulation Server (Port 8081)**: 👉 **[http://localhost:8081](http://localhost:8081)** (Simulated legacy/flawed repository)
 * 📊 **Interactive Gap Audit Dashboard**: 👉 **[http://localhost:8080/audit.html](http://localhost:8080/audit.html)** or **`/compliance.json`**
 
@@ -48,6 +48,7 @@ The webserver takes over real-world marine entities from Flanders Marine Institu
 | **Flanders Marine Institute (VLIZ)** | Institute | Organization profile, Turtle, JSON-LD, RDF/XML | [marineinfo.org/id/institute/36](https://marineinfo.org/id/institute/36) |
 | **RO-Crate Biodiversity Publishing Paper** | Publication | PDF Full Text, DOI, Turtle, JSON-LD | [doi.org/10.3897/biss.6.94630](https://doi.org/10.3897/biss.6.94630) |
 | **MAREGRAPH Research Initiative** | Project | Project roadmap, Dataset parts, Turtle | [marineinfo.org/id/project/5484](https://marineinfo.org/id/project/5484) |
+| **Macrobenthos North Sea (Dataset 90)** | Dataset | Series (10.14284/90), Releases (v1.0, v2.0, v2.1), CSV Payloads, History Archive | [marineinfo.org/id/dataset/90](https://marineinfo.org/id/dataset/90) |
 | **MarineInfo Subsetting API** | API | OpenAPI 3.0, Swagger UI, JSON responses | [marineinfo.org/api](https://marineinfo.org/api) |
 | **Research Staff (Marc, Katrina, Cedric, Laurian, Joanna)** | People | Researcher profiles, ORCIDs, Turtle, Linksets | [orcid.org/0000-0002-9648-6484](https://orcid.org/0000-0002-9648-6484) |
 
@@ -84,6 +85,13 @@ Persistent resource URIs (`/resource/:id`) negotiate representations dynamically
 - `Accept: text/turtle` ➔ `303 See Other` to `/rdf/:id.ttl`
 - `Accept: application/ld+json` ➔ `303 See Other` to `/rdf/:id.jsonld`
 - `Accept: text/html` ➔ `303 See Other` to corresponding HTML page (`/datasets/:id.html`, `/institutes/:id.html`, etc.)
+
+### 6. Release Linking & Version Navigation (RT-P09 / RFC 5829)
+Conceptual dataset series and semantic profile evolutions are linked to immutable snapshots via RFC 5829 relations:
+- `rel="latest-version"`: Points from series PID to the latest authoritative release (`/id/dataset/dataset-90/v2.1`).
+- `rel="predecessor-version"`: Sequential reverse navigation through release snapshots (`v2.1` ➔ `v2.0` ➔ `v1.0`).
+- `rel="version-history"`: Links to release history archive and standalone RFC 9264 JSON history linkset (`/id/dataset/dataset-90/history`).
+- **Behavior A Direct Resolution**: Series DOI (`/doi/10.14284/90`) resolves directly via 303 to latest authoritative CSV payload (`/data/dataset-90-v2.1.csv`) signposted with Release DOI `rel="cite-as"` and Series DOI `rel="collection"`.
 
 ---
 
@@ -130,6 +138,7 @@ Detailed audit documents are generated under [`docs/compliance/`](docs/complianc
 7. [MAREGRAPH Initiative](docs/compliance/maregraph-project-5484.md)
 8. [MarineInfo Subsetting API](docs/compliance/marineinfo-api.md)
 9. [Research Staff & ORCID Profiles](docs/compliance/orcid-researchers.md)
+10. [Macrobenthos North Sea (Dataset 90)](docs/compliance/dataset-90.md)
 
 ---
 
@@ -139,7 +148,7 @@ Detailed audit documents are generated under [`docs/compliance/`](docs/complianc
 
 This repository builds and runs a **dual-container topology** in [`docker-compose.yml`](docker-compose.yml) designed for crawler development, semantic harvesting evaluation, and compliance testing:
 
-1. **`lod-reference-webserver` (Port 8080)**: The **Gold Standard** reference implementation (100% compliant with EOSC RT-P01 through RT-P08).
+1. **`lod-reference-webserver` (Port 8080)**: The **Gold Standard** reference implementation (100% compliant with EOSC RT-P01 through RT-P09).
 2. **`lod-gapped-webserver` (Port 8081)**: The **Simulated Gapped Repository** exhibiting deliberate, real-world semantic defects across catalog entities.
 
 ```
@@ -174,6 +183,7 @@ This repository builds and runs a **dual-container topology** in [`docker-compos
 | **`marineinfo-api`** *(API Service)* | RFC 9727 API Catalog | **Orphan API Endpoint** | `RT-P05`, `RT-P06` | Omits `rel="cite-as"`, `rel="service-desc"`, and is unindexed in api-catalog. |
 | **`maregraph`** *(Project)* | Modular `sitemap-index.xml` | **Flat Legacy Sitemap** | `RT-P07` | Omitted from modular sub-sitemaps; in flat `sitemap.xml` without `rs:ln`. |
 | **`katrina`** *(Person)* | 2-Way Conneg Linkset | **Broken Inverse Selfs** | `RT-P03 (Inverse Bindings)` | Linkset omits reverse format anchor entries (`anchor: ...ttl`, `self: PID`). |
+| **`dataset-90`** *(Dataset)* | Full RFC 5829 Lifecycle Links | **Unlinked Releases** | `RT-P09` | Omits `rel="latest-version"`, `rel="version-history"`, and 404 on history linkset. |
 
 ---
 
