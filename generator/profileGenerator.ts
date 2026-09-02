@@ -1,14 +1,21 @@
 import { Profile, PROFILES, getProfileById } from "./profiles";
 import { renderHeader, renderFooter } from "./htmlTemplates";
 
+export function getProfileUri(profile: Profile, baseUrl: string): string {
+  if (profile.abstractProfileId && profile.version) {
+    return `${baseUrl}/id/profile/${profile.abstractProfileId}/v${profile.version}`;
+  }
+  return `${baseUrl}/id/profile/${profile.id}`;
+}
+
 export function generateProfileLinkset(profile: Profile, baseUrl: string) {
-  const profileUri = `${baseUrl}/id/profile/${profile.id}`;
+  const profileUri = getProfileUri(profile, baseUrl);
   const items: any[] = [];
 
   if (profile.composedProfiles) {
     for (const subId of profile.composedProfiles) {
       const subProfile = getProfileById(subId);
-      const targetUri = `${baseUrl}/id/profile/${subId}`;
+      const targetUri = subProfile ? getProfileUri(subProfile, baseUrl) : `${baseUrl}/id/profile/${subId}`;
       items.push({
         href: targetUri,
         title: subProfile ? subProfile.title : subId
@@ -22,9 +29,9 @@ export function generateProfileLinkset(profile: Profile, baseUrl: string) {
       { href: "http://www.w3.org/ns/dx/prof/Profile", title: "W3C Profiles Vocabulary" }
     ],
     alternate: [
-      { href: `${baseUrl}/id/profile/${profile.id}.ttl`, type: "text/turtle; charset=utf-8" },
-      { href: `${baseUrl}/id/profile/${profile.id}.jsonld`, type: "application/ld+json" },
-      { href: `${baseUrl}/id/profile/${profile.id}.html`, type: "text/html; charset=utf-8" }
+      { href: `${profileUri}.ttl`, type: "text/turtle; charset=utf-8" },
+      { href: `${profileUri}.jsonld`, type: "application/ld+json" },
+      { href: `${profileUri}.html`, type: "text/html; charset=utf-8" }
     ]
   };
 
@@ -32,20 +39,67 @@ export function generateProfileLinkset(profile: Profile, baseUrl: string) {
     primaryObj["http://schema.org/hasPart"] = items;
   }
 
+  // RT-P09 Profile Lifecycle & Versioning
+  if (profile.latestVersionId) {
+    const latestProf = getProfileById(profile.latestVersionId);
+    const latestUri = latestProf ? getProfileUri(latestProf, baseUrl) : `${baseUrl}/id/profile/${profile.latestVersionId}`;
+    primaryObj["latest-version"] = [{ href: latestUri }];
+    primaryObj["version-history"] = [{ href: `${profileUri}/history` }];
+  }
+  if (profile.abstractProfileId) {
+    const absProf = getProfileById(profile.abstractProfileId);
+    const absUri = absProf ? getProfileUri(absProf, baseUrl) : `${baseUrl}/id/profile/${profile.abstractProfileId}`;
+    primaryObj["http://schema.org/hasPart"] = [
+      ...(primaryObj["http://schema.org/hasPart"] || []),
+      { href: absUri }
+    ];
+    primaryObj["version-history"] = [{ href: `${absUri}/history` }];
+    if (profile.predecessorVersionId) {
+      const predProf = getProfileById(profile.predecessorVersionId);
+      const predUri = predProf ? getProfileUri(predProf, baseUrl) : `${baseUrl}/id/profile/${profile.predecessorVersionId}`;
+      primaryObj["predecessor-version"] = [{ href: predUri }];
+    }
+    if (profile.successorVersionId) {
+      const succProf = getProfileById(profile.successorVersionId);
+      const succUri = succProf ? getProfileUri(succProf, baseUrl) : `${baseUrl}/id/profile/${profile.successorVersionId}`;
+      primaryObj["successor-version"] = [{ href: succUri }];
+    }
+  }
+
   return {
     linkset: [
       primaryObj,
       {
-        anchor: `${baseUrl}/id/profile/${profile.id}.ttl`,
+        anchor: `${profileUri}.ttl`,
         self: [{ href: profileUri }]
       },
       {
-        anchor: `${baseUrl}/id/profile/${profile.id}.jsonld`,
+        anchor: `${profileUri}.jsonld`,
         self: [{ href: profileUri }]
       },
       {
-        anchor: `${baseUrl}/id/profile/${profile.id}.html`,
+        anchor: `${profileUri}.html`,
         self: [{ href: profileUri }]
+      }
+    ]
+  };
+}
+
+export function generateProfileHistoryLinkset(profile: Profile, versions: Profile[], baseUrl: string): object {
+  const profileUri = getProfileUri(profile, baseUrl);
+  const historyUri = `${profileUri}/history`;
+
+  return {
+    linkset: [
+      {
+        anchor: historyUri,
+        collection: [{ href: profileUri }],
+        item: versions.map(v => ({
+          href: getProfileUri(v, baseUrl),
+          version: v.version,
+          "release-date": v.releaseDate,
+          title: v.title
+        }))
       }
     ]
   };

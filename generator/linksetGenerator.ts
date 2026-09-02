@@ -1,5 +1,6 @@
-import { MarineEntity, getEntityTypeSlug, getEntityNameSlug, getEntityHtmlPath } from "./types";
+import { MarineEntity, getEntityTypeSlug, getEntityNameSlug, getEntityHtmlPath, getEntityIdPath } from "./types";
 import { expandUri } from "./rdfSerializer";
+import { getResourceById } from "./resources";
 
 export function generateApiServiceLinkset(resource: MarineEntity, baseUrl: string): object {
   const datasetPid = resource.properties?.["dcat:servesDataset"]
@@ -48,6 +49,7 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
   const resourceUri = expandUri(resource.id, baseUrl);
   const typeSlug = getEntityTypeSlug(resource);
   const nameSlug = getEntityNameSlug(resource);
+  const idPath = getEntityIdPath(resource);
 
   const typeUri = resource.type === "Dataset" ? "https://schema.org/Dataset" : `https://schema.org/${resource.type}`;
 
@@ -58,10 +60,10 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
   const primaryObj: any = {
     anchor: resourceUri,
     alternate: [
-      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`, type: "text/turtle; charset=utf-8" },
-      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`, type: "application/ld+json" },
-      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.html`, type: "text/html; charset=utf-8" },
-      { href: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`, type: "application/rdf+xml" }
+      { href: `${baseUrl}${idPath}.ttl`, type: "text/turtle; charset=utf-8" },
+      { href: `${baseUrl}${idPath}.jsonld`, type: "application/ld+json" },
+      { href: `${baseUrl}${idPath}.html`, type: "text/html; charset=utf-8" },
+      { href: `${baseUrl}${idPath}.rdf`, type: "application/rdf+xml" }
     ],
     ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
   };
@@ -74,6 +76,24 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
     primaryObj.profile = [
       { href: `${baseUrl}/id/profile/${resource.profileId}` }
     ];
+  }
+
+  // RT-P09 Lifecycle & Release Links
+  if (resource.latestVersionId) {
+    primaryObj["latest-version"] = [{ href: expandUri(resource.latestVersionId, baseUrl) }];
+    primaryObj["version-history"] = [{ href: `${baseUrl}${idPath}/history` }];
+  }
+  if (resource.seriesId) {
+    const seriesRes = getResourceById(resource.seriesId);
+    const seriesUri = seriesRes ? expandUri(seriesRes.id, baseUrl) : `${baseUrl}/id/${typeSlug}/${getEntityNameSlug(resource.seriesId)}`;
+    primaryObj.collection = [{ href: seriesUri }];
+    primaryObj["version-history"] = [{ href: `${seriesUri}/history` }];
+    if (resource.predecessorVersionId) {
+      primaryObj["predecessor-version"] = [{ href: expandUri(resource.predecessorVersionId, baseUrl) }];
+    }
+    if (resource.successorVersionId) {
+      primaryObj["successor-version"] = [{ href: expandUri(resource.successorVersionId, baseUrl) }];
+    }
   }
 
   // Showcase RT-P08 (Large Linkset Split-Up) on arms-mbon
@@ -95,24 +115,45 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
     linkset: [
       primaryObj,
       {
-        anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.ttl`,
+        anchor: `${baseUrl}${idPath}.ttl`,
         self: [{ href: resourceUri }],
         ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
       },
       {
-        anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.jsonld`,
+        anchor: `${baseUrl}${idPath}.jsonld`,
         self: [{ href: resourceUri }],
         ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
       },
       {
-        anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.html`,
+        anchor: `${baseUrl}${idPath}.html`,
         self: [{ href: resourceUri }],
         ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
       },
       {
-        anchor: `${baseUrl}/id/${typeSlug}/${nameSlug}.rdf`,
+        anchor: `${baseUrl}${idPath}.rdf`,
         self: [{ href: resourceUri }],
         ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
+      }
+    ]
+  };
+}
+
+export function generateHistoryLinkset(series: MarineEntity, releases: MarineEntity[], baseUrl: string): object {
+  const seriesUri = expandUri(series.id, baseUrl);
+  const idPath = getEntityIdPath(series);
+  const historyUri = `${baseUrl}${idPath}/history`;
+
+  return {
+    linkset: [
+      {
+        anchor: historyUri,
+        collection: [{ href: seriesUri }],
+        item: releases.map(rel => ({
+          href: expandUri(rel.id, baseUrl),
+          version: rel.version,
+          "release-date": rel.releaseDate,
+          title: rel.title
+        }))
       }
     ]
   };
