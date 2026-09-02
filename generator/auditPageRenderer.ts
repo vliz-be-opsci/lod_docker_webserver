@@ -163,6 +163,22 @@ export const RESOURCE_GAP_SPECS: ResourceGapSpec[] = [
     testCommand8080: "curl -s http://localhost:8080/id/person/katrina.linkset.json",
     testCommand8081: "curl -s http://localhost:8081/id/person/katrina.linkset.json",
     expectedDiff: "8080 contains 5 anchor blocks (bidirectional); 8081 contains only the single primary anchor block."
+  },
+  {
+    resourceId: "resource-dataset-90",
+    nameSlug: "dataset-90",
+    typeSlug: "dataset",
+    title: "Macrobenthos of the Belgian Part of the North Sea (Dataset 90)",
+    category: "Dataset",
+    archetype: "Unlinked Releases & Missing Lifecycle Navigation",
+    port8080Status: "100% Compliant",
+    port8081Status: "Missing RFC 5829 Lifecycle Links & History Archive",
+    missingPatterns: ["RT-P09"],
+    compliantPatterns: ["RT-P01", "RT-P03", "RT-P04"],
+    description: "Series DOI and releases exist on port 8081, but omit RFC 5829 latest-version, predecessor-version, successor-version, and version-history links.",
+    testCommand8080: "curl -I http://localhost:8080/id/dataset/dataset-90.html",
+    testCommand8081: "curl -I http://localhost:8081/id/dataset/dataset-90.html",
+    expectedDiff: "8080 includes rel='latest-version' and rel='version-history' pointing to releases and archive; 8081 omits lifecycle headers."
   }
 ];
 
@@ -174,7 +190,7 @@ export function generateComplianceJson(baseUrl8080: string, baseUrl8081: string)
       referenceServer: {
         baseUrl: baseUrl8080,
         port: 8080,
-        description: "100% Fully Compliant Reference Implementation (RT-P01 through RT-P08)",
+        description: "100% Fully Compliant Reference Implementation (RT-P01 through RT-P09)",
         complianceScore: "100%"
       },
       gappedServer: {

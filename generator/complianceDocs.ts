@@ -269,6 +269,42 @@ const AUDIT_DOCS: ComplianceDoc[] = [
       rdf: ["/id/person/marc.ttl", "/id/person/katrina.ttl", "/id/person/cedric.ttl", "/id/person/laurian.ttl", "/id/person/joanna.ttl"],
       conneg: "GET /id/person/marc with Accept: text/turtle returns 303 to /id/person/marc.ttl."
     }
+  },
+  {
+    filename: "dataset-90.md",
+    title: "Macrobenthos of the Belgian Part of the North Sea (Dataset 90)",
+    resourceId: "resource-dataset-90",
+    sourceUri: "https://marineinfo.org/id/dataset/90",
+    entityType: "schema:Dataset / dcat:Dataset (Series & Releases)",
+    upstreamState: "MarineInfo standard dataset landing page. Only displays current state without RFC 5829 lifecycle navigation, Release DOIs, or RFC 9264 version history linksets.",
+    gaps: [
+      "No RFC 5829 lifecycle links (`rel=\"latest-version\"`, `rel=\"predecessor-version\"`, `rel=\"successor-version\"`, `rel=\"version-history\"`).",
+      "No distinction between evolving conceptual series PID (`10.14284/90`) and immutable snapshot release PIDs (`10.14284/90.v1.0`, `10.14284/90.v2.0`, `10.14284/90.v2.1`).",
+      "No standalone version history linkset (`/id/dataset/dataset-90/history.linkset.json`).",
+      "Direct DOI resolution on series PID does not signpost both Series DOI and Release DOI simultaneously."
+    ],
+    rtEnhancements: {
+      headers: [
+        "Link: </id/dataset/dataset-90/v2.1>; rel=\"latest-version\"",
+        "Link: </id/dataset/dataset-90/history>; rel=\"version-history\"",
+        "Link: </id/dataset/dataset-90/history.linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\"",
+        "Link: </doi/10.14284/90>; rel=\"collection\"",
+        "Link: </doi/10.14284/90.v2.1>; rel=\"cite-as\""
+      ],
+      linkset: "/id/dataset/dataset-90.linkset.json + /id/dataset/dataset-90/history.linkset.json",
+      distributions: [
+        "CSV v1.0: /data/dataset-90-v1.0.csv (Baseline snapshot)",
+        "CSV v2.0: /data/dataset-90-v2.0.csv (Harmonized snapshot)",
+        "CSV v2.1: /data/dataset-90-v2.1.csv (Authoritative latest snapshot)"
+      ],
+      rdf: [
+        "/id/dataset/dataset-90.ttl",
+        "/id/dataset/dataset-90/v1.0.ttl",
+        "/id/dataset/dataset-90/v2.0.ttl",
+        "/id/dataset/dataset-90/v2.1.ttl"
+      ],
+      conneg: "GET /doi/10.14284/90 returns 303 to /data/dataset-90-v2.1.csv (Behavior A) with rel='cite-as' and rel='collection' signposts."
+    }
   }
 ];
 

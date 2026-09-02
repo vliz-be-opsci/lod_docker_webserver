@@ -19,7 +19,7 @@ describe("Gapped LOD Server & Gap Simulation Engine", () => {
     const compliance = generateComplianceJson("http://localhost:8080", "http://localhost:8081") as any;
     expect(compliance.instances.referenceServer.port).toBe(8080);
     expect(compliance.instances.gappedServer.port).toBe(8081);
-    expect(compliance.resources.length).toBe(9);
+    expect(compliance.resources.length).toBe(10);
 
     const armsMbon = compliance.resources.find((r: any) => r.slug === "arms-mbon");
     expect(armsMbon.gappedPort8081.missingPatterns.length).toBe(0);
@@ -110,5 +110,13 @@ describe("Gapped LOD Server & Gap Simulation Engine", () => {
     const nginxGappedConf = fs.readFileSync(path.resolve(process.cwd(), "nginx-gapped.conf"), "utf-8");
     expect(nginxGappedConf).toContain("location ~ ^/doi/");
     expect(nginxGappedConf).toContain("return 303 $scheme://$http_host$doi_payload_uri;");
+  });
+
+  it("Scenario 11: gapped server omits RT-P09 history linkset file and lifecycle headers", () => {
+    const histLinksetGapped = path.join(distGappedDir, "id", "dataset", "dataset-90", "history.linkset.json");
+    expect(fs.existsSync(histLinksetGapped)).toBe(false);
+
+    const gappedHeaders = fs.readFileSync(path.join(distGappedDir, "nginx-headers.conf"), "utf-8");
+    expect(gappedHeaders).not.toContain('rel="latest-version"');
   });
 });

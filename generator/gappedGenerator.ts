@@ -124,6 +124,11 @@ export async function generateGappedSite(distGappedDir: string, baseUrl: string)
     fs.writeFileSync(sitemapPath, sitemap);
   }
 
+  // GAP 11: dataset-90 (Unlinked Releases & Missing Lifecycle on Gapped Server)
+  const d90HistDir = path.join(distGappedDir, "id", "dataset", "dataset-90");
+  const d90HistLinkset = path.join(d90HistDir, "history.linkset.json");
+  if (fs.existsSync(d90HistLinkset)) fs.unlinkSync(d90HistLinkset);
+
   // =========================================================================
   // GENERATE GAPPED NGINX CONFIGURATIONS
   // =========================================================================
