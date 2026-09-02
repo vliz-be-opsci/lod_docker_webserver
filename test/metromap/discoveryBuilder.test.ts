@@ -51,4 +51,20 @@ describe("MetroGraphBuilder & Discovery Cascade", () => {
     expect(graph.nodes.some(n => n.uri.includes("arms-mbon.linkset.json"))).toBe(true);
     expect(graph.nodes.some(n => n.uri.includes("arms-mbon-18s.csv"))).toBe(true);
   });
+
+  it("builds lifecycle and release navigation tracks for Dataset 90 (RT-P09)", () => {
+    const builder = new MetroGraphBuilder(RESOURCES, "http://localhost:8080");
+    const graph = builder.buildGraph("/");
+
+    const latestTrack = graph.tracks.find(t => t.relationLabel?.includes("latest-version"));
+    expect(latestTrack).toBeDefined();
+    expect(latestTrack?.target.uri).toBe("/id/dataset/dataset-90/v2.1");
+
+    const historyTrack = graph.tracks.find(t => t.relationLabel?.includes("version-history"));
+    expect(historyTrack).toBeDefined();
+    expect(historyTrack?.target.uri).toBe("/id/dataset/dataset-90/history");
+
+    const predTrack = graph.tracks.find(t => t.relationLabel?.includes("predecessor-version"));
+    expect(predTrack).toBeDefined();
+  });
 });

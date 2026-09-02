@@ -13,17 +13,21 @@ describe("MetroMap Registries", () => {
     expect(SPECS_REGISTRY.RFC_6573).toBeDefined();
     expect(SPECS_REGISTRY.DCAT_3).toBeDefined();
     expect(SPECS_REGISTRY.RO_CRATE).toBeDefined();
+    expect(SPECS_REGISTRY.RFC_5829).toBeDefined();
 
     expect(getSpecById("RFC_8288")?.code).toBe("RFC 8288");
+    expect(getSpecById("RFC_5829")?.code).toBe("RFC 5829");
   });
 
-  it("contains the 8 official EOSC Radical Transparency Patterns (RT-P01 through RT-P08)", () => {
-    expect(RT_PATTERNS_REGISTRY.length).toBe(8);
+  it("contains the 9 official EOSC Radical Transparency Patterns (RT-P01 through RT-P09)", () => {
+    expect(RT_PATTERNS_REGISTRY.length).toBe(9);
     const p1 = getPatternById("RT_P01");
     expect(p1?.name).toBe("Profile Conformity Declarations");
     const p3 = getPatternById("RT_P03");
     expect(p3?.name).toBe("Content Negotiation Menu");
     const p5 = getPatternById("RT_P05");
     expect(p5?.name).toBe("Subsetting API");
+    const p9 = getPatternById("RT_P09");
+    expect(p9?.name).toBe("Release Linking");
   });
 });

@@ -49,6 +49,14 @@ export const SPECS_REGISTRY = {
     "https://datatracker.ietf.org/doc/html/rfc6573",
     "Expresses containment and membership between collections, catalogs, and item links."
   ),
+  RFC_5829: new Specification(
+    "RFC_5829",
+    "RFC 5829",
+    "Link Relations for Versioning",
+    "IETF",
+    "https://datatracker.ietf.org/doc/html/rfc5829",
+    "Defines latest-version, predecessor-version, successor-version, and version-history link relations."
+  ),
   RFC_8631: new Specification(
     "RFC_8631",
     "RFC 8631",

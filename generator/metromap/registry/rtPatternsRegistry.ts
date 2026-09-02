@@ -91,6 +91,17 @@ export const RT_PATTERNS_REGISTRY: RTPattern[] = [
     "#fefce8",
     node => node.category === "linkset" || node.uri.includes(".linkset.json") || node.uri.includes("/linksets/"),
     `${EOSC_BASE_URL}/08-large-linksets.md`
+  ),
+  new RTPattern(
+    "RT_P09",
+    9,
+    "Release Linking",
+    "Links evolving conceptual dataset and profile series to immutable snapshot releases and version histories using RFC 5829 lifecycle relations (latest-version, predecessor-version, successor-version, version-history).",
+    [SPECS_REGISTRY.RFC_5829, SPECS_REGISTRY.RFC_8288, SPECS_REGISTRY.RFC_9264, SPECS_REGISTRY.RFC_6573],
+    "#8b5cf6",
+    "#f5f3ff",
+    node => node.id.includes("history") || node.id.includes("v1") || node.id.includes("v2") || node.uri.includes("/history") || node.uri.includes("/v1.") || node.uri.includes("/v2."),
+    `${EOSC_BASE_URL}/09-release-links.md`
   )
 ];
 

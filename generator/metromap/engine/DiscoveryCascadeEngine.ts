@@ -38,6 +38,7 @@ export class DiscoveryCascadeEngine {
       r.id === "resource-vliz" || 
       r.id === "resource-ro-crate-paper" || 
       r.id === "resource-eurobis-occurrences" ||
+      r.id === "resource-dataset-90" ||
       r.category === "service" ||
       r.category === "api"
     );
@@ -116,6 +117,17 @@ export class DiscoveryCascadeEngine {
           { sourceUri: `/id/${typeSlug}/${nameSlug}.linkset.json`, targetUri: `/id/${typeSlug}/${nameSlug}.conneg.linkset.json`, relation: 'rel="item"', category: "linkset", label: "Conneg Linkset Fragment", sublabel: "RT-P08 Split", specIds: ["RFC_9264", "RFC_6573"] },
           { sourceUri: `/id/${typeSlug}/${nameSlug}.linkset.json`, targetUri: `/id/${typeSlug}/${nameSlug}.profiles.linkset.json`, relation: 'rel="item"', category: "linkset", label: "Profiles Linkset Fragment", sublabel: "RT-P08 Split", specIds: ["RFC_9264", "RFC_6573"] },
           { sourceUri: `/id/${typeSlug}/${nameSlug}.linkset.json`, targetUri: `/id/${typeSlug}/${nameSlug}.provenance.linkset.json`, relation: 'rel="item"', category: "linkset", label: "Provenance Linkset Fragment", sublabel: "RT-P08 Split", specIds: ["RFC_9264", "RFC_6573"] }
+        );
+      }
+
+      // RT-P09 Release Linking & Lifecycle Signals (Showcase on Dataset 90)
+      if (res.id === "resource-dataset-90") {
+        signals.push(
+          { sourceUri: pidUri, targetUri: "/id/dataset/dataset-90/v2.1", relation: 'rel="latest-version"', category: "dataset", label: "Dataset 90 Latest Release", sublabel: "Snapshot v2.1", specIds: ["RFC_5829", "RFC_8288"] },
+          { sourceUri: pidUri, targetUri: "/id/dataset/dataset-90/history", relation: 'rel="version-history"', category: "dataset", label: "Dataset 90 History", sublabel: "Release Archive", specIds: ["RFC_5829", "RFC_8288"] },
+          { sourceUri: "/id/dataset/dataset-90/history", targetUri: "/id/dataset/dataset-90/history.linkset.json", relation: 'rel="linkset"', category: "linkset", label: "History Linkset", sublabel: "RFC 9264 History", specIds: ["RFC_9264", "RFC_5829"] },
+          { sourceUri: "/id/dataset/dataset-90/v2.1", targetUri: "/id/dataset/dataset-90/v2.0", relation: 'rel="predecessor-version"', category: "dataset", label: "Snapshot v2.0", sublabel: "Predecessor", specIds: ["RFC_5829"] },
+          { sourceUri: "/id/dataset/dataset-90/v2.0", targetUri: "/id/dataset/dataset-90/v1.0", relation: 'rel="predecessor-version"', category: "dataset", label: "Snapshot v1.0", sublabel: "Baseline", specIds: ["RFC_5829"] }
         );
       }
 
