@@ -45,6 +45,14 @@ export interface Resource {
     id: string;
     relationship: string;
   }[];
+  // RT-P09 Lifecycle & Release properties
+  seriesId?: string;
+  version?: string;
+  releaseDate?: string;
+  latestVersionId?: string;
+  predecessorVersionId?: string;
+  successorVersionId?: string;
+  historyUri?: string;
 }
 
 export type MarineEntity = Resource;
@@ -67,6 +75,10 @@ export function getEntityNameSlug(entityOrId: { id: string } | string): string {
 
 export function getEntityIdPath(entity: MarineEntity): string {
   const typeSlug = getEntityTypeSlug(entity);
+  if (entity.seriesId && entity.version) {
+    const parentNameSlug = entity.seriesId.replace(/^resource-/, "");
+    return `/id/${typeSlug}/${parentNameSlug}/v${entity.version}`;
+  }
   const nameSlug = getEntityNameSlug(entity);
   return `/id/${typeSlug}/${nameSlug}`;
 }

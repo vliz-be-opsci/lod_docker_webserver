@@ -340,5 +340,30 @@ startxref
 %%EOF`;
     fs.writeFileSync(targetPdfPath, minimalPdf);
   }
+
+  // 10. Dataset 90 Release Payloads (RT-P09)
+  const d90v1Csv = `sample_id,date,station,latitude,longitude,depth_m,species,aphia_id,abundance,biomass_g
+S-101,2023-05-12,Station 115bis,51.155,2.780,14.5,Abra alba,141433,450,2.12
+S-102,2023-05-12,Station 115bis,51.155,2.780,14.5,Lanice conchilega,131495,120,5.40
+S-103,2023-05-18,Station 700,51.375,3.010,22.0,Nephtys hombergii,130359,35,1.15
+S-104,2023-05-25,Station 780,51.480,2.920,28.5,Spiophanes bombyx,131189,280,0.72
+`;
+  fs.writeFileSync(path.join(dataDir, "dataset-90-v1.0.csv"), d90v1Csv);
+
+  const d90v2Csv = `sample_id,date,station,latitude,longitude,depth_m,species,aphia_id,abundance,biomass_g
+S-201,2025-01-14,Station 115bis,51.155,2.780,14.5,Abra alba,141433,520,2.45
+S-202,2025-01-14,Station 115bis,51.155,2.780,14.5,Lanice conchilega,131495,180,6.10
+S-203,2025-01-20,Station 700,51.375,3.010,22.0,Nephtys hombergii,130359,42,1.30
+S-204,2025-01-28,Station 780,51.480,2.920,28.5,Spiophanes bombyx,131189,295,0.78
+`;
+  fs.writeFileSync(path.join(dataDir, "dataset-90-v2.0.csv"), d90v2Csv);
+
+  const d90v21Csv = `sample_id,date,station,latitude,longitude,depth_m,species,aphia_id,qc_flag,abundance,biomass_g
+S-301,2026-06-10,Station 115bis,51.155,2.780,14.5,Abra alba,141433,PASSED,535,2.50
+S-302,2026-06-10,Station 115bis,51.155,2.780,14.5,Lanice conchilega,131495,PASSED,195,6.35
+S-303,2026-06-16,Station 700,51.375,3.010,22.0,Nephtys hombergii,130359,PASSED,48,1.42
+S-304,2026-06-22,Station 780,51.480,2.920,28.5,Spiophanes bombyx,131189,PASSED,310,0.85
+`;
+  fs.writeFileSync(path.join(dataDir, "dataset-90-v2.1.csv"), d90v21Csv);
 }
 

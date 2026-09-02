@@ -8,6 +8,13 @@ export interface Profile {
   specUrl: string;
   composedProfiles?: string[]; // IDs of sub-profiles if composite (for RT-P02)
   shaclShape: string;
+  // RT-P09 Profile Evolution & Lifecycle
+  version?: string;
+  releaseDate?: string;
+  latestVersionId?: string;
+  predecessorVersionId?: string;
+  successorVersionId?: string;
+  abstractProfileId?: string;
 }
 
 export const PROFILES: Profile[] = [
@@ -66,10 +73,57 @@ dcat:DatasetShape
   },
   {
     id: "ro-crate-package-profile",
-    title: "RO-Crate 1.1 Research Object Archival Profile",
-    description: "FAIR digital object package format combining contextual JSON-LD metadata with zipped data files.",
+    title: "RO-Crate Research Object Archival Profile (Abstract)",
+    description: "Abstract FAIR digital object package format combining contextual JSON-LD metadata with zipped data files.",
     publisher: "RO-Crate Community / BioCompute",
     isAtomic: true,
+    conformsToStandard: "https://w3id.org/ro/crate",
+    specUrl: "https://w3id.org/ro/crate",
+    latestVersionId: "ro-crate-package-profile-v1.1",
+    shaclShape: `@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ro: <https://w3id.org/ro/crate/> .
+
+ro:CrateShape
+    a sh:NodeShape ;
+    sh:targetClass ro:RootDataset ;
+    sh:property [
+        sh:path ro:metadataFile ;
+        sh:hasValue "ro-crate-metadata.json" ;
+    ] .`
+  },
+  {
+    id: "ro-crate-package-profile-v1.0",
+    title: "RO-Crate 1.0 Archival Profile",
+    description: "Initial release of the RO-Crate archival packaging profile.",
+    publisher: "RO-Crate Community / BioCompute",
+    isAtomic: true,
+    version: "1.0",
+    releaseDate: "2021-04-12",
+    abstractProfileId: "ro-crate-package-profile",
+    successorVersionId: "ro-crate-package-profile-v1.1",
+    conformsToStandard: "https://w3id.org/ro/crate/1.0",
+    specUrl: "https://w3id.org/ro/crate/1.0",
+    shaclShape: `@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ro: <https://w3id.org/ro/crate/> .
+
+ro:CrateShape
+    a sh:NodeShape ;
+    sh:targetClass ro:RootDataset ;
+    sh:property [
+        sh:path ro:metadataFile ;
+        sh:hasValue "ro-crate-metadata.json" ;
+    ] .`
+  },
+  {
+    id: "ro-crate-package-profile-v1.1",
+    title: "RO-Crate 1.1 Research Object Archival Profile",
+    description: "Standardized RO-Crate 1.1 profile with strict entity typing and computational workflow metadata support.",
+    publisher: "RO-Crate Community / BioCompute",
+    isAtomic: true,
+    version: "1.1",
+    releaseDate: "2023-10-25",
+    abstractProfileId: "ro-crate-package-profile",
+    predecessorVersionId: "ro-crate-package-profile-v1.0",
     conformsToStandard: "https://w3id.org/ro/crate/1.1",
     specUrl: "https://w3id.org/ro/crate/1.1",
     shaclShape: `@prefix sh: <http://www.w3.org/ns/shacl#> .

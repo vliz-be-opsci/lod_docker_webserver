@@ -222,6 +222,167 @@ export const RESOURCES: MarineEntity[] = [
       ]
     }
   },
+  {
+    id: "resource-dataset-90",
+    type: "Dataset",
+    category: "dataset",
+    title: "Macrobenthos of the Belgian Part of the North Sea (Dataset 90)",
+    description: "Long-term monitoring of macrobenthic community structure, biomass, and species density across the Belgian Part of the North Sea (BPNS). Managed by Flanders Marine Institute (VLIZ).",
+    sourceUri: "https://marineinfo.org/id/dataset/90",
+    doi: "https://doi.org/10.14284/90",
+    license: "Creative Commons Attribution 4.0 International",
+    licenseUrl: "https://creativecommons.org/licenses/by/4.0/",
+    temporalCoverage: "2023-01-01/present",
+    spatialCoverage: "Belgian Part of the North Sea (BPNS)",
+    publisher: "resource-vliz",
+    creators: ["resource-marc", "resource-cedric"],
+    profileId: "dcat3-dataset-profile",
+    latestVersionId: "resource-dataset-90-v2.1",
+    historyUri: "/id/dataset/dataset-90/history",
+    properties: {
+      "schema:name": "Macrobenthos of the Belgian Part of the North Sea Series",
+      "owl:sameAs": "https://marineinfo.org/id/dataset/90"
+    },
+    distributions: [
+      {
+        id: "dist-dataset-90-latest-csv",
+        title: "Latest Macrobenthos Abundance Matrix (CSV)",
+        description: "Latest authoritative observation records (v2.1 snapshot).",
+        mediaType: "text/csv",
+        format: "CSV",
+        downloadUrl: "/data/dataset-90-v2.1.csv",
+        byteSize: 28672
+      }
+    ]
+  },
+  {
+    id: "resource-dataset-90-v1.0",
+    type: "Dataset",
+    category: "dataset",
+    seriesId: "resource-dataset-90",
+    version: "1.0",
+    releaseDate: "2023-06-02",
+    successorVersionId: "resource-dataset-90-v2.0",
+    title: "Macrobenthos of the Belgian Part of the North Sea - Release v1.0",
+    description: "Initial baseline release of benthic sampling matrix (2023-06-02).",
+    sourceUri: "https://marineinfo.org/id/dataset/90/v1.0",
+    doi: "https://doi.org/10.14284/90.v1.0",
+    license: "Creative Commons Attribution 4.0 International",
+    licenseUrl: "https://creativecommons.org/licenses/by/4.0/",
+    temporalCoverage: "2023-01-01/2023-05-31",
+    spatialCoverage: "Belgian Part of the North Sea",
+    publisher: "resource-vliz",
+    creators: ["resource-marc", "resource-cedric"],
+    profileId: "dcat3-dataset-profile",
+    properties: {
+      "schema:name": "Macrobenthos Baseline Snapshot v1.0"
+    },
+    distributions: [
+      {
+        id: "dist-dataset-90-v1.0-csv",
+        title: "Macrobenthos Abundance Matrix v1.0 (CSV)",
+        description: "Initial benthic sampling matrix.",
+        mediaType: "text/csv",
+        format: "CSV",
+        downloadUrl: "/data/dataset-90-v1.0.csv",
+        byteSize: 20480
+      }
+    ],
+    sampleData: {
+      columns: ["sample_id", "station", "species", "abundance", "biomass_g"],
+      rows: [
+        { sample_id: "S-101", station: "Station 115bis", species: "Abra alba", abundance: 450, biomass_g: 2.12 },
+        { sample_id: "S-102", station: "Station 115bis", species: "Lanice conchilega", abundance: 120, biomass_g: 5.40 },
+        { sample_id: "S-103", station: "Station 700", species: "Nephtys hombergii", abundance: 35, biomass_g: 1.15 }
+      ]
+    }
+  },
+  {
+    id: "resource-dataset-90-v2.0",
+    type: "Dataset",
+    category: "dataset",
+    seriesId: "resource-dataset-90",
+    version: "2.0",
+    releaseDate: "2025-02-06",
+    predecessorVersionId: "resource-dataset-90-v1.0",
+    successorVersionId: "resource-dataset-90-v2.1",
+    title: "Macrobenthos of the Belgian Part of the North Sea - Release v2.0",
+    description: "Taxonomic harmonization and sampling grid expansion release (2025-02-06).",
+    sourceUri: "https://marineinfo.org/id/dataset/90/v2.0",
+    doi: "https://doi.org/10.14284/90.v2.0",
+    license: "Creative Commons Attribution 4.0 International",
+    licenseUrl: "https://creativecommons.org/licenses/by/4.0/",
+    temporalCoverage: "2023-01-01/2024-12-31",
+    spatialCoverage: "Belgian Part of the North Sea",
+    publisher: "resource-vliz",
+    creators: ["resource-marc", "resource-cedric"],
+    profileId: "dcat3-dataset-profile",
+    properties: {
+      "schema:name": "Macrobenthos Harmonized Snapshot v2.0"
+    },
+    distributions: [
+      {
+        id: "dist-dataset-90-v2.0-csv",
+        title: "Macrobenthos Abundance Matrix v2.0 (CSV)",
+        description: "Harmonized benthic species observations.",
+        mediaType: "text/csv",
+        format: "CSV",
+        downloadUrl: "/data/dataset-90-v2.0.csv",
+        byteSize: 24576
+      }
+    ],
+    sampleData: {
+      columns: ["sample_id", "station", "species", "aphia_id", "abundance", "biomass_g"],
+      rows: [
+        { sample_id: "S-201", station: "Station 115bis", species: "Abra alba", aphia_id: 141433, abundance: 520, biomass_g: 2.45 },
+        { sample_id: "S-202", station: "Station 115bis", species: "Lanice conchilega", aphia_id: 131495, abundance: 180, biomass_g: 6.10 },
+        { sample_id: "S-203", station: "Station 700", species: "Nephtys hombergii", aphia_id: 130359, abundance: 42, biomass_g: 1.30 }
+      ]
+    }
+  },
+  {
+    id: "resource-dataset-90-v2.1",
+    type: "Dataset",
+    category: "dataset",
+    seriesId: "resource-dataset-90",
+    version: "2.1",
+    releaseDate: "2026-08-26",
+    predecessorVersionId: "resource-dataset-90-v2.0",
+    title: "Macrobenthos of the Belgian Part of the North Sea - Release v2.1",
+    description: "Current authoritative snapshot with quality control flags and biomass recalibrations (2026-08-26).",
+    sourceUri: "https://marineinfo.org/id/dataset/90/v2.1",
+    doi: "https://doi.org/10.14284/90.v2.1",
+    license: "Creative Commons Attribution 4.0 International",
+    licenseUrl: "https://creativecommons.org/licenses/by/4.0/",
+    temporalCoverage: "2023-01-01/2026-06-30",
+    spatialCoverage: "Belgian Part of the North Sea",
+    publisher: "resource-vliz",
+    creators: ["resource-marc", "resource-cedric"],
+    profileId: "dcat3-dataset-profile",
+    properties: {
+      "schema:name": "Macrobenthos Authoritative Snapshot v2.1"
+    },
+    distributions: [
+      {
+        id: "dist-dataset-90-v2.1-csv",
+        title: "Macrobenthos Abundance Matrix v2.1 (CSV)",
+        description: "QC-flagged macrobenthos observation records.",
+        mediaType: "text/csv",
+        format: "CSV",
+        downloadUrl: "/data/dataset-90-v2.1.csv",
+        byteSize: 28672
+      }
+    ],
+    sampleData: {
+      columns: ["sample_id", "station", "species", "aphia_id", "qc_flag", "abundance", "biomass_g"],
+      rows: [
+        { sample_id: "S-301", station: "Station 115bis", species: "Abra alba", aphia_id: 141433, qc_flag: "PASSED", abundance: 535, biomass_g: 2.50 },
+        { sample_id: "S-302", station: "Station 115bis", species: "Lanice conchilega", aphia_id: 131495, qc_flag: "PASSED", abundance: 195, biomass_g: 6.35 },
+        { sample_id: "S-303", station: "Station 700", species: "Nephtys hombergii", aphia_id: 130359, qc_flag: "PASSED", abundance: 48, biomass_g: 1.42 },
+        { sample_id: "S-304", station: "Station 780", species: "Spiophanes bombyx", aphia_id: 131189, qc_flag: "PASSED", abundance: 310, biomass_g: 0.85 }
+      ]
+    }
+  },
 
   // ==========================================
   // 2. INSTITUTES / ORGANIZATIONS
