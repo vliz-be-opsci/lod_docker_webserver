@@ -239,4 +239,30 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     expect(headersConf).toContain('<http://localhost:8080/doi/10.14284/578>; rel="cite-as"');
     expect(headersConf).toContain('<http://localhost:8080/doi/10.14284/412>; rel="cite-as"');
   });
+
+  // RT-P09 Integration Tests
+  it("generates Behavior A DOI mapping in nginx-coneg.conf for Dataset 90 series and releases", () => {
+    const conegConf = fs.readFileSync(path.join(distDir, "nginx-coneg.conf"), "utf-8");
+    expect(conegConf).toContain('"/doi/10.14284/90" "/data/dataset-90-v2.1.csv";');
+    expect(conegConf).toContain('"/doi/10.14284/90.v1.0" "/data/dataset-90-v1.0.csv";');
+    expect(conegConf).toContain('"/doi/10.14284/90.v2.0" "/data/dataset-90-v2.0.csv";');
+    expect(conegConf).toContain('"/doi/10.14284/90.v2.1" "/data/dataset-90-v2.1.csv";');
+  });
+
+  it("generates RFC 8288 Link headers for Dataset 90 Series and Releases in nginx-headers.conf", () => {
+    const headersConf = fs.readFileSync(path.join(distDir, "nginx-headers.conf"), "utf-8");
+    // Series headers
+    expect(headersConf).toContain('<http://localhost:8080/id/dataset/dataset-90/v2.1>; rel="latest-version"');
+    expect(headersConf).toContain('<http://localhost:8080/id/dataset/dataset-90/history>; rel="version-history"');
+    // Release headers
+    expect(headersConf).toContain('<http://localhost:8080/id/dataset/dataset-90/v2.0>; rel="predecessor-version"');
+    expect(headersConf).toContain('<http://localhost:8080/id/dataset/dataset-90>; rel="collection"');
+    // History headers
+    expect(headersConf).toContain('location = /id/dataset/dataset-90/history.linkset.json');
+  });
+
+  it("supports nested sub-resource routing in nginx.conf", () => {
+    const nginxConf = fs.readFileSync(path.resolve(process.cwd(), "nginx.conf"), "utf-8");
+    expect(nginxConf).toContain("location ~ ^/id/(?<res_type>[^/]+)/(?<res_name>[^/]+)/(?<res_sub>[^/.]+)$");
+  });
 });

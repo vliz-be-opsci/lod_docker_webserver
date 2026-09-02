@@ -4,7 +4,7 @@ import { RESOURCES, getResourceById } from "./resources";
 import { PROFILES, getProfileById } from "./profiles";
 import { serializeJsonLd, serializeTurtle, serializeRDFXML, expandUri } from "./rdfSerializer";
 import { generateDcatCatalog } from "./dcatGenerator";
-import { generateLinkset, generateSplitLinksets, generateApiCatalog } from "./linksetGenerator";
+import { generateLinkset, generateSplitLinksets, generateApiCatalog, generateHistoryLinkset } from "./linksetGenerator";
 import { generateDataPayloads } from "./dataPayloads";
 import { generateOpenApiSpec, generateApiDocsHtml, generateApiSampleResponses } from "./openApiGenerator";
 import {
@@ -12,12 +12,14 @@ import {
   generateProfileCatalogHtml,
   generateProfileTurtle,
   generateProfileJsonLd,
-  generateProfileLinkset
+  generateProfileLinkset,
+  generateProfileHistoryLinkset
 } from "./profileGenerator";
 import {
   getCssContent,
   renderCatalogHomeHtml,
   renderDatasetPageHtml,
+  renderHistoryPageHtml,
   renderInstitutePageHtml,
   renderPublicationPageHtml,
   renderProjectPageHtml,
@@ -94,10 +96,24 @@ async function main() {
     const rdf = serializeRDFXML(resource, BASE_URL);
     const linkset = generateLinkset(resource, BASE_URL);
 
+    // Flat files
     fs.writeFileSync(path.join(targetDir, `${nameSlug}.jsonld`), jsonld);
     fs.writeFileSync(path.join(targetDir, `${nameSlug}.ttl`), ttl);
     fs.writeFileSync(path.join(targetDir, `${nameSlug}.rdf`), rdf);
     fs.writeFileSync(path.join(targetDir, `${nameSlug}.linkset.json`), JSON.stringify(linkset, null, 2));
+
+    // Nested versioned files (e.g., dist/id/dataset/dataset-90/v2.1.ttl)
+    if (resource.seriesId && resource.version) {
+      const parentSlug = getEntityNameSlug(resource.seriesId);
+      const nestedDir = path.join(targetDir, parentSlug);
+      if (!fs.existsSync(nestedDir)) {
+        fs.mkdirSync(nestedDir, { recursive: true });
+      }
+      fs.writeFileSync(path.join(nestedDir, `v${resource.version}.jsonld`), jsonld);
+      fs.writeFileSync(path.join(nestedDir, `v${resource.version}.ttl`), ttl);
+      fs.writeFileSync(path.join(nestedDir, `v${resource.version}.rdf`), rdf);
+      fs.writeFileSync(path.join(nestedDir, `v${resource.version}.linkset.json`), JSON.stringify(linkset, null, 2));
+    }
 
     // Showcase RT-P08: Large Linkset Split-Up on arms-mbon
     if (resource.id === "resource-arms-mbon") {
@@ -125,6 +141,31 @@ async function main() {
     fs.writeFileSync(path.join(DIST_DIR, "id", "profile", `${profile.id}.ttl`), generateProfileTurtle(profile, BASE_URL));
     fs.writeFileSync(path.join(DIST_DIR, "id", "profile", `${profile.id}.jsonld`), generateProfileJsonLd(profile, BASE_URL));
     fs.writeFileSync(path.join(DIST_DIR, "id", "profile", `${profile.id}.linkset.json`), JSON.stringify(generateProfileLinkset(profile, BASE_URL), null, 2));
+
+    if (profile.abstractProfileId && profile.version) {
+      const nestedProfDir = path.join(DIST_DIR, "id", "profile", profile.abstractProfileId);
+      if (!fs.existsSync(nestedProfDir)) {
+        fs.mkdirSync(nestedProfDir, { recursive: true });
+      }
+      fs.writeFileSync(path.join(nestedProfDir, `v${profile.version}.html`), generateProfileHtml(profile, BASE_URL));
+      fs.writeFileSync(path.join(nestedProfDir, `v${profile.version}.ttl`), generateProfileTurtle(profile, BASE_URL));
+      fs.writeFileSync(path.join(nestedProfDir, `v${profile.version}.jsonld`), generateProfileJsonLd(profile, BASE_URL));
+      fs.writeFileSync(path.join(nestedProfDir, `v${profile.version}.linkset.json`), JSON.stringify(generateProfileLinkset(profile, BASE_URL), null, 2));
+    }
+  }
+
+  // Generate RO-Crate Profile History Linkset
+  const roCrateAbstract = getProfileById("ro-crate-package-profile");
+  if (roCrateAbstract) {
+    const roCrateVersions = [
+      getProfileById("ro-crate-package-profile-v1.0")!,
+      getProfileById("ro-crate-package-profile-v1.1")!
+    ].filter(Boolean);
+    const roCrateHistDir = path.join(DIST_DIR, "id", "profile", "ro-crate-package-profile");
+    if (!fs.existsSync(roCrateHistDir)) {
+      fs.mkdirSync(roCrateHistDir, { recursive: true });
+    }
+    fs.writeFileSync(path.join(roCrateHistDir, "history.linkset.json"), JSON.stringify(generateProfileHistoryLinkset(roCrateAbstract, roCrateVersions, BASE_URL), null, 2));
   }
 
   // 6. Generate OpenAPI Specification & Subsetting API Explorer
@@ -159,19 +200,47 @@ async function main() {
     const nameSlug = getEntityNameSlug(res);
     const targetDir = path.join(DIST_DIR, "id", typeSlug);
 
+    let htmlContent = "";
     if (res.category === "dataset") {
-      fs.writeFileSync(path.join(targetDir, `${nameSlug}.html`), renderDatasetPageHtml(res, BASE_URL));
+      htmlContent = renderDatasetPageHtml(res, BASE_URL);
     } else if (res.category === "institute") {
-      fs.writeFileSync(path.join(targetDir, `${nameSlug}.html`), renderInstitutePageHtml(res, BASE_URL));
+      htmlContent = renderInstitutePageHtml(res, BASE_URL);
     } else if (res.category === "publication") {
-      fs.writeFileSync(path.join(targetDir, `${nameSlug}.html`), renderPublicationPageHtml(res, BASE_URL));
+      htmlContent = renderPublicationPageHtml(res, BASE_URL);
     } else if (res.category === "project") {
-      fs.writeFileSync(path.join(targetDir, `${nameSlug}.html`), renderProjectPageHtml(res, BASE_URL));
+      htmlContent = renderProjectPageHtml(res, BASE_URL);
     } else if (res.category === "person") {
-      fs.writeFileSync(path.join(targetDir, `${nameSlug}.html`), renderPersonPageHtml(res, BASE_URL));
+      htmlContent = renderPersonPageHtml(res, BASE_URL);
     } else if (res.category === "service" || res.category === "api") {
-      fs.writeFileSync(path.join(targetDir, `${nameSlug}.html`), generateApiDocsHtml(BASE_URL));
+      htmlContent = generateApiDocsHtml(BASE_URL);
     }
+
+    fs.writeFileSync(path.join(targetDir, `${nameSlug}.html`), htmlContent);
+
+    if (res.seriesId && res.version) {
+      const parentSlug = getEntityNameSlug(res.seriesId);
+      const nestedDir = path.join(targetDir, parentSlug);
+      if (!fs.existsSync(nestedDir)) {
+        fs.mkdirSync(nestedDir, { recursive: true });
+      }
+      fs.writeFileSync(path.join(nestedDir, `v${res.version}.html`), htmlContent);
+    }
+  }
+
+  // Generate RT-P09 History Page & Linkset for Dataset 90
+  const series90 = getResourceById("resource-dataset-90");
+  if (series90) {
+    const releases90 = [
+      getResourceById("resource-dataset-90-v1.0")!,
+      getResourceById("resource-dataset-90-v2.0")!,
+      getResourceById("resource-dataset-90-v2.1")!
+    ].filter(Boolean);
+    const d90HistoryDir = path.join(DIST_DIR, "id", "dataset", "dataset-90");
+    if (!fs.existsSync(d90HistoryDir)) {
+      fs.mkdirSync(d90HistoryDir, { recursive: true });
+    }
+    fs.writeFileSync(path.join(d90HistoryDir, "history.html"), renderHistoryPageHtml(series90, releases90, BASE_URL));
+    fs.writeFileSync(path.join(d90HistoryDir, "history.linkset.json"), JSON.stringify(generateHistoryLinkset(series90, releases90, BASE_URL), null, 2));
   }
 
   // 9. Generate Sitemap with ResourceSync rs:ln (Signmap)
@@ -425,7 +494,8 @@ async function main() {
     const htmlPath = getEntityHtmlPath(res);
     const typeSlug = getEntityTypeSlug(res);
     const nameSlug = getEntityNameSlug(res);
-    const entityPid = `${BASE_URL}/id/${typeSlug}/${nameSlug}`;
+    const idPath = getEntityIdPath(res);
+    const entityPid = `${BASE_URL}${idPath}`;
     const localDoiUri = res.doi && res.doi.startsWith("https://doi.org/")
       ? `${BASE_URL}/doi/${res.doi.replace("https://doi.org/", "")}`
       : undefined;
@@ -436,14 +506,40 @@ async function main() {
     const typeHeader = `<${typeUri}>; rel="type"`;
     const doiCiteAsHeader = localDoiUri ? [`<${localDoiUri}>; rel="cite-as"`] : [];
 
+    // RT-P09 Lifecycle headers
+    const lifecycleHeaders: string[] = [];
+    if (res.latestVersionId) {
+      const latestRes = getResourceById(res.latestVersionId);
+      const latestPid = latestRes ? `${BASE_URL}${getEntityIdPath(latestRes)}` : `${BASE_URL}/id/${typeSlug}/${getEntityNameSlug(res.latestVersionId)}`;
+      lifecycleHeaders.push(`<${latestPid}>; rel="latest-version"`);
+      lifecycleHeaders.push(`<${BASE_URL}${idPath}/history>; rel="version-history"`);
+    }
+    if (res.seriesId) {
+      const seriesRes = getResourceById(res.seriesId);
+      const seriesPid = seriesRes ? `${BASE_URL}${getEntityIdPath(seriesRes)}` : `${BASE_URL}/id/${typeSlug}/${getEntityNameSlug(res.seriesId)}`;
+      lifecycleHeaders.push(`<${seriesPid}>; rel="collection"`);
+      lifecycleHeaders.push(`<${seriesPid}/history>; rel="version-history"`);
+      if (res.predecessorVersionId) {
+        const predRes = getResourceById(res.predecessorVersionId);
+        const predPid = predRes ? `${BASE_URL}${getEntityIdPath(predRes)}` : `${BASE_URL}/id/${typeSlug}/${getEntityNameSlug(res.predecessorVersionId)}`;
+        lifecycleHeaders.push(`<${predPid}>; rel="predecessor-version"`);
+      }
+      if (res.successorVersionId) {
+        const succRes = getResourceById(res.successorVersionId);
+        const succPid = succRes ? `${BASE_URL}${getEntityIdPath(succRes)}` : `${BASE_URL}/id/${typeSlug}/${getEntityNameSlug(res.successorVersionId)}`;
+        lifecycleHeaders.push(`<${succPid}>; rel="successor-version"`);
+      }
+    }
+
     // 1. Headers for .html landing page
     const htmlLinks: string[] = [
       `<${entityPid}>; rel="describes"`,
       ...doiCiteAsHeader,
       ...profileHeaders,
       typeHeader,
-      `<${BASE_URL}/id/${typeSlug}/${nameSlug}.ttl>; rel="describedby"; type="text/turtle"`,
-      `<${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json>; rel="linkset"; type="application/linkset+json"`,
+      ...lifecycleHeaders,
+      `<${BASE_URL}${idPath}.ttl>; rel="describedby"; type="text/turtle"`,
+      `<${BASE_URL}${idPath}.linkset.json>; rel="linkset"; type="application/linkset+json"`,
       `<${BASE_URL}/catalog/>; rel="collection"`
     ];
 
@@ -451,13 +547,20 @@ async function main() {
     headersConf += `    add_header Link '${htmlLinks.join(", ")}' always;\n`;
     headersConf += `}\n\n`;
 
+    if (`/id/${typeSlug}/${nameSlug}.html` !== htmlPath) {
+      headersConf += `location = /id/${typeSlug}/${nameSlug}.html {\n`;
+      headersConf += `    add_header Link '${htmlLinks.join(", ")}' always;\n`;
+      headersConf += `}\n\n`;
+    }
+
     // 2. Headers for RDF representations (.ttl, .jsonld, .rdf)
     const rdfLinks: string[] = [
       `<${entityPid}>; rel="describes"`,
       ...doiCiteAsHeader,
       ...profileHeaders,
       typeHeader,
-      `<${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json>; rel="linkset"; type="application/linkset+json"`
+      ...lifecycleHeaders,
+      `<${BASE_URL}${idPath}.linkset.json>; rel="linkset"; type="application/linkset+json"`
     ];
 
     headersConf += `location = /id/${typeSlug}/${nameSlug}.ttl {\n`;
@@ -471,6 +574,27 @@ async function main() {
     headersConf += `location = /id/${typeSlug}/${nameSlug}.rdf {\n`;
     headersConf += `    add_header Link '${rdfLinks.join(", ")}' always;\n`;
     headersConf += `}\n\n`;
+
+    if (res.seriesId && res.version) {
+      const parentSlug = getEntityNameSlug(res.seriesId);
+      const nestedPrefix = `/id/${typeSlug}/${parentSlug}/v${res.version}`;
+
+      headersConf += `location = ${nestedPrefix}.ttl {\n`;
+      headersConf += `    add_header Link '${rdfLinks.join(", ")}' always;\n`;
+      headersConf += `}\n\n`;
+
+      headersConf += `location = ${nestedPrefix}.jsonld {\n`;
+      headersConf += `    add_header Link '${rdfLinks.join(", ")}' always;\n`;
+      headersConf += `}\n\n`;
+
+      headersConf += `location = ${nestedPrefix}.rdf {\n`;
+      headersConf += `    add_header Link '${rdfLinks.join(", ")}' always;\n`;
+      headersConf += `}\n\n`;
+
+      headersConf += `location = ${nestedPrefix}.linkset.json {\n`;
+      headersConf += `    add_header Link '<${entityPid}>; rel="describes"' always;\n`;
+      headersConf += `}\n\n`;
+    }
 
     // 3. Headers for Linkset (.linkset.json)
     const splitItemHeaders = (res.id === "resource-arms-mbon")
@@ -500,6 +624,23 @@ async function main() {
       }
     }
   }
+
+  // Headers for History endpoints (RT-P09)
+  headersConf += `location = /id/dataset/dataset-90/history.linkset.json {\n`;
+  headersConf += `    default_type application/linkset+json;\n`;
+  headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/id/dataset/dataset-90/history>; rel="describes", <${BASE_URL}/id/dataset/dataset-90>; rel="collection"' always;\n`;
+  headersConf += `}\n\n`;
+
+  headersConf += `location = /id/dataset/dataset-90/history.html {\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/id/dataset/dataset-90/history>; rel="describes", <${BASE_URL}/id/dataset/dataset-90/history.linkset.json>; rel="linkset"; type="application/linkset+json", <${BASE_URL}/id/dataset/dataset-90>; rel="collection"' always;\n`;
+  headersConf += `}\n\n`;
+
+  headersConf += `location = /id/profile/ro-crate-package-profile/history.linkset.json {\n`;
+  headersConf += `    default_type application/linkset+json;\n`;
+  headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/id/profile/ro-crate-package-profile/history>; rel="describes", <${BASE_URL}/id/profile/ro-crate-package-profile>; rel="collection"' always;\n`;
+  headersConf += `}\n\n`;
 
   // Headers for RT-P04 Direct Data Payloads (No Landing Page Solution)
   const armsZipLinks = [
@@ -560,6 +701,45 @@ async function main() {
   ];
   headersConf += `location = /data/north-sea-sensors-latest.csv {\n`;
   headersConf += `    add_header Link '${sensorCsvLinks.join(", ")}' always;\n`;
+  headersConf += `}\n\n`;
+
+  // Headers for Dataset 90 CSV Payloads (RT-P09 / Behavior A)
+  const d90v1Links = [
+    `<${BASE_URL}/doi/10.14284/90.v1.0>; rel="cite-as"`,
+    `<${BASE_URL}/id/dataset/dataset-90/v1.0>; rel="cite-as"`,
+    `<${BASE_URL}/id/dataset/dataset-90>; rel="collection"`,
+    `<${BASE_URL}/id/dataset/dataset-90/v1.0.ttl>; rel="describedby"; type="text/turtle"`,
+    `<${BASE_URL}/id/dataset/dataset-90/v1.0.html>; rel="describedby"; type="text/html"`,
+    `<${BASE_URL}/id/dataset/dataset-90/v1.0.linkset.json>; rel="linkset"; type="application/linkset+json"`
+  ];
+  headersConf += `location = /data/dataset-90-v1.0.csv {\n`;
+  headersConf += `    add_header Link '${d90v1Links.join(", ")}' always;\n`;
+  headersConf += `}\n\n`;
+
+  const d90v2Links = [
+    `<${BASE_URL}/doi/10.14284/90.v2.0>; rel="cite-as"`,
+    `<${BASE_URL}/id/dataset/dataset-90/v2.0>; rel="cite-as"`,
+    `<${BASE_URL}/id/dataset/dataset-90>; rel="collection"`,
+    `<${BASE_URL}/id/dataset/dataset-90/v2.0.ttl>; rel="describedby"; type="text/turtle"`,
+    `<${BASE_URL}/id/dataset/dataset-90/v2.0.html>; rel="describedby"; type="text/html"`,
+    `<${BASE_URL}/id/dataset/dataset-90/v2.0.linkset.json>; rel="linkset"; type="application/linkset+json"`
+  ];
+  headersConf += `location = /data/dataset-90-v2.0.csv {\n`;
+  headersConf += `    add_header Link '${d90v2Links.join(", ")}' always;\n`;
+  headersConf += `}\n\n`;
+
+  // Behavior A: dataset-90-v2.1.csv is ALSO the authoritative target of Series DOI 10.14284/90
+  const d90v21Links = [
+    `<${BASE_URL}/doi/10.14284/90.v2.1>; rel="cite-as"`,
+    `<${BASE_URL}/doi/10.14284/90>; rel="collection"`,
+    `<${BASE_URL}/id/dataset/dataset-90/v2.1>; rel="cite-as"`,
+    `<${BASE_URL}/id/dataset/dataset-90>; rel="collection"`,
+    `<${BASE_URL}/id/dataset/dataset-90/v2.1.ttl>; rel="describedby"; type="text/turtle"`,
+    `<${BASE_URL}/id/dataset/dataset-90/v2.1.html>; rel="describedby"; type="text/html"`,
+    `<${BASE_URL}/id/dataset/dataset-90/v2.1.linkset.json>; rel="linkset"; type="application/linkset+json"`
+  ];
+  headersConf += `location = /data/dataset-90-v2.1.csv {\n`;
+  headersConf += `    add_header Link '${d90v21Links.join(", ")}' always;\n`;
   headersConf += `}\n\n`;
 
   fs.writeFileSync(path.join(DIST_DIR, "nginx-headers.conf"), headersConf);
