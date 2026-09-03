@@ -20,7 +20,7 @@ Similar resources in the webserver follow standardized, predictable URI patterns
 | **Local DOI Direct Resolution** | `/doi/{doiSuffix}` | `/doi/10.14284/578` | `303 See Other` direct redirect to primary payload file (`/data/...`) | Inherited from Nginx redirect map | **RT-P04** | RFC 9110, RFC 8574 |
 | **Physical Data Payloads** | `/data/{filename}` | `/data/arms-mbon-18s.csv`<br>`/data/arms-mbon-rocrate.zip`<br>`/data/ro-crate-paper.pdf` | `200 OK` (`text/csv`, `application/zip`, `application/pdf`, etc.) | `rel="cite-as"` (to local DOI & PID)<br>`rel="profile"`<br>`rel="describedby"` (to .ttl & .html)<br>`rel="linkset"` | **RT-P04, RT-P01, RT-P03** | RFC 8574, RFC 8288, RO-Crate 1.1 |
 | **Subsetting API Endpoint** | `/api/observations/v1` | `/api/observations/v1` | `200 OK` (`application/json`) Parameterized subsetting query | `rel="api-catalog"`<br>`rel="collection"`<br>`rel="linkset"`<br>`rel="cite-as"` (to parent dataset PID) | **RT-P05, RT-P07** | RFC 9727, RFC 8631, OpenAPI 3.0 |
-| **API Documentation & Spec** | `/api/openapi.json`<br>`/api/docs/` | `/api/openapi.json`<br>`/api/docs/` | `200 OK` OpenAPI schema / Swagger UI interactive explorer | `rel="service-desc"`, `rel="service-doc"` | **RT-P05** | OpenAPI 3.0, Swagger |
+| **API Documentation & Spec** | `/api/observations/v1/openapi.json`<br>`/api/observations/v1/docs/` | `/api/observations/v1/openapi.json`<br>`/api/observations/v1/docs/` | `200 OK` OpenAPI schema / Swagger UI interactive explorer | `rel="service-desc"`, `rel="service-doc"` | **RT-P05** | OpenAPI 3.0, Swagger |
 | **RFC 9727 API Catalog** | `/.well-known/api-catalog` | `/.well-known/api-catalog` | `200 OK` (`application/linkset+json`) Registry of hosted APIs | `rel="api-catalog"` (incoming)<br>`rel="item"` in JSON anchor pointing to API | **RT-P05, RT-P07** | RFC 9727, RFC 8615 |
 | **Semantic Profile Registry** | `/id/profiles`<br>`/id/profile/` | `/id/profiles` | `200 OK` (`text/html`) Catalog of atomic and composite profiles | `rel="type"` (`http://www.w3.org/ns/dx/prof/Profile`) | **RT-P01, RT-P02, RT-P07** | W3C DX-PROF |
 | **Semantic Profile Record** | `/id/profile/{profileId}` | `/id/profile/marine-genomic-dataset-profile` | `200 OK` (.html, .ttl, .jsonld, .linkset.json) Profile declaration + SHACL | `rel="type"` (Profile)<br>`rel="describedby"`<br>`rel="linkset"`<br>`rel="collection"` (to /id/profiles)<br>`rel="http://schema.org/hasPart"` (sub-profiles) | **RT-P01, RT-P02** | W3C DX-PROF, W3C SHACL |
@@ -174,7 +174,7 @@ The section below details the exact `rel="X"` link relations required for each R
 | `<base-api-uri>` | HTTP Header | `rel="cite-as"` | `<dataset-pid-uri>` (`/id/dataset/arms-mbon`) | Cites parent dataset from which observations are derived. |
 | `<base-api-uri>` | HTTP Header | `rel="api-catalog"` | `/.well-known/api-catalog` | Points to RFC 9727 API Catalog. |
 | `<base-api-uri>` | HTTP Header | `rel="linkset"` | `/api/observations/v1.linkset.json` | Dedicated API Linkset Hub. |
-| `<base-api-uri>` (in `.linkset.json`) | JSON Linkset | `"service-desc"` | `/api/openapi.json` | Machine-readable OpenAPI 3.0 schema. |
+| `<base-api-uri>` (in `.linkset.json`) | JSON Linkset | `"service-desc"` | `/api/observations/v1/openapi.json` | Machine-readable OpenAPI 3.0 schema. |
 | `<base-api-uri>` (in `.linkset.json`) | JSON Linkset | `"service-doc"` | `/api/docs/` | Interactive Swagger UI documentation. |
 | `<base-api-uri>` (in `.linkset.json`) | JSON Linkset | `"service-meta"` | `/id/service/marineinfo-api.ttl` | RDF service description. |
 | `/.well-known/api-catalog` | JSON Linkset | `"item"` | `<base-api-uri>` | API Catalog lists the service as a member item. |
@@ -313,7 +313,7 @@ Below is the complete inventory of all entities configured in `generator/resourc
 
 | Service Name | Persistent PID | Subsetting Endpoint | OpenAPI & Documentation | RFC 9727 API Catalog | Serves Dataset | Mapped RT Patterns |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **ARMS-MBON Subsetting API** | `/id/service/marineinfo-api` | `/api/observations/v1`<br>`/api/observations/v1.json`<br>`/api/observations/v1.linkset.json` | `/api/openapi.json`<br>`/api/docs/` | `/.well-known/api-catalog` | `/id/dataset/arms-mbon` | **RT-P05, RT-P07** |
+| **ARMS-MBON Subsetting API** | `/id/service/marineinfo-api` | `/api/observations/v1`<br>`/api/observations/v1/data.json`<br>`/api/observations/v1/linkset.json` | `/api/observations/v1/openapi.json`<br>`/api/observations/v1/docs/` | `/.well-known/api-catalog` | `/id/dataset/arms-mbon` | **RT-P05, RT-P07** |
 
 ---
 

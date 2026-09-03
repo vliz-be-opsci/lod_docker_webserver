@@ -150,8 +150,8 @@ export class DiscoveryCascadeEngine {
     // 3. Subsetting API Signals (RT-P05)
     signals.push(
       { sourceUri: "/.well-known/api-catalog", targetUri: "/api/observations/v1", relation: 'rel="service"', category: "api", label: "ARMS Observations API", sublabel: "Subsetting Endpoint (RT-P05)", specIds: ["RFC_9727", "OPENAPI_3"] },
-      { sourceUri: "/api/observations/v1", targetUri: "/api/openapi.json", relation: 'rel="service-desc"', category: "api", label: "OpenAPI Specification", sublabel: "Schema Definition", specIds: ["OPENAPI_3"] },
-      { sourceUri: "/api/observations/v1", targetUri: "/api/docs/", relation: 'rel="service-doc"', category: "api", label: "Swagger UI Docs", sublabel: "Interactive API Docs", specIds: ["OPENAPI_3"] },
+      { sourceUri: "/api/observations/v1", targetUri: "/api/observations/v1/openapi.json", relation: 'rel="service-desc"', category: "api", label: "OpenAPI Specification", sublabel: "Schema Definition", specIds: ["OPENAPI_3"] },
+      { sourceUri: "/api/observations/v1", targetUri: "/api/observations/v1/docs/", relation: 'rel="service-doc"', category: "api", label: "Swagger UI Docs", sublabel: "Interactive API Docs", specIds: ["OPENAPI_3"] },
       { sourceUri: "/api/observations/v1", targetUri: "/id/dataset/arms-mbon", relation: 'rel="cite-as"', category: "api", label: "Parent Dataset Anchor", sublabel: "RT-P05 Cite-As Anchor", specIds: ["RFC_8574", "RFC_8288"] }
     );
 

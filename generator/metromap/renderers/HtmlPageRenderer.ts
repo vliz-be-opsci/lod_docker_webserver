@@ -388,7 +388,7 @@ export class HtmlPageRenderer {
               <td style="padding: 0.6rem 0.8rem;"><span class="hero-tag" style="background:#f0fdf4; color:#16a34a;">Layer 4</span></td>
               <td style="padding: 0.6rem 0.8rem;"><span class="hero-tag" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; font-size: 0.75rem;">✅ Verified</span></td>
               <td style="padding: 0.6rem 0.8rem;"><code>rel="cite-as"</code>, <code>rel="service-desc"</code></td>
-              <td style="padding: 0.6rem 0.8rem;"><code>dist/api/openapi.json</code>, <code>dist/api/observations/v1.json</code></td>
+              <td style="padding: 0.6rem 0.8rem;"><code>dist/api/observations/v1/openapi.json</code>, <code>dist/api/observations/v1/data.json</code></td>
               <td style="padding: 0.6rem 0.8rem;"><a href="https://github.com/eosc-semantic-interop/if-solutions-proposals/blob/main/proposals/radical-transparency/linkset-usage-patterns/05-subsetting-api.md" target="_blank">05-subsetting-api.md</a></td>
             </tr>
             <tr style="border-bottom: 1px solid var(--panel-border);">
@@ -979,7 +979,7 @@ export class HtmlPageRenderer {
           {
             uri: "/api/observations/v1",
             req: "GET /api/observations/v1 HTTP/1.1",
-            res: "HTTP/1.1 200 OK | Link: </id/dataset/arms-mbon>; rel='cite-as', </api/openapi.json>; rel='service-desc'",
+            res: "HTTP/1.1 200 OK | Link: </id/dataset/arms-mbon>; rel='cite-as', </api/observations/v1/openapi.json>; rel='service-desc'",
             pattern: "RT-P05 Subsetting API",
             reasoning: "API response returns dynamic observations anchored to dataset PID and OpenAPI documentation."
           }

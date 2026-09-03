@@ -26,8 +26,8 @@ Link: </.well-known/api-catalog>; rel="api-catalog"
 - **Linkset Path:** `/.well-known/api-catalog`
 
 ### Data Distributions & Downloads
-- 📥 **OpenAPI: /api/openapi.json (OpenAPI 3.0 specification)**
-- 📥 **Swagger UI: /api/docs/ (Interactive explorer)**
+- 📥 **OpenAPI: /api/observations/v1/openapi.json (OpenAPI 3.0 specification)**
+- 📥 **Swagger UI: /api/observations/v1/docs/ (Interactive explorer)**
 
 ### Machine-Readable RDF Representations
 - 🐢 `/id/service/marineinfo-api.ttl`

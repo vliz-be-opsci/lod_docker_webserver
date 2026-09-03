@@ -67,4 +67,15 @@ describe("MetroGraphBuilder & Discovery Cascade", () => {
     const predTrack = graph.tracks.find(t => t.relationLabel?.includes("predecessor-version"));
     expect(predTrack).toBeDefined();
   });
+
+  it("builds discovery tracks to co-located API OpenAPI spec and docs", () => {
+    const builder = new MetroGraphBuilder(RESOURCES, "http://localhost:8080");
+    const graph = builder.buildGraph("/");
+
+    const descTrack = graph.tracks.find(t => t.relationLabel?.includes("service-desc"));
+    expect(descTrack?.target.uri).toBe("/api/observations/v1/openapi.json");
+
+    const docTrack = graph.tracks.find(t => t.relationLabel?.includes("service-doc"));
+    expect(docTrack?.target.uri).toBe("/api/observations/v1/docs/");
+  });
 });

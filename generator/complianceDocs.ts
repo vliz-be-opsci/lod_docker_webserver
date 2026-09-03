@@ -240,8 +240,8 @@ const AUDIT_DOCS: ComplianceDoc[] = [
       ],
       linkset: "/.well-known/api-catalog",
       distributions: [
-        "OpenAPI: /api/openapi.json (OpenAPI 3.0 specification)",
-        "Swagger UI: /api/docs/ (Interactive explorer)"
+        "OpenAPI: /api/observations/v1/openapi.json (OpenAPI 3.0 specification)",
+        "Swagger UI: /api/observations/v1/docs/ (Interactive explorer)"
       ],
       rdf: ["/id/service/marineinfo-api.ttl", "/id/service/marineinfo-api.jsonld"],
       conneg: "Endpoint discoverable via RFC 9727 and DCAT-3."
