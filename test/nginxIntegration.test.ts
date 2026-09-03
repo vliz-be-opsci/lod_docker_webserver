@@ -92,8 +92,8 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     expect(catalog.linkset[0].item[0].href).toBe("http://localhost:8080/api/observations/v1");
   });
 
-  it("generates valid RT-P05 API Linkset for marineinfo-api at /api/observations/v1.linkset.json", () => {
-    const apiLinksetPath = path.join(distDir, "api", "observations", "v1.linkset.json");
+  it("generates valid RT-P05 API Linkset for marineinfo-api at /api/observations/v1/linkset.json", () => {
+    const apiLinksetPath = path.join(distDir, "api", "observations", "v1", "linkset.json");
     expect(fs.existsSync(apiLinksetPath)).toBe(true);
 
     const apiLinkset = JSON.parse(fs.readFileSync(apiLinksetPath, "utf-8"));
@@ -101,9 +101,15 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     expect(apiLinkset.linkset[0].anchor).toBe("http://localhost:8080/api/observations/v1");
     expect(apiLinkset.linkset[0]["cite-as"][0].href).toBe("http://localhost:8080/id/dataset/arms-mbon");
     expect(apiLinkset.linkset[0]["api-catalog"][0].href).toBe("http://localhost:8080/.well-known/api-catalog");
-    expect(apiLinkset.linkset[0]["service-desc"][0].href).toBe("http://localhost:8080/api/openapi.json");
-    expect(apiLinkset.linkset[0]["service-doc"][0].href).toBe("http://localhost:8080/api/docs/");
-    expect(apiLinkset.linkset[0]["service-meta"][0].href).toBe("http://localhost:8080/id/service/marineinfo-api.ttl");
+    expect(apiLinkset.linkset[0]["service-desc"][0].href).toBe("http://localhost:8080/api/observations/v1/openapi.json");
+    expect(apiLinkset.linkset[0]["service-doc"][0].href).toBe("http://localhost:8080/api/observations/v1/docs/");
+    expect(apiLinkset.linkset[0]["service-meta"][0].href).toBe("http://localhost:8080/api/observations/v1/meta.ttl");
+  });
+
+  it("confirms legacy top-level API paths are removed", () => {
+    expect(fs.existsSync(path.join(distDir, "api", "openapi.json"))).toBe(false);
+    expect(fs.existsSync(path.join(distDir, "api", "docs", "index.html"))).toBe(false);
+    expect(fs.existsSync(path.join(distDir, "api", "observations", "v1.linkset.json"))).toBe(false);
   });
 
   it("generates clean sitemap.xml with ResourceSync rs:ln referencing base /id/ paths, rel=type, and rel=profile", () => {

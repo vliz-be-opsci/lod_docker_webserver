@@ -410,10 +410,12 @@ async function main() {
 
   // Headers for Subsetting API (RT-P05)
   const apiLinks = [
-    `<${BASE_URL}/.well-known/api-catalog>; rel="api-catalog"`,
-    `<${BASE_URL}/api/observations/v1>; rel="collection"`,
-    `<${BASE_URL}/api/observations/v1.linkset.json>; rel="linkset"`,
-    `<${BASE_URL}/id/dataset/arms-mbon>; rel="cite-as"`
+    `<${BASE_URL}/id/dataset/arms-mbon>; rel="cite-as"`,
+    `<${BASE_URL}/api/observations/v1/openapi.json>; rel="service-desc"; type="application/json"`,
+    `<${BASE_URL}/api/observations/v1/docs/>; rel="service-doc"; type="text/html"`,
+    `<${BASE_URL}/api/observations/v1/meta.ttl>; rel="service-meta"; type="text/turtle"`,
+    `<${BASE_URL}/api/observations/v1/linkset.json>; rel="linkset"; type="application/linkset+json"`,
+    `<${BASE_URL}/.well-known/api-catalog>; rel="api-catalog"`
   ];
 
   headersConf += `location = /api/observations/v1 {\n`;
@@ -426,23 +428,25 @@ async function main() {
   headersConf += `    if ($args = "") {\n`;
   headersConf += `        return 307 $scheme://$http_host/api/observations/v1?marker_gene=18S&limit=20;\n`;
   headersConf += `    }\n`;
-  headersConf += `    try_files /api/observations/v1.json /api/observations/v1 =404;\n`;
+  headersConf += `    try_files /api/observations/v1/data.json =404;\n`;
   headersConf += `}\n\n`;
 
-  headersConf += `location = /api/observations/v1.json {\n`;
-  headersConf += `    default_type application/json;\n`;
-  headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
-  headersConf += `    add_header Access-Control-Allow-Methods "GET, OPTIONS" always;\n`;
-  headersConf += `    add_header Access-Control-Allow-Headers "Range, DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Accept, Link" always;\n`;
-  headersConf += `    add_header Access-Control-Expose-Headers "Link, Content-Type, Location" always;\n`;
-  headersConf += `    add_header Link '${apiLinks.join(", ")}' always;\n`;
-  headersConf += `    try_files /api/observations/v1.json /api/observations/v1 =404;\n`;
-  headersConf += `}\n\n`;
-
-  headersConf += `location = /api/observations/v1.linkset.json {\n`;
+  headersConf += `location = /api/observations/v1/linkset.json {\n`;
   headersConf += `    default_type application/linkset+json;\n`;
   headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
   headersConf += `    add_header Link '<${BASE_URL}/api/observations/v1>; rel="describes", <${BASE_URL}/.well-known/api-catalog>; rel="collection"' always;\n`;
+  headersConf += `}\n\n`;
+
+  headersConf += `location = /api/observations/v1/docs/ {\n`;
+  headersConf += `    default_type text/html;\n`;
+  headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/api/observations/v1/openapi.json>; rel="service-desc"; type="application/json", <${BASE_URL}/api/observations/v1>; rel="service"' always;\n`;
+  headersConf += `}\n\n`;
+
+  headersConf += `location = /api/observations/v1/openapi.json {\n`;
+  headersConf += `    default_type application/json;\n`;
+  headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/api/observations/v1>; rel="service", <https://www.openapis.org/#profile>; rel="profile"' always;\n`;
   headersConf += `}\n\n`;
 
   // Headers for Profiles Catalog

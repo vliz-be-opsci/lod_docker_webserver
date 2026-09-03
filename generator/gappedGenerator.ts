@@ -180,12 +180,7 @@ export async function generateGappedSite(distGappedDir: string, baseUrl: string)
   gappedHeadersConf += `location = /api/observations/v1 {\n`;
   gappedHeadersConf += `    default_type application/json;\n`;
   gappedHeadersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
-  gappedHeadersConf += `    try_files /api/observations/v1.json /api/observations/v1 =404;\n`;
-  gappedHeadersConf += `}\n\n`;
-
-  gappedHeadersConf += `location = /api/observations/v1.json {\n`;
-  gappedHeadersConf += `    default_type application/json;\n`;
-  gappedHeadersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
+  gappedHeadersConf += `    try_files /api/observations/v1/data.json =404;\n`;
   gappedHeadersConf += `}\n\n`;
 
   // Profile headers
