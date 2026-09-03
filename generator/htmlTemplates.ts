@@ -858,7 +858,7 @@ export function renderHeader(activeNav: string): string {
       <a href="/" class="${activeNav === 'datasets' ? 'active' : ''}">Datasets</a>
       <a href="/catalog/" class="${activeNav === 'catalog' ? 'active' : ''}">DCAT Catalog</a>
       <a href="/id/profiles" class="${activeNav === 'profiles' ? 'active' : ''}">Semantic Profiles</a>
-      <a href="/api/docs/" class="${activeNav === 'api' ? 'active' : ''}">Subsetting API</a>
+      <a href="/api/observations/v1/docs/" class="${activeNav === 'api' ? 'active' : ''}">Subsetting API</a>
       <a href="/id/publication/ro-crate-paper.html" class="${activeNav === 'publications' ? 'active' : ''}">Publications</a>
       <a href="/map.html" class="${activeNav === 'map' ? 'active' : ''}">Metro Map</a>
       <a href="/audit.html" class="${activeNav === 'audit' ? 'active' : ''}">Gap Audit</a>
@@ -908,7 +908,7 @@ function renderRtBox(resourceId: string, isDataset = false): string {
             <li>📜 <a href="/id/${typeSlug}/${nameSlug}.jsonld">Download JSON-LD</a></li>
             <li>🏷️ <a href="/id/${typeSlug}/${nameSlug}.rdf">Download RDF/XML</a></li>
             <li>🔗 <a href="/id/${typeSlug}/${nameSlug}.linkset.json">RFC 9264 Linkset JSON</a></li>
-            ${isDataset ? `<li>⚡ <a href="/api/docs/">Subsetting API Explorer</a></li>` : ''}
+            ${isDataset ? `<li>⚡ <a href="/api/observations/v1/docs/">Subsetting API Explorer</a></li>` : ''}
             <li>🗺️ <a href="/map.html"><strong>Interactive Protocol Metro Map</strong></a></li>
             <li style="border-top: 1px dashed #99f6e4; margin-top: 0.75rem; padding-top: 0.75rem;">📄 <a href="https://open-science.vliz.be/papers/2026-radical-transparency-position/2026-radical-transparency-position.pdf" target="_blank">RT Position Paper (PDF)</a></li>
             <li>📊 <a href="https://docs.google.com/presentation/d/1-dJbI4bJfCL5JKKE9QHYsqayXkZkOjy1rxcYCuu2ou8/edit" target="_blank">Presentation Slides (Google Docs)</a></li>

@@ -42,6 +42,12 @@ describe("HTML Template Rendering", () => {
     expect(headerHtml).toContain('VLIZ Marine Data Portal');
   });
 
+  it("renders header with link to versioned subsetting API docs", () => {
+    const headerHtml = renderHeader("api");
+    expect(headerHtml).toContain('href="/api/observations/v1/docs/"');
+    expect(headerHtml).not.toContain('href="/api/docs/"');
+  });
+
   it("renders audit page with homepage css styles, shared header, hero, and footer", () => {
     const auditHtml = generateAuditHtml("http://localhost:8080", "http://localhost:8081");
     // Link to shared stylesheet

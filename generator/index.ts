@@ -168,17 +168,24 @@ async function main() {
     fs.writeFileSync(path.join(roCrateHistDir, "history.linkset.json"), JSON.stringify(generateProfileHistoryLinkset(roCrateAbstract, roCrateVersions, BASE_URL), null, 2));
   }
 
-  // 6. Generate OpenAPI Specification & Subsetting API Explorer
-  console.log(`Generating OpenAPI specification & Swagger UI in /api/...`);
-  const openApiSpec = generateOpenApiSpec(BASE_URL);
-  fs.writeFileSync(path.join(DIST_DIR, "api", "openapi.json"), JSON.stringify(openApiSpec, null, 2));
-  fs.writeFileSync(path.join(DIST_DIR, "api", "docs", "index.html"), generateApiDocsHtml(BASE_URL));
-  generateApiSampleResponses(DIST_DIR);
+  // 6. Generate OpenAPI Specification & Subsetting API Explorer in /api/observations/v1/
+  console.log(`Generating OpenAPI specification & Swagger UI in /api/observations/v1/...`);
+  generateApiSampleResponses(DIST_DIR, BASE_URL);
+
+  // Clean up legacy top-level API files if they exist in dist
+  const legacyOpenApi = path.join(DIST_DIR, "api", "openapi.json");
+  if (fs.existsSync(legacyOpenApi)) fs.rmSync(legacyOpenApi);
+  const legacyOpenApiYaml = path.join(DIST_DIR, "api", "openapi.yaml");
+  if (fs.existsSync(legacyOpenApiYaml)) fs.rmSync(legacyOpenApiYaml);
+  const legacyDocs = path.join(DIST_DIR, "api", "docs");
+  if (fs.existsSync(legacyDocs)) fs.rmSync(legacyDocs, { recursive: true, force: true });
+  const legacyLinkset = path.join(DIST_DIR, "api", "observations", "v1.linkset.json");
+  if (fs.existsSync(legacyLinkset)) fs.rmSync(legacyLinkset);
 
   // Generate dedicated RT-P05 API Linkset
   const apiResource = RESOURCES.find(r => r.id === "resource-marineinfo-api")!;
   const apiLinksetJson = generateLinkset(apiResource, BASE_URL);
-  fs.writeFileSync(path.join(DIST_DIR, "api", "observations", "v1.linkset.json"), JSON.stringify(apiLinksetJson, null, 2));
+  fs.writeFileSync(path.join(DIST_DIR, "api", "observations", "v1", "linkset.json"), JSON.stringify(apiLinksetJson, null, 2));
 
   // 7. Generate RFC 9727 API Catalog & Resource Map in /.well-known/
   console.log(`Generating RFC 9727 API Catalog in /.well-known/...`);
@@ -339,7 +346,7 @@ async function main() {
   sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/catalog/</loc>\n    <rs:ln rel="type" href="https://www.w3.org/TR/vocab-dcat/" />\n    <rs:ln rel="alternate" href="${BASE_URL}/catalog/dcat.ttl" type="text/turtle" />\n  </url>\n`;
   sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/.well-known/api-catalog</loc>\n    <rs:ln rel="profile" href="https://www.rfc-editor.org/info/rfc9727" />\n  </url>\n`;
   sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/api/observations/v1</loc>\n    <rs:ln rel="cite-as" href="${BASE_URL}/id/dataset/arms-mbon" />\n  </url>\n`;
-  sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/api/docs/</loc>\n    <rs:ln rel="service-desc" href="${BASE_URL}/api/openapi.json" />\n  </url>\n`;
+  sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/api/observations/v1/docs/</loc>\n    <rs:ln rel="service-desc" href="${BASE_URL}/api/observations/v1/openapi.json" />\n  </url>\n`;
   sitemapCatalog += `</urlset>\n`;
   fs.writeFileSync(path.join(DIST_DIR, "sitemap-catalog.xml"), sitemapCatalog);
 
