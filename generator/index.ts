@@ -449,6 +449,12 @@ async function main() {
   headersConf += `    add_header Link '<${BASE_URL}/api/observations/v1>; rel="service", <https://www.openapis.org/#profile>; rel="profile"' always;\n`;
   headersConf += `}\n\n`;
 
+  headersConf += `location = /api/observations/v1/meta.ttl {\n`;
+  headersConf += `    default_type text/turtle;\n`;
+  headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/api/observations/v1>; rel="describes"' always;\n`;
+  headersConf += `}\n\n`;
+
   // Headers for Profiles Catalog
   headersConf += `location = /id/profiles {\n`;
   headersConf += `    default_type text/html;\n`;
