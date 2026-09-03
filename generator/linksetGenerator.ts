@@ -19,20 +19,20 @@ export function generateApiServiceLinkset(resource: MarineEntity, baseUrl: strin
         ],
         "service-desc": [
           {
-            href: `${baseUrl}/api/openapi.json`,
+            href: `${baseUrl}/api/observations/v1/openapi.json`,
             type: "application/json",
             profile: "https://www.openapis.org/#profile"
           }
         ],
         "service-doc": [
           {
-            href: `${baseUrl}/api/docs/`,
+            href: `${baseUrl}/api/observations/v1/docs/`,
             type: "text/html"
           }
         ],
         "service-meta": [
           {
-            href: `${baseUrl}/id/service/marineinfo-api.ttl`,
+            href: `${baseUrl}/api/observations/v1/meta.ttl`,
             type: "text/turtle"
           }
         ]

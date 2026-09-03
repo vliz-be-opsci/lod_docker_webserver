@@ -68,7 +68,7 @@ export function generateOpenApiSpec(baseUrl: string): any {
                   "description": "RFC 8288 Link headers linking to dataset PID (cite-as), base service (collection), and linkset",
                   "schema": {
                     "type": "string",
-                    "example": "<http://localhost:8080/id/dataset/arms-mbon>; rel=\"cite-as\", <http://localhost:8080/api/openapi.json>; rel=\"service-desc\"; type=\"application/json\", <http://localhost:8080/.well-known/api-catalog>; rel=\"linkset\""
+                    "example": "<http://localhost:8080/id/dataset/arms-mbon>; rel=\"cite-as\", <http://localhost:8080/api/observations/v1/openapi.json>; rel=\"service-desc\"; type=\"application/json\", <http://localhost:8080/api/observations/v1/docs/>; rel=\"service-doc\"; type=\"text/html\", <http://localhost:8080/api/observations/v1/meta.ttl>; rel=\"service-meta\"; type=\"text/turtle\", <http://localhost:8080/api/observations/v1/linkset.json>; rel=\"linkset\"; type=\"application/linkset+json\", <http://localhost:8080/.well-known/api-catalog>; rel=\"api-catalog\""
                   }
                 }
               },
@@ -121,9 +121,9 @@ export function generateApiDocsHtml(baseUrl: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui.min.css">
-  <link rel="describedby" type="application/vnd.oai.openapi+json" href="/api/openapi.json">
-  <link rel="describedby" type="application/vnd.oai.openapi+yaml" href="/api/openapi.yaml">
-  <link rel="service-desc" type="application/vnd.oai.openapi+json" href="/api/openapi.json">
+  <link rel="describedby" type="application/vnd.oai.openapi+json" href="/api/observations/v1/openapi.json">
+  <link rel="describedby" type="application/vnd.oai.openapi+yaml" href="/api/observations/v1/openapi.yaml">
+  <link rel="service-desc" type="application/vnd.oai.openapi+json" href="/api/observations/v1/openapi.json">
   <style>
     .swagger-ui .topbar { display: none; }
     .main-content {
@@ -156,7 +156,7 @@ export function generateApiDocsHtml(baseUrl: string): string {
   <script>
     window.onload = () => {
       window.ui = SwaggerUIBundle({
-        url: '/api/openapi.json',
+        url: '/api/observations/v1/openapi.json',
         dom_id: '#swagger-ui',
         presets: [
           SwaggerUIBundle.presets.apis,
@@ -173,15 +173,32 @@ export function generateApiDocsHtml(baseUrl: string): string {
 </html>`;
 }
 
-export function generateApiSampleResponses(distDir: string): void {
-  const apiObsDir = path.join(distDir, "api", "observations");
-  if (!fs.existsSync(apiObsDir)) {
-    fs.mkdirSync(apiObsDir, { recursive: true });
+export const generateSwaggerHtml = generateApiDocsHtml;
+
+export function generateApiMetaTtl(baseUrl: string): string {
+  return `@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+<${baseUrl}/id/service/marineinfo-api> a dcat:DataService ;
+    dcterms:title "ARMS-MBON Subsetting & Observation API (v1)" ;
+    dcterms:description "Parameterized observation querying service for marine genomics." ;
+    dcat:endpointURL <${baseUrl}/api/observations/v1> ;
+    dcat:endpointDescription <${baseUrl}/api/observations/v1/openapi.json> ;
+    dcat:servesDataset <${baseUrl}/id/dataset/arms-mbon> .
+`;
+}
+
+export function generateApiSampleResponses(distDir: string, baseUrl: string = "http://localhost:8080"): void {
+  const v1Dir = path.join(distDir, "api", "observations", "v1");
+  const v1DocsDir = path.join(v1Dir, "docs");
+
+  if (!fs.existsSync(v1DocsDir)) {
+    fs.mkdirSync(v1DocsDir, { recursive: true });
   }
 
-  // 1. /api/observations/v1 default response (and as v1.json)
+  // 1. Observation data payload
   const observationsResponse = {
-    dataset: "http://localhost:8080/id/dataset/arms-mbon",
+    dataset: `${baseUrl}/id/dataset/arms-mbon`,
     title: "ARMS-MBON data on long-term monitoring of hard-bottom communities: 18S results from 2018-2020",
     cite_as: "https://doi.org/10.14284/578",
     license: "https://creativecommons.org/licenses/by/4.0/",
@@ -205,6 +222,15 @@ export function generateApiSampleResponses(distDir: string): void {
     ]
   };
 
-  fs.writeFileSync(path.join(apiObsDir, "v1"), JSON.stringify(observationsResponse, null, 2));
-  fs.writeFileSync(path.join(apiObsDir, "v1.json"), JSON.stringify(observationsResponse, null, 2));
+  fs.writeFileSync(path.join(v1Dir, "data.json"), JSON.stringify(observationsResponse, null, 2));
+
+  // 2. Co-located OpenAPI Spec
+  const openApiSpec = generateOpenApiSpec(baseUrl);
+  fs.writeFileSync(path.join(v1Dir, "openapi.json"), JSON.stringify(openApiSpec, null, 2));
+
+  // 3. Co-located DCAT-3 metadata
+  fs.writeFileSync(path.join(v1Dir, "meta.ttl"), generateApiMetaTtl(baseUrl));
+
+  // 4. Co-located Swagger UI docs
+  fs.writeFileSync(path.join(v1DocsDir, "index.html"), generateApiDocsHtml(baseUrl));
 }

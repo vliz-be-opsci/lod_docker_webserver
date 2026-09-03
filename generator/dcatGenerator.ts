@@ -52,7 +52,7 @@ export function generateDcatCatalog(resources: MarineEntity[], baseUrl: string):
     writer.addQuad(namedNode(apiUri), namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), namedNode("http://www.w3.org/ns/dcat#DataService"));
     writer.addQuad(namedNode(apiUri), namedNode("http://purl.org/dc/terms/title"), literal(api.title));
     writer.addQuad(namedNode(apiUri), namedNode("http://www.w3.org/ns/dcat#endpointURL"), namedNode(`${baseUrl}/api/observations/v1`));
-    writer.addQuad(namedNode(apiUri), namedNode("http://www.w3.org/ns/dcat#endpointDescription"), namedNode(`${baseUrl}/api/openapi.json`));
+    writer.addQuad(namedNode(apiUri), namedNode("http://www.w3.org/ns/dcat#endpointDescription"), namedNode(`${baseUrl}/api/observations/v1/openapi.json`));
   }
 
   let ttl = "";
@@ -93,7 +93,7 @@ export function generateDcatCatalog(resources: MarineEntity[], baseUrl: string):
       "@type": "dcat:DataService",
       "dcterms:title": api.title,
       "dcat:endpointURL": `${baseUrl}/api/observations/v1`,
-      "dcat:endpointDescription": `${baseUrl}/api/openapi.json`
+      "dcat:endpointDescription": `${baseUrl}/api/observations/v1/openapi.json`
     }))
   };
 
