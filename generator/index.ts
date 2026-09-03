@@ -402,6 +402,7 @@ async function main() {
   headersConf += `location = /.well-known/api-catalog {\n`;
   headersConf += `    default_type application/linkset+json;\n`;
   headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/sitemap-catalog.xml>; rel="alternate"; type="application/xml"' always;\n`;
   headersConf += `}\n\n`;
 
   headersConf += `location = /catalog/ {\n`;
@@ -471,6 +472,7 @@ async function main() {
   // Headers for Profiles
   for (const prof of PROFILES) {
     const profileHtmlLinks = [
+      `<https://www.rfc-editor.org/info/rfc6906>; rel="type"`,
       `<http://www.w3.org/ns/dx/prof/Profile>; rel="type"`,
       `<${BASE_URL}/id/profile/${prof.id}.ttl>; rel="describedby"; type="text/turtle"`,
       `<${BASE_URL}/id/profile/${prof.id}.linkset.json>; rel="linkset"; type="application/linkset+json"`,
@@ -489,6 +491,7 @@ async function main() {
 
     const profileRdfLinks = [
       `<${BASE_URL}/id/profile/${prof.id}>; rel="describes"`,
+      `<https://www.rfc-editor.org/info/rfc6906>; rel="type"`,
       `<http://www.w3.org/ns/dx/prof/Profile>; rel="type"`,
       `<${BASE_URL}/id/profile/${prof.id}.linkset.json>; rel="linkset"; type="application/linkset+json"`
     ];

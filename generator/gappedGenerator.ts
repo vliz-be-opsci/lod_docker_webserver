@@ -186,15 +186,15 @@ export async function generateGappedSite(distGappedDir: string, baseUrl: string)
   // Profile headers
   for (const prof of PROFILES) {
     gappedHeadersConf += `location = /id/profile/${prof.id}.html {\n`;
-    gappedHeadersConf += `    add_header Link '<http://www.w3.org/ns/dx/prof/Profile>; rel="type", <${baseUrl}/id/profile/${prof.id}.linkset.json>; rel="linkset"; type="application/linkset+json"' always;\n`;
+    gappedHeadersConf += `    add_header Link '<https://www.rfc-editor.org/info/rfc6906>; rel="type", <http://www.w3.org/ns/dx/prof/Profile>; rel="type", <${baseUrl}/id/profile/${prof.id}.linkset.json>; rel="linkset"; type="application/linkset+json"' always;\n`;
     gappedHeadersConf += `}\n\n`;
 
     gappedHeadersConf += `location = /id/profile/${prof.id}.ttl {\n`;
-    gappedHeadersConf += `    add_header Link '<${baseUrl}/id/profile/${prof.id}>; rel="describes", <http://www.w3.org/ns/dx/prof/Profile>; rel="type"' always;\n`;
+    gappedHeadersConf += `    add_header Link '<${baseUrl}/id/profile/${prof.id}>; rel="describes", <https://www.rfc-editor.org/info/rfc6906>; rel="type", <http://www.w3.org/ns/dx/prof/Profile>; rel="type"' always;\n`;
     gappedHeadersConf += `}\n\n`;
 
     gappedHeadersConf += `location = /id/profile/${prof.id}.jsonld {\n`;
-    gappedHeadersConf += `    add_header Link '<${baseUrl}/id/profile/${prof.id}>; rel="describes", <http://www.w3.org/ns/dx/prof/Profile>; rel="type"' always;\n`;
+    gappedHeadersConf += `    add_header Link '<${baseUrl}/id/profile/${prof.id}>; rel="describes", <https://www.rfc-editor.org/info/rfc6906>; rel="type", <http://www.w3.org/ns/dx/prof/Profile>; rel="type"' always;\n`;
     gappedHeadersConf += `}\n\n`;
 
     gappedHeadersConf += `location = /id/profile/${prof.id}.linkset.json {\n`;

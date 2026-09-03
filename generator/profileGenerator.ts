@@ -26,7 +26,12 @@ export function generateProfileLinkset(profile: Profile, baseUrl: string) {
   const primaryObj: any = {
     anchor: profileUri,
     type: [
+      { href: "https://www.rfc-editor.org/info/rfc6906", title: "RFC 6906 Profile Link Relation" },
       { href: "http://www.w3.org/ns/dx/prof/Profile", title: "W3C Profiles Vocabulary" }
+    ],
+    describedby: [
+      { href: `${profileUri}.ttl`, type: "text/turtle" },
+      { href: `${profileUri}.jsonld`, type: "application/ld+json" }
     ],
     alternate: [
       { href: `${profileUri}.ttl`, type: "text/turtle; charset=utf-8" },
@@ -200,6 +205,8 @@ export function generateProfileHtml(profile: Profile, baseUrl: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="type" href="https://www.rfc-editor.org/info/rfc6906">
+  <link rel="type" href="http://www.w3.org/ns/dx/prof/Profile">
   <link rel="describedby" type="text/turtle" href="/id/profile/${profile.id}.ttl">
   <link rel="describedby" type="application/ld+json" href="/id/profile/${profile.id}.jsonld">
   <link rel="linkset" type="application/linkset+json" href="/id/profile/${profile.id}.linkset.json">

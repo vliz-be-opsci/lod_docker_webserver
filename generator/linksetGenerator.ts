@@ -239,6 +239,12 @@ export function generateApiCatalog(baseUrl: string): object {
           {
             href: `${baseUrl}/api/observations/v1`
           }
+        ],
+        alternate: [
+          {
+            href: `${baseUrl}/sitemap-catalog.xml`,
+            type: "application/xml"
+          }
         ]
       }
     ]
