@@ -341,21 +341,23 @@ async function main() {
   sitemapProfiles += `</urlset>\n`;
   fs.writeFileSync(path.join(DIST_DIR, "sitemap-profiles.xml"), sitemapProfiles);
 
-  // 3. sitemap-catalog.xml
+  // 3. sitemap-catalog.xml (RT-P07)
   let sitemapCatalog = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n        xmlns:rs="http://www.openarchives.org/rs/terms/">\n`;
+  sitemapCatalog += `  <rs:ln rel="self" href="${BASE_URL}/.well-known/api-catalog" />\n`;
   sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/catalog/</loc>\n    <rs:ln rel="type" href="https://www.w3.org/TR/vocab-dcat/" />\n    <rs:ln rel="alternate" href="${BASE_URL}/catalog/dcat.ttl" type="text/turtle" />\n  </url>\n`;
   sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/.well-known/api-catalog</loc>\n    <rs:ln rel="profile" href="https://www.rfc-editor.org/info/rfc9727" />\n  </url>\n`;
-  sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/api/observations/v1</loc>\n    <rs:ln rel="cite-as" href="${BASE_URL}/id/dataset/arms-mbon" />\n  </url>\n`;
+  sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/api/observations/v1</loc>\n    <rs:ln rel="cite-as" href="${BASE_URL}/id/dataset/arms-mbon" />\n    <rs:ln rel="alternate" href="${BASE_URL}/api/observations/v1/sitemap.xml" type="application/xml" />\n  </url>\n`;
   sitemapCatalog += `  <url>\n    <loc>${BASE_URL}/api/observations/v1/docs/</loc>\n    <rs:ln rel="service-desc" href="${BASE_URL}/api/observations/v1/openapi.json" />\n  </url>\n`;
   sitemapCatalog += `</urlset>\n`;
   fs.writeFileSync(path.join(DIST_DIR, "sitemap-catalog.xml"), sitemapCatalog);
 
-  // 4. sitemap-index.xml
+  // 4. sitemap-index.xml (RT-P07)
   let sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
   sitemapIndex += `  <sitemap>\n    <loc>${BASE_URL}/sitemap.xml</loc>\n  </sitemap>\n`;
   sitemapIndex += `  <sitemap>\n    <loc>${BASE_URL}/sitemap-datasets.xml</loc>\n  </sitemap>\n`;
   sitemapIndex += `  <sitemap>\n    <loc>${BASE_URL}/sitemap-profiles.xml</loc>\n  </sitemap>\n`;
   sitemapIndex += `  <sitemap>\n    <loc>${BASE_URL}/sitemap-catalog.xml</loc>\n  </sitemap>\n`;
+  sitemapIndex += `  <sitemap>\n    <loc>${BASE_URL}/api/observations/v1/sitemap.xml</loc>\n  </sitemap>\n`;
   sitemapIndex += `</sitemapindex>\n`;
   fs.writeFileSync(path.join(DIST_DIR, "sitemap-index.xml"), sitemapIndex);
 

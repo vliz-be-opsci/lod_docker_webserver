@@ -155,6 +155,11 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     expect(indexXml).toContain("<loc>http://localhost:8080/sitemap-datasets.xml</loc>");
     expect(indexXml).toContain("<loc>http://localhost:8080/sitemap-profiles.xml</loc>");
     expect(indexXml).toContain("<loc>http://localhost:8080/sitemap-catalog.xml</loc>");
+    expect(indexXml).toContain("<loc>http://localhost:8080/api/observations/v1/sitemap.xml</loc>");
+
+    const catalogXml = fs.readFileSync(sitemapCatalogPath, "utf-8");
+    expect(catalogXml).toContain('<rs:ln rel="self" href="http://localhost:8080/.well-known/api-catalog" />');
+    expect(catalogXml).toContain('<rs:ln rel="alternate" href="http://localhost:8080/api/observations/v1/sitemap.xml" type="application/xml" />');
 
     const robotsTxt = fs.readFileSync(robotsPath, "utf-8");
     expect(robotsTxt).toContain("Sitemap: http://localhost:8080/sitemap-index.xml");
