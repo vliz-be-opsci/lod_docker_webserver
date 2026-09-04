@@ -43,24 +43,36 @@ describe("RT-P09 Standalone Linksets", () => {
     expect(ls.linkset[0].item[2].version).toBe("2.1");
   });
 
-  it("generates Profile release linkset with rel=http://schema.org/hasPart pointing to abstract profile", () => {
-    const v11 = getProfileById("ro-crate-package-profile-v1.1")!;
+  it("generates Profile release linkset with rel=http://schema.org/hasPart and typed version-history linkset", () => {
+    const v11 = getProfileById("ro-crate-package-profile-1.1.0")!;
     const ls: any = generateProfileLinkset(v11, BASE_URL);
     const anchor = ls.linkset[0];
+    expect(anchor.anchor).toBe(`${BASE_URL}/id/profile/ro-crate-package-profile/1.1.0`);
     expect(anchor["http://schema.org/hasPart"][0].href).toBe(`${BASE_URL}/id/profile/ro-crate-package-profile`);
-    expect(anchor["predecessor-version"][0].href).toBe(`${BASE_URL}/id/profile/ro-crate-package-profile/v1.0`);
-    expect(anchor["version-history"][0].href).toBe(`${BASE_URL}/id/profile/ro-crate-package-profile/history`);
+    expect(anchor["predecessor-version"][0].href).toBe(`${BASE_URL}/id/profile/ro-crate-package-profile/1.0.0`);
+    expect(anchor["version-history"][0].href).toBe(`${BASE_URL}/id/profile/ro-crate-package-profile/history.linkset.json`);
+    expect(anchor["version-history"][0].type).toBe("application/linkset+json");
   });
 
-  it("generates Profile history linkset with item list", () => {
+  it("generates DCAT-3 AP Dataset Profile releases with SemVer", () => {
+    const dcat3 = getProfileById("dcat-dataset-profile-3.0.0")!;
+    const ls: any = generateProfileLinkset(dcat3, BASE_URL);
+    const anchor = ls.linkset[0];
+    expect(anchor.anchor).toBe(`${BASE_URL}/id/profile/dcat-dataset-profile/3.0.0`);
+    expect(anchor["predecessor-version"][0].href).toBe(`${BASE_URL}/id/profile/dcat-dataset-profile/2.0.0`);
+    expect(anchor["version-history"][0].href).toBe(`${BASE_URL}/id/profile/dcat-dataset-profile/history.linkset.json`);
+    expect(anchor["version-history"][0].type).toBe("application/linkset+json");
+  });
+
+  it("generates Profile history linkset with item list and history.linkset.json anchor", () => {
     const absProf = getProfileById("ro-crate-package-profile")!;
     const versions = [
-      getProfileById("ro-crate-package-profile-v1.0")!,
-      getProfileById("ro-crate-package-profile-v1.1")!
+      getProfileById("ro-crate-package-profile-1.0.0")!,
+      getProfileById("ro-crate-package-profile-1.1.0")!
     ];
     const ls: any = generateProfileHistoryLinkset(absProf, versions, BASE_URL);
-    expect(ls.linkset[0].anchor).toBe(`${BASE_URL}/id/profile/ro-crate-package-profile/history`);
+    expect(ls.linkset[0].anchor).toBe(`${BASE_URL}/id/profile/ro-crate-package-profile/history.linkset.json`);
     expect(ls.linkset[0].item).toHaveLength(2);
-    expect(ls.linkset[0].item[0].version).toBe("1.0");
+    expect(ls.linkset[0].item[0].version).toBe("1.0.0");
   });
 });

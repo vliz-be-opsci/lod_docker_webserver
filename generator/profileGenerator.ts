@@ -3,7 +3,7 @@ import { renderHeader, renderFooter } from "./htmlTemplates";
 
 export function getProfileUri(profile: Profile, baseUrl: string): string {
   if (profile.abstractProfileId && profile.version) {
-    return `${baseUrl}/id/profile/${profile.abstractProfileId}/v${profile.version}`;
+    return `${baseUrl}/id/profile/${profile.abstractProfileId}/${profile.version}`;
   }
   return `${baseUrl}/id/profile/${profile.id}`;
 }
@@ -49,7 +49,7 @@ export function generateProfileLinkset(profile: Profile, baseUrl: string) {
     const latestProf = getProfileById(profile.latestVersionId);
     const latestUri = latestProf ? getProfileUri(latestProf, baseUrl) : `${baseUrl}/id/profile/${profile.latestVersionId}`;
     primaryObj["latest-version"] = [{ href: latestUri }];
-    primaryObj["version-history"] = [{ href: `${profileUri}/history` }];
+    primaryObj["version-history"] = [{ href: `${profileUri}/history.linkset.json`, type: "application/linkset+json" }];
   }
   if (profile.abstractProfileId) {
     const absProf = getProfileById(profile.abstractProfileId);
@@ -58,7 +58,7 @@ export function generateProfileLinkset(profile: Profile, baseUrl: string) {
       ...(primaryObj["http://schema.org/hasPart"] || []),
       { href: absUri }
     ];
-    primaryObj["version-history"] = [{ href: `${absUri}/history` }];
+    primaryObj["version-history"] = [{ href: `${absUri}/history.linkset.json`, type: "application/linkset+json" }];
     if (profile.predecessorVersionId) {
       const predProf = getProfileById(profile.predecessorVersionId);
       const predUri = predProf ? getProfileUri(predProf, baseUrl) : `${baseUrl}/id/profile/${profile.predecessorVersionId}`;
@@ -92,13 +92,13 @@ export function generateProfileLinkset(profile: Profile, baseUrl: string) {
 
 export function generateProfileHistoryLinkset(profile: Profile, versions: Profile[], baseUrl: string): object {
   const profileUri = getProfileUri(profile, baseUrl);
-  const historyUri = `${profileUri}/history`;
+  const historyUri = `${profileUri}/history.linkset.json`;
 
   return {
     linkset: [
       {
         anchor: historyUri,
-        collection: [{ href: profileUri }],
+        describes: [{ href: profileUri }],
         item: versions.map(v => ({
           href: getProfileUri(v, baseUrl),
           version: v.version,

@@ -48,6 +48,112 @@ schema:DatasetShape
     ] .`
   },
   {
+    id: "dcat-dataset-profile",
+    title: "W3C DCAT Dataset Application Profile (Abstract)",
+    description: "Standard W3C Data Catalog Vocabulary application profile for open science repositories.",
+    publisher: "W3C Dataset Exchange Working Group",
+    isAtomic: true,
+    conformsToStandard: "https://www.w3.org/TR/vocab-dcat-3/",
+    specUrl: "https://www.w3.org/TR/vocab-dcat-3/",
+    latestVersionId: "dcat-dataset-profile-3.0.0",
+    shaclShape: `@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+dcat:DatasetShape
+    a sh:NodeShape ;
+    sh:targetClass dcat:Dataset ;
+    sh:property [
+        sh:path dcterms:title ;
+        sh:minCount 1 ;
+    ] ;
+    sh:property [
+        sh:path dcat:distribution ;
+        sh:minCount 1 ;
+    ] .`
+  },
+  {
+    id: "dcat-dataset-profile-1.0.0",
+    title: "W3C DCAT-1 AP Dataset Profile",
+    description: "Initial baseline release of the DCAT application profile.",
+    publisher: "W3C Dataset Exchange Working Group",
+    isAtomic: true,
+    version: "1.0.0",
+    releaseDate: "2020-02-04",
+    abstractProfileId: "dcat-dataset-profile",
+    successorVersionId: "dcat-dataset-profile-2.0.0",
+    conformsToStandard: "https://www.w3.org/TR/vocab-dcat-1/",
+    specUrl: "https://www.w3.org/TR/vocab-dcat-1/",
+    shaclShape: `@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+dcat:DatasetShape
+    a sh:NodeShape ;
+    sh:targetClass dcat:Dataset ;
+    sh:property [
+        sh:path dcterms:title ;
+        sh:minCount 1 ;
+    ] .`
+  },
+  {
+    id: "dcat-dataset-profile-2.0.0",
+    title: "W3C DCAT-2 AP Dataset Profile",
+    description: "Harmonized DCAT-2 profile with dataset distributions and service linkages.",
+    publisher: "W3C Dataset Exchange Working Group",
+    isAtomic: true,
+    version: "2.0.0",
+    releaseDate: "2023-01-18",
+    abstractProfileId: "dcat-dataset-profile",
+    predecessorVersionId: "dcat-dataset-profile-1.0.0",
+    successorVersionId: "dcat-dataset-profile-3.0.0",
+    conformsToStandard: "https://www.w3.org/TR/vocab-dcat-2/",
+    specUrl: "https://www.w3.org/TR/vocab-dcat-2/",
+    shaclShape: `@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+dcat:DatasetShape
+    a sh:NodeShape ;
+    sh:targetClass dcat:Dataset ;
+    sh:property [
+        sh:path dcterms:title ;
+        sh:minCount 1 ;
+    ] ;
+    sh:property [
+        sh:path dcat:distribution ;
+        sh:minCount 1 ;
+    ] .`
+  },
+  {
+    id: "dcat-dataset-profile-3.0.0",
+    title: "W3C DCAT-3 AP Dataset Profile",
+    description: "Standard W3C Data Catalog Vocabulary version 3 application profile for open science repositories.",
+    publisher: "W3C Dataset Exchange Working Group",
+    isAtomic: true,
+    version: "3.0.0",
+    releaseDate: "2024-08-20",
+    abstractProfileId: "dcat-dataset-profile",
+    predecessorVersionId: "dcat-dataset-profile-2.0.0",
+    conformsToStandard: "https://www.w3.org/TR/vocab-dcat-3/",
+    specUrl: "https://www.w3.org/TR/vocab-dcat-3/",
+    shaclShape: `@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+dcat:DatasetShape
+    a sh:NodeShape ;
+    sh:targetClass dcat:Dataset ;
+    sh:property [
+        sh:path dcterms:title ;
+        sh:minCount 1 ;
+    ] ;
+    sh:property [
+        sh:path dcat:distribution ;
+        sh:minCount 1 ;
+    ] .`
+  },
+  {
     id: "dcat3-dataset-profile",
     title: "W3C DCAT-3 AP Dataset Profile",
     description: "Standard W3C Data Catalog Vocabulary version 3 application profile for open science repositories.",
@@ -79,7 +185,7 @@ dcat:DatasetShape
     isAtomic: true,
     conformsToStandard: "https://w3id.org/ro/crate",
     specUrl: "https://w3id.org/ro/crate",
-    latestVersionId: "ro-crate-package-profile-v1.1",
+    latestVersionId: "ro-crate-package-profile-1.1.0",
     shaclShape: `@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix ro: <https://w3id.org/ro/crate/> .
 
@@ -92,15 +198,15 @@ ro:CrateShape
     ] .`
   },
   {
-    id: "ro-crate-package-profile-v1.0",
+    id: "ro-crate-package-profile-1.0.0",
     title: "RO-Crate 1.0 Archival Profile",
     description: "Initial release of the RO-Crate archival packaging profile.",
     publisher: "RO-Crate Community / BioCompute",
     isAtomic: true,
-    version: "1.0",
+    version: "1.0.0",
     releaseDate: "2021-04-12",
     abstractProfileId: "ro-crate-package-profile",
-    successorVersionId: "ro-crate-package-profile-v1.1",
+    successorVersionId: "ro-crate-package-profile-1.1.0",
     conformsToStandard: "https://w3id.org/ro/crate/1.0",
     specUrl: "https://w3id.org/ro/crate/1.0",
     shaclShape: `@prefix sh: <http://www.w3.org/ns/shacl#> .
@@ -115,15 +221,15 @@ ro:CrateShape
     ] .`
   },
   {
-    id: "ro-crate-package-profile-v1.1",
+    id: "ro-crate-package-profile-1.1.0",
     title: "RO-Crate 1.1 Research Object Archival Profile",
     description: "Standardized RO-Crate 1.1 profile with strict entity typing and computational workflow metadata support.",
     publisher: "RO-Crate Community / BioCompute",
     isAtomic: true,
-    version: "1.1",
+    version: "1.1.0",
     releaseDate: "2023-10-25",
     abstractProfileId: "ro-crate-package-profile",
-    predecessorVersionId: "ro-crate-package-profile-v1.0",
+    predecessorVersionId: "ro-crate-package-profile-1.0.0",
     conformsToStandard: "https://w3id.org/ro/crate/1.1",
     specUrl: "https://w3id.org/ro/crate/1.1",
     shaclShape: `@prefix sh: <http://www.w3.org/ns/shacl#> .
