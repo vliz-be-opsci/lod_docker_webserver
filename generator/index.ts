@@ -147,10 +147,10 @@ async function main() {
       if (!fs.existsSync(nestedProfDir)) {
         fs.mkdirSync(nestedProfDir, { recursive: true });
       }
-      fs.writeFileSync(path.join(nestedProfDir, `v${profile.version}.html`), generateProfileHtml(profile, BASE_URL));
-      fs.writeFileSync(path.join(nestedProfDir, `v${profile.version}.ttl`), generateProfileTurtle(profile, BASE_URL));
-      fs.writeFileSync(path.join(nestedProfDir, `v${profile.version}.jsonld`), generateProfileJsonLd(profile, BASE_URL));
-      fs.writeFileSync(path.join(nestedProfDir, `v${profile.version}.linkset.json`), JSON.stringify(generateProfileLinkset(profile, BASE_URL), null, 2));
+      fs.writeFileSync(path.join(nestedProfDir, `${profile.version}.html`), generateProfileHtml(profile, BASE_URL));
+      fs.writeFileSync(path.join(nestedProfDir, `${profile.version}.ttl`), generateProfileTurtle(profile, BASE_URL));
+      fs.writeFileSync(path.join(nestedProfDir, `${profile.version}.jsonld`), generateProfileJsonLd(profile, BASE_URL));
+      fs.writeFileSync(path.join(nestedProfDir, `${profile.version}.linkset.json`), JSON.stringify(generateProfileLinkset(profile, BASE_URL), null, 2));
     }
   }
 
@@ -158,14 +158,29 @@ async function main() {
   const roCrateAbstract = getProfileById("ro-crate-package-profile");
   if (roCrateAbstract) {
     const roCrateVersions = [
-      getProfileById("ro-crate-package-profile-v1.0")!,
-      getProfileById("ro-crate-package-profile-v1.1")!
+      getProfileById("ro-crate-package-profile-1.0.0")!,
+      getProfileById("ro-crate-package-profile-1.1.0")!
     ].filter(Boolean);
     const roCrateHistDir = path.join(DIST_DIR, "id", "profile", "ro-crate-package-profile");
     if (!fs.existsSync(roCrateHistDir)) {
       fs.mkdirSync(roCrateHistDir, { recursive: true });
     }
     fs.writeFileSync(path.join(roCrateHistDir, "history.linkset.json"), JSON.stringify(generateProfileHistoryLinkset(roCrateAbstract, roCrateVersions, BASE_URL), null, 2));
+  }
+
+  // Generate DCAT Dataset Profile History Linkset
+  const dcatAbstract = getProfileById("dcat-dataset-profile");
+  if (dcatAbstract) {
+    const dcatVersions = [
+      getProfileById("dcat-dataset-profile-1.0.0")!,
+      getProfileById("dcat-dataset-profile-2.0.0")!,
+      getProfileById("dcat-dataset-profile-3.0.0")!
+    ].filter(Boolean);
+    const dcatHistDir = path.join(DIST_DIR, "id", "profile", "dcat-dataset-profile");
+    if (!fs.existsSync(dcatHistDir)) {
+      fs.mkdirSync(dcatHistDir, { recursive: true });
+    }
+    fs.writeFileSync(path.join(dcatHistDir, "history.linkset.json"), JSON.stringify(generateProfileHistoryLinkset(dcatAbstract, dcatVersions, BASE_URL), null, 2));
   }
 
   // 6. Generate OpenAPI Specification & Subsetting API Explorer in /api/observations/v1/
@@ -662,20 +677,27 @@ async function main() {
   }
 
   // Headers for History endpoints (RT-P09)
+  // Headers for History endpoints (RT-P09)
   headersConf += `location = /id/dataset/dataset-90/history.linkset.json {\n`;
   headersConf += `    default_type application/linkset+json;\n`;
   headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
-  headersConf += `    add_header Link '<${BASE_URL}/id/dataset/dataset-90/history>; rel="describes", <${BASE_URL}/id/dataset/dataset-90>; rel="collection"' always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/id/dataset/dataset-90>; rel="describes"' always;\n`;
   headersConf += `}\n\n`;
 
   headersConf += `location = /id/dataset/dataset-90/history.html {\n`;
-  headersConf += `    add_header Link '<${BASE_URL}/id/dataset/dataset-90/history>; rel="describes", <${BASE_URL}/id/dataset/dataset-90/history.linkset.json>; rel="linkset"; type="application/linkset+json", <${BASE_URL}/id/dataset/dataset-90>; rel="collection"' always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/id/dataset/dataset-90>; rel="describes", <${BASE_URL}/id/dataset/dataset-90/history.linkset.json>; rel="linkset"; type="application/linkset+json"' always;\n`;
   headersConf += `}\n\n`;
 
   headersConf += `location = /id/profile/ro-crate-package-profile/history.linkset.json {\n`;
   headersConf += `    default_type application/linkset+json;\n`;
   headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
-  headersConf += `    add_header Link '<${BASE_URL}/id/profile/ro-crate-package-profile/history>; rel="describes", <${BASE_URL}/id/profile/ro-crate-package-profile>; rel="collection"' always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/id/profile/ro-crate-package-profile>; rel="describes"' always;\n`;
+  headersConf += `}\n\n`;
+
+  headersConf += `location = /id/profile/dcat-dataset-profile/history.linkset.json {\n`;
+  headersConf += `    default_type application/linkset+json;\n`;
+  headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/id/profile/dcat-dataset-profile>; rel="describes"' always;\n`;
   headersConf += `}\n\n`;
 
   // Headers for RT-P04 Direct Data Payloads (No Landing Page Solution)
@@ -743,7 +765,6 @@ async function main() {
   const d90v1Links = [
     `<${BASE_URL}/doi/10.14284/90.v1.0>; rel="cite-as"`,
     `<${BASE_URL}/id/dataset/dataset-90/v1.0>; rel="cite-as"`,
-    `<${BASE_URL}/id/dataset/dataset-90>; rel="collection"`,
     `<${BASE_URL}/id/dataset/dataset-90/v1.0.ttl>; rel="describedby"; type="text/turtle"`,
     `<${BASE_URL}/id/dataset/dataset-90/v1.0.html>; rel="describedby"; type="text/html"`,
     `<${BASE_URL}/id/dataset/dataset-90/v1.0.linkset.json>; rel="linkset"; type="application/linkset+json"`
@@ -755,7 +776,6 @@ async function main() {
   const d90v2Links = [
     `<${BASE_URL}/doi/10.14284/90.v2.0>; rel="cite-as"`,
     `<${BASE_URL}/id/dataset/dataset-90/v2.0>; rel="cite-as"`,
-    `<${BASE_URL}/id/dataset/dataset-90>; rel="collection"`,
     `<${BASE_URL}/id/dataset/dataset-90/v2.0.ttl>; rel="describedby"; type="text/turtle"`,
     `<${BASE_URL}/id/dataset/dataset-90/v2.0.html>; rel="describedby"; type="text/html"`,
     `<${BASE_URL}/id/dataset/dataset-90/v2.0.linkset.json>; rel="linkset"; type="application/linkset+json"`
@@ -767,9 +787,7 @@ async function main() {
   // Behavior A: dataset-90-v2.1.csv is ALSO the authoritative target of Series DOI 10.14284/90
   const d90v21Links = [
     `<${BASE_URL}/doi/10.14284/90.v2.1>; rel="cite-as"`,
-    `<${BASE_URL}/doi/10.14284/90>; rel="collection"`,
     `<${BASE_URL}/id/dataset/dataset-90/v2.1>; rel="cite-as"`,
-    `<${BASE_URL}/id/dataset/dataset-90>; rel="collection"`,
     `<${BASE_URL}/id/dataset/dataset-90/v2.1.ttl>; rel="describedby"; type="text/turtle"`,
     `<${BASE_URL}/id/dataset/dataset-90/v2.1.html>; rel="describedby"; type="text/html"`,
     `<${BASE_URL}/id/dataset/dataset-90/v2.1.linkset.json>; rel="linkset"; type="application/linkset+json"`

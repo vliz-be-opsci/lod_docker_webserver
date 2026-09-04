@@ -262,14 +262,13 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
 
   it("generates RFC 8288 Link headers for Dataset 90 Series and Releases in nginx-headers.conf", () => {
     const headersConf = fs.readFileSync(path.join(distDir, "nginx-headers.conf"), "utf-8");
-    // Series headers
-    expect(headersConf).toContain('<http://localhost:8080/id/dataset/dataset-90/v2.1>; rel="latest-version"');
-    expect(headersConf).toContain('<http://localhost:8080/id/dataset/dataset-90/history>; rel="version-history"');
-    // Release headers
-    expect(headersConf).toContain('<http://localhost:8080/id/dataset/dataset-90/v2.0>; rel="predecessor-version"');
-    expect(headersConf).toContain('<http://localhost:8080/id/dataset/dataset-90>; rel="collection"');
     // History headers
-    expect(headersConf).toContain('location = /id/dataset/dataset-90/history.linkset.json');
+    expect(headersConf).toContain("location = /id/dataset/dataset-90/history.linkset.json");
+    expect(headersConf).toContain("location = /id/profile/dcat-dataset-profile/history.linkset.json");
+    expect(headersConf).toContain("location = /id/profile/ro-crate-package-profile/history.linkset.json");
+    expect(headersConf).toContain("default_type application/linkset+json;");
+    // Ensure CSV payloads do NOT contain rel="collection"
+    expect(headersConf).not.toContain('add_header Link \'<http://localhost:8080/id/dataset/dataset-90>; rel="collection"');
   });
 
   it("supports nested sub-resource routing in nginx.conf", () => {

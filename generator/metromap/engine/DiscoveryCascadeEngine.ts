@@ -127,8 +127,7 @@ export class DiscoveryCascadeEngine {
       if (res.id === "resource-dataset-90") {
         signals.push(
           { sourceUri: pidUri, targetUri: "/id/dataset/dataset-90/v2.1", relation: 'rel="latest-version"', category: "dataset", label: "Dataset 90 Latest Release", sublabel: "Snapshot v2.1", specIds: ["RFC_5829", "RFC_8288"] },
-          { sourceUri: pidUri, targetUri: "/id/dataset/dataset-90/history", relation: 'rel="version-history"', category: "dataset", label: "Dataset 90 History", sublabel: "Release Archive", specIds: ["RFC_5829", "RFC_8288"] },
-          { sourceUri: "/id/dataset/dataset-90/history", targetUri: "/id/dataset/dataset-90/history.linkset.json", relation: 'rel="linkset"', category: "linkset", label: "History Linkset", sublabel: "RFC 9264 History", specIds: ["RFC_9264", "RFC_5829"] },
+          { sourceUri: pidUri, targetUri: "/id/dataset/dataset-90/history.linkset.json", relation: 'rel="version-history"', category: "linkset", label: "Dataset 90 History", sublabel: "Release Archive", specIds: ["RFC_5829", "RFC_9264"] },
           { sourceUri: "/id/dataset/dataset-90/v2.1", targetUri: "/id/dataset/dataset-90/v2.0", relation: 'rel="predecessor-version"', category: "dataset", label: "Snapshot v2.0", sublabel: "Predecessor", specIds: ["RFC_5829"] },
           { sourceUri: "/id/dataset/dataset-90/v2.0", targetUri: "/id/dataset/dataset-90/v1.0", relation: 'rel="predecessor-version"', category: "dataset", label: "Snapshot v1.0", sublabel: "Baseline", specIds: ["RFC_5829"] }
         );

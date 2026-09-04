@@ -62,7 +62,7 @@ describe("MetroGraphBuilder & Discovery Cascade", () => {
 
     const historyTrack = graph.tracks.find(t => t.relationLabel?.includes("version-history"));
     expect(historyTrack).toBeDefined();
-    expect(historyTrack?.target.uri).toBe("/id/dataset/dataset-90/history");
+    expect(historyTrack?.target.uri).toBe("/id/dataset/dataset-90/history.linkset.json");
 
     const predTrack = graph.tracks.find(t => t.relationLabel?.includes("predecessor-version"));
     expect(predTrack).toBeDefined();
