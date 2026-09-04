@@ -49,6 +49,7 @@ export function getNodeStaticFile(uri: string): string {
   if (uri === "/catalog/") return "dist/catalog/index.html";
   if (uri === "/id/profiles") return "dist/id/profiles/index.html";
   if (uri === "/api/observations/v1") return "dist/api/observations/v1/data.json";
+  if (uri === "/api/observations/v1/sitemap.xml") return "dist/api/observations/v1/sitemap.xml";
   if (uri === "/api/observations/v1/openapi.json") return "dist/api/observations/v1/openapi.json";
   if (uri === "/api/observations/v1/docs/") return "dist/api/observations/v1/docs/index.html";
   if (uri.startsWith("/id/") && !uri.includes(".")) return `dist${uri}.html (Conneg 303 Hub)`;

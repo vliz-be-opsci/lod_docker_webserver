@@ -25,7 +25,10 @@ export class DiscoveryCascadeEngine {
       { sourceUri: "/robots.txt", targetUri: "/sitemap-index.xml", relation: "Sitemap:", category: "domain", label: "/robots.txt", sublabel: "Sitemap Index Bootstrap (RT-P07)", specIds: ["RESOURCESYNC", "RFC_8288"] },
       { sourceUri: "/sitemap-index.xml", targetUri: "/sitemap.xml", relation: "sitemap", category: "domain", label: "/sitemap-index.xml", sublabel: "Main Signmap (RT-P06)", specIds: ["RESOURCESYNC"] },
       { sourceUri: "/sitemap-index.xml", targetUri: "/sitemap-catalog.xml", relation: "sitemap", category: "domain", label: "/sitemap-index.xml", sublabel: "Catalog Sub-Sitemap (RT-P07)", specIds: ["RESOURCESYNC", "DCAT_3"] },
-      { sourceUri: "/sitemap-catalog.xml", targetUri: "/.well-known/api-catalog", relation: "rs:ln (profile)", category: "domain", label: "/sitemap-catalog.xml", sublabel: "API Catalog Hub", specIds: ["RESOURCESYNC", "RFC_9727"] },
+      { sourceUri: "/sitemap-index.xml", targetUri: "/api/observations/v1/sitemap.xml", relation: "sitemap", category: "domain", label: "/sitemap-index.xml", sublabel: "API Sub-Sitemap (RT-P07)", specIds: ["RESOURCESYNC"] },
+      { sourceUri: "/api/observations/v1/sitemap.xml", targetUri: "/api/observations/v1", relation: "rs:ln (self)", category: "api", label: "/api/observations/v1/sitemap.xml", sublabel: "Subsetting Endpoint", specIds: ["RESOURCESYNC", "OPENAPI_3"] },
+      { sourceUri: "/sitemap-catalog.xml", targetUri: "/.well-known/api-catalog", relation: "rs:ln (self)", category: "domain", label: "/sitemap-catalog.xml", sublabel: "API Catalog Hub", specIds: ["RESOURCESYNC", "RFC_9727"] },
+      { sourceUri: "/sitemap-catalog.xml", targetUri: "/api/observations/v1/sitemap.xml", relation: "rs:ln (alternate)", category: "domain", label: "/sitemap-catalog.xml", sublabel: "API Sub-Sitemap", specIds: ["RESOURCESYNC"] },
       { sourceUri: "/sitemap-catalog.xml", targetUri: "/catalog/dcat.ttl", relation: "rs:ln (alternate)", category: "domain", label: "/sitemap-catalog.xml", sublabel: "DCAT-3 Catalogue", specIds: ["RESOURCESYNC", "DCAT_3"] },
       { sourceUri: "/sitemap.xml", targetUri: "/id/profiles", relation: "rs:ln (type)", category: "profile", label: "/id/profiles", sublabel: "Semantic Profiles Registry", specIds: ["RESOURCESYNC", "RFC_6906"] }
     );
