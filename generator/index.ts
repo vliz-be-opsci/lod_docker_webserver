@@ -401,24 +401,38 @@ async function main() {
   headersConf += `    add_header Link '<${BASE_URL}/.well-known/api-catalog>; rel="api-catalog", <${BASE_URL}/catalog/dcat.ttl>; rel="describedby"; type="text/turtle"' always;\n`;
   headersConf += `}\n\n`;
 
+  headersConf += `location = /sitemap-catalog.xml {\n`;
+  headersConf += `    default_type application/xml;\n`;
+  headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/.well-known/api-catalog>; rel="self"' always;\n`;
+  headersConf += `}\n\n`;
+
+  headersConf += `location = /api/observations/v1/sitemap.xml {\n`;
+  headersConf += `    default_type application/xml;\n`;
+  headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/api/observations/v1>; rel="self", <${BASE_URL}/.well-known/api-catalog>; rel="api-catalog"' always;\n`;
+  headersConf += `}\n\n`;
+
   headersConf += `location = /.well-known/api-catalog {\n`;
   headersConf += `    default_type application/linkset+json;\n`;
   headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
-  headersConf += `    add_header Link '<${BASE_URL}/sitemap-catalog.xml>; rel="alternate"; type="application/xml"' always;\n`;
+  headersConf += `    add_header Link '<${BASE_URL}/sitemap-catalog.xml>; rel="alternate"; type="application/xml", <${BASE_URL}/api/observations/v1>; rel="item"' always;\n`;
   headersConf += `}\n\n`;
 
   headersConf += `location = /catalog/ {\n`;
   headersConf += `    add_header Link '<https://www.w3.org/TR/vocab-dcat/>; rel="type", <${BASE_URL}/catalog/dcat.ttl>; rel="alternate"; type="text/turtle", <${BASE_URL}/catalog/dcat.jsonld>; rel="alternate"; type="application/ld+json"' always;\n`;
   headersConf += `}\n\n`;
 
-  // Headers for Subsetting API (RT-P05)
+  // Headers for Subsetting API (RT-P05 & RT-P07)
   const apiLinks = [
     `<${BASE_URL}/id/dataset/arms-mbon>; rel="cite-as"`,
     `<${BASE_URL}/api/observations/v1/openapi.json>; rel="service-desc"; type="application/json"`,
     `<${BASE_URL}/api/observations/v1/docs/>; rel="service-doc"; type="text/html"`,
     `<${BASE_URL}/api/observations/v1/meta.ttl>; rel="service-meta"; type="text/turtle"`,
     `<${BASE_URL}/api/observations/v1/linkset.json>; rel="linkset"; type="application/linkset+json"`,
-    `<${BASE_URL}/.well-known/api-catalog>; rel="api-catalog"`
+    `<${BASE_URL}/api/observations/v1/sitemap.xml>; rel="alternate"; type="application/xml"`,
+    `<${BASE_URL}/.well-known/api-catalog>; rel="api-catalog"`,
+    `<${BASE_URL}/api/observations/v1>; rel="collection"`
   ];
 
   headersConf += `location = /api/observations/v1 {\n`;

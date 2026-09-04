@@ -295,5 +295,35 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     expect(primaryAnchor.alternate).toBeDefined();
     expect(primaryAnchor.alternate[0].href).toBe("http://localhost:8080/api/observations/v1/sitemap.xml");
   });
+
+  it("configures RT-P07 RFC 8288 Link headers in nginx-headers.conf for catalog sitemap, API sitemap, and endpoint", () => {
+    const headersConf = fs.readFileSync(path.join(distDir, "nginx-headers.conf"), "utf-8");
+
+    // /sitemap-catalog.xml
+    expect(headersConf).toContain("location = /sitemap-catalog.xml");
+    expect(headersConf).toContain('<http://localhost:8080/.well-known/api-catalog>; rel="self"');
+
+    // /api/observations/v1/sitemap.xml
+    expect(headersConf).toContain("location = /api/observations/v1/sitemap.xml");
+    expect(headersConf).toContain('<http://localhost:8080/api/observations/v1>; rel="self"');
+    expect(headersConf).toContain('<http://localhost:8080/.well-known/api-catalog>; rel="api-catalog"');
+
+    // /.well-known/api-catalog
+    const catBlock = headersConf.substring(
+      headersConf.indexOf("location = /.well-known/api-catalog"),
+      headersConf.indexOf("}", headersConf.indexOf("location = /.well-known/api-catalog"))
+    );
+    expect(catBlock).toContain('<http://localhost:8080/api/observations/v1>; rel="item"');
+    expect(catBlock).toContain('<http://localhost:8080/sitemap-catalog.xml>; rel="alternate"; type="application/xml"');
+
+    // /api/observations/v1
+    const apiBlock = headersConf.substring(
+      headersConf.indexOf("location = /api/observations/v1 {"),
+      headersConf.indexOf("}", headersConf.indexOf("location = /api/observations/v1 {"))
+    );
+    expect(apiBlock).toContain('<http://localhost:8080/api/observations/v1/sitemap.xml>; rel="alternate"; type="application/xml"');
+    expect(apiBlock).toContain('<http://localhost:8080/api/observations/v1>; rel="collection"');
+  });
 });
+
 
