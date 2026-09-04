@@ -39,9 +39,19 @@ describe("Profiles System & RT-P02 Composition", () => {
     ]);
     expect(linkset.linkset[0].describedby).toBeDefined();
     expect(linkset.linkset[0].describedby[0].href).toBe("http://localhost:8080/id/profile/marine-genomic-dataset-profile.ttl");
-    expect(linkset.linkset.some((e: any) => e.anchor.endsWith(".ttl") && e.self[0].href.endsWith("marine-genomic-dataset-profile"))).toBe(true);
+    const ttlAnchor = linkset.linkset.find((e: any) => e.anchor === "http://localhost:8080/id/profile/marine-genomic-dataset-profile.ttl");
+    expect(ttlAnchor).toBeDefined();
+    expect(ttlAnchor.self[0].href).toBe("http://localhost:8080/id/profile/marine-genomic-dataset-profile");
+    expect(ttlAnchor.profile[0].href).toBe("http://www.w3.org/ns/dx/prof/Profile");
     expect(linkset.linkset[0]["http://schema.org/hasPart"]).toBeDefined();
     expect(linkset.linkset[0]["http://schema.org/hasPart"][0].href).toBe("http://localhost:8080/id/profile/schema-dataset-profile");
+  });
+
+  it("generates profile Turtle with canonical URI for versioned profiles", () => {
+    const dcat3 = getProfileById("dcat-dataset-profile-3.0.0")!;
+    const ttl = generateProfileTurtle(dcat3, "http://localhost:8080");
+    expect(ttl).toContain("<http://localhost:8080/id/profile/dcat-dataset-profile/3.0.0> a prof:Profile ;");
+    expect(ttl).toContain("prof:hasArtifact <http://localhost:8080/id/profile/dcat-dataset-profile/3.0.0.ttl> ;");
   });
 
   it("renders profile catalog at /id/profiles and individual profile HTML", () => {

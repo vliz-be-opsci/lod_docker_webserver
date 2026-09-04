@@ -3,6 +3,7 @@ import path from "path";
 import { getEntityTypeSlug, getEntityNameSlug, getEntityHtmlPath } from "./types";
 import { RESOURCES } from "./resources";
 import { PROFILES } from "./profiles";
+import { getProfileUri } from "./profileGenerator";
 
 export async function generateGappedSite(distGappedDir: string, baseUrl: string): Promise<void> {
   const distDir = path.resolve(process.cwd(), "dist");
@@ -185,21 +186,41 @@ export async function generateGappedSite(distGappedDir: string, baseUrl: string)
 
   // Profile headers
   for (const prof of PROFILES) {
+    const profileUri = getProfileUri(prof, baseUrl);
     gappedHeadersConf += `location = /id/profile/${prof.id}.html {\n`;
-    gappedHeadersConf += `    add_header Link '<https://www.rfc-editor.org/info/rfc6906>; rel="type", <http://www.w3.org/ns/dx/prof/Profile>; rel="type", <${baseUrl}/id/profile/${prof.id}.linkset.json>; rel="linkset"; type="application/linkset+json"' always;\n`;
+    gappedHeadersConf += `    add_header Link '<https://www.rfc-editor.org/info/rfc6906>; rel="type", <http://www.w3.org/ns/dx/prof/Profile>; rel="profile", <http://www.w3.org/ns/dx/prof/Profile>; rel="type", <${profileUri}.linkset.json>; rel="linkset"; type="application/linkset+json"' always;\n`;
     gappedHeadersConf += `}\n\n`;
 
     gappedHeadersConf += `location = /id/profile/${prof.id}.ttl {\n`;
-    gappedHeadersConf += `    add_header Link '<${baseUrl}/id/profile/${prof.id}>; rel="describes", <https://www.rfc-editor.org/info/rfc6906>; rel="type", <http://www.w3.org/ns/dx/prof/Profile>; rel="type"' always;\n`;
+    gappedHeadersConf += `    add_header Link '<${profileUri}>; rel="describes", <https://www.rfc-editor.org/info/rfc6906>; rel="type", <http://www.w3.org/ns/dx/prof/Profile>; rel="profile", <http://www.w3.org/ns/dx/prof/Profile>; rel="type"' always;\n`;
     gappedHeadersConf += `}\n\n`;
 
     gappedHeadersConf += `location = /id/profile/${prof.id}.jsonld {\n`;
-    gappedHeadersConf += `    add_header Link '<${baseUrl}/id/profile/${prof.id}>; rel="describes", <https://www.rfc-editor.org/info/rfc6906>; rel="type", <http://www.w3.org/ns/dx/prof/Profile>; rel="type"' always;\n`;
+    gappedHeadersConf += `    add_header Link '<${profileUri}>; rel="describes", <https://www.rfc-editor.org/info/rfc6906>; rel="type", <http://www.w3.org/ns/dx/prof/Profile>; rel="profile", <http://www.w3.org/ns/dx/prof/Profile>; rel="type"' always;\n`;
     gappedHeadersConf += `}\n\n`;
 
     gappedHeadersConf += `location = /id/profile/${prof.id}.linkset.json {\n`;
-    gappedHeadersConf += `    add_header Link '<${baseUrl}/id/profile/${prof.id}>; rel="describes"' always;\n`;
+    gappedHeadersConf += `    add_header Link '<${profileUri}>; rel="describes"' always;\n`;
     gappedHeadersConf += `}\n\n`;
+
+    if (prof.abstractProfileId && prof.version) {
+      const nestedPrefix = `/id/profile/${prof.abstractProfileId}/${prof.version}`;
+      gappedHeadersConf += `location = ${nestedPrefix}.html {\n`;
+      gappedHeadersConf += `    add_header Link '<https://www.rfc-editor.org/info/rfc6906>; rel="type", <http://www.w3.org/ns/dx/prof/Profile>; rel="profile", <http://www.w3.org/ns/dx/prof/Profile>; rel="type", <${profileUri}.linkset.json>; rel="linkset"; type="application/linkset+json"' always;\n`;
+      gappedHeadersConf += `}\n\n`;
+
+      gappedHeadersConf += `location = ${nestedPrefix}.ttl {\n`;
+      gappedHeadersConf += `    add_header Link '<${profileUri}>; rel="describes", <https://www.rfc-editor.org/info/rfc6906>; rel="type", <http://www.w3.org/ns/dx/prof/Profile>; rel="profile", <http://www.w3.org/ns/dx/prof/Profile>; rel="type"' always;\n`;
+      gappedHeadersConf += `}\n\n`;
+
+      gappedHeadersConf += `location = ${nestedPrefix}.jsonld {\n`;
+      gappedHeadersConf += `    add_header Link '<${profileUri}>; rel="describes", <https://www.rfc-editor.org/info/rfc6906>; rel="type", <http://www.w3.org/ns/dx/prof/Profile>; rel="profile", <http://www.w3.org/ns/dx/prof/Profile>; rel="type"' always;\n`;
+      gappedHeadersConf += `}\n\n`;
+
+      gappedHeadersConf += `location = ${nestedPrefix}.linkset.json {\n`;
+      gappedHeadersConf += `    add_header Link '<${profileUri}>; rel="describes"' always;\n`;
+      gappedHeadersConf += `}\n\n`;
+    }
   }
 
   // Entity headers with selective gap exclusions

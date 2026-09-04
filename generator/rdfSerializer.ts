@@ -2,8 +2,14 @@ import { Writer, DataFactory } from "n3";
 import { Resource, getEntityTypeSlug, getEntityNameSlug, getEntityIdPath } from "./types";
 import { RESOURCES, getResourceById } from "./resources";
 import { getProfileById } from "./profiles";
+import { getProfileUri } from "./profileGenerator";
 
 const { namedNode, literal } = DataFactory;
+
+export function resolveProfileUri(profileId: string, baseUri: string): string {
+  const prof = getProfileById(profileId);
+  return prof ? getProfileUri(prof, baseUri) : `${baseUri}/id/profile/${profileId}`;
+}
 
 export const PREFIXES: Record<string, string> = {
   rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
@@ -111,8 +117,9 @@ export function serializeJsonLd(resource: Resource, baseUri: string): string {
     expandedProperties["schema:license"] = resource.licenseUrl;
   }
   if (resource.profileId) {
-    expandedProperties["schema:conformsTo"] = { "@id": `${baseUri}/id/profile/${resource.profileId}` };
-    expandedProperties["dcterms:conformsTo"] = { "@id": `${baseUri}/id/profile/${resource.profileId}` };
+    const profUri = resolveProfileUri(resource.profileId, baseUri);
+    expandedProperties["schema:conformsTo"] = { "@id": profUri };
+    expandedProperties["dcterms:conformsTo"] = { "@id": profUri };
   }
 
   for (const [key, value] of Object.entries(resource.properties)) {
@@ -191,15 +198,16 @@ export function serializeTurtle(resource: Resource, baseUri: string): string {
 
   // Add conformsTo triple if profile attached
   if (resource.profileId) {
+    const profUri = resolveProfileUri(resource.profileId, baseUri);
     writer.addQuad(
       namedNode(resUri),
       namedNode("https://schema.org/conformsTo"),
-      namedNode(`${baseUri}/id/profile/${resource.profileId}`)
+      namedNode(profUri)
     );
     writer.addQuad(
       namedNode(resUri),
       namedNode("http://purl.org/dc/terms/conformsTo"),
-      namedNode(`${baseUri}/id/profile/${resource.profileId}`)
+      namedNode(profUri)
     );
   }
 
@@ -343,8 +351,9 @@ export function serializeRDFXML(resource: Resource, baseUri: string): string {
   xml += `    <schema:description>${escapeXml(resource.description)}</schema:description>\n`;
   xml += `    <dcterms:description>${escapeXml(resource.description)}</dcterms:description>\n`;
   if (resource.profileId) {
-    xml += `    <schema:conformsTo rdf:resource="${escapeXml(`${baseUri}/id/profile/${resource.profileId}`)}"/>\n`;
-    xml += `    <dcterms:conformsTo rdf:resource="${escapeXml(`${baseUri}/id/profile/${resource.profileId}`)}"/>\n`;
+    const profUri = resolveProfileUri(resource.profileId, baseUri);
+    xml += `    <schema:conformsTo rdf:resource="${escapeXml(profUri)}"/>\n`;
+    xml += `    <dcterms:conformsTo rdf:resource="${escapeXml(profUri)}"/>\n`;
   }
 
   for (const [key, value] of Object.entries(resource.properties)) {

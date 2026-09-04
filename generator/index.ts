@@ -13,7 +13,8 @@ import {
   generateProfileTurtle,
   generateProfileJsonLd,
   generateProfileLinkset,
-  generateProfileHistoryLinkset
+  generateProfileHistoryLinkset,
+  getProfileUri
 } from "./profileGenerator";
 import {
   getCssContent,
@@ -288,9 +289,10 @@ async function main() {
   sitemapXml += `  </url>\n`;
 
   for (const prof of PROFILES) {
-    sitemapXml += `  <url>\n    <loc>${BASE_URL}/id/profile/${prof.id}</loc>\n`;
+    const profUri = getProfileUri(prof, BASE_URL);
+    sitemapXml += `  <url>\n    <loc>${profUri}</loc>\n`;
     sitemapXml += `    <rs:ln rel="type" href="http://www.w3.org/ns/dx/prof/Profile" />\n`;
-    sitemapXml += `    <rs:ln rel="linkset" href="${BASE_URL}/id/profile/${prof.id}.linkset.json" type="application/linkset+json" />\n`;
+    sitemapXml += `    <rs:ln rel="linkset" href="${profUri}.linkset.json" type="application/linkset+json" />\n`;
     sitemapXml += `  </url>\n`;
   }
 
@@ -308,7 +310,9 @@ async function main() {
     const nameSlug = getEntityNameSlug(res);
     sitemapXml += `  <url>\n    <loc>${BASE_URL}/id/${typeSlug}/${nameSlug}</loc>\n`;
     if (res.profileId) {
-      sitemapXml += `    <rs:ln rel="profile" href="${BASE_URL}/id/profile/${res.profileId}" />\n`;
+      const prof = getProfileById(res.profileId);
+      const profUri = prof ? getProfileUri(prof, BASE_URL) : `${BASE_URL}/id/profile/${res.profileId}`;
+      sitemapXml += `    <rs:ln rel="profile" href="${profUri}" />\n`;
     }
     sitemapXml += `    <rs:ln rel="linkset" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json" type="application/linkset+json" />\n`;
     
@@ -336,7 +340,9 @@ async function main() {
     const nameSlug = getEntityNameSlug(res);
     sitemapDatasets += `  <url>\n    <loc>${BASE_URL}/id/${typeSlug}/${nameSlug}</loc>\n`;
     if (res.profileId) {
-      sitemapDatasets += `    <rs:ln rel="profile" href="${BASE_URL}/id/profile/${res.profileId}" />\n`;
+      const prof = getProfileById(res.profileId);
+      const profUri = prof ? getProfileUri(prof, BASE_URL) : `${BASE_URL}/id/profile/${res.profileId}`;
+      sitemapDatasets += `    <rs:ln rel="profile" href="${profUri}" />\n`;
     }
     sitemapDatasets += `    <rs:ln rel="linkset" href="${BASE_URL}/id/${typeSlug}/${nameSlug}.linkset.json" type="application/linkset+json" />\n`;
     sitemapDatasets += `  </url>\n`;
@@ -348,9 +354,10 @@ async function main() {
   let sitemapProfiles = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n        xmlns:rs="http://www.openarchives.org/rs/terms/">\n`;
   sitemapProfiles += `  <url>\n    <loc>${BASE_URL}/id/profiles</loc>\n    <rs:ln rel="type" href="http://www.w3.org/ns/dx/prof/Profile" />\n  </url>\n`;
   for (const prof of PROFILES) {
-    sitemapProfiles += `  <url>\n    <loc>${BASE_URL}/id/profile/${prof.id}</loc>\n`;
+    const profUri = getProfileUri(prof, BASE_URL);
+    sitemapProfiles += `  <url>\n    <loc>${profUri}</loc>\n`;
     sitemapProfiles += `    <rs:ln rel="type" href="http://www.w3.org/ns/dx/prof/Profile" />\n`;
-    sitemapProfiles += `    <rs:ln rel="linkset" href="${BASE_URL}/id/profile/${prof.id}.linkset.json" type="application/linkset+json" />\n`;
+    sitemapProfiles += `    <rs:ln rel="linkset" href="${profUri}.linkset.json" type="application/linkset+json" />\n`;
     sitemapProfiles += `  </url>\n`;
   }
   sitemapProfiles += `</urlset>\n`;
@@ -502,17 +509,21 @@ async function main() {
 
   // Headers for Profiles
   for (const prof of PROFILES) {
+    const profileUri = getProfileUri(prof, BASE_URL);
     const profileHtmlLinks = [
       `<https://www.rfc-editor.org/info/rfc6906>; rel="type"`,
+      `<http://www.w3.org/ns/dx/prof/Profile>; rel="profile"`,
       `<http://www.w3.org/ns/dx/prof/Profile>; rel="type"`,
-      `<${BASE_URL}/id/profile/${prof.id}.ttl>; rel="describedby"; type="text/turtle"`,
-      `<${BASE_URL}/id/profile/${prof.id}.linkset.json>; rel="linkset"; type="application/linkset+json"`,
+      `<${profileUri}.ttl>; rel="describedby"; type="text/turtle"`,
+      `<${profileUri}.linkset.json>; rel="linkset"; type="application/linkset+json"`,
       `<${BASE_URL}/id/profiles>; rel="collection"`
     ];
 
     if (prof.composedProfiles && prof.composedProfiles.length > 0) {
       for (const subId of prof.composedProfiles) {
-        profileHtmlLinks.push(`<${BASE_URL}/id/profile/${subId}>; rel="http://schema.org/hasPart"`);
+        const sub = getProfileById(subId);
+        const subUri = sub ? getProfileUri(sub, BASE_URL) : `${BASE_URL}/id/profile/${subId}`;
+        profileHtmlLinks.push(`<${subUri}>; rel="http://schema.org/hasPart"`);
       }
     }
 
@@ -521,10 +532,11 @@ async function main() {
     headersConf += `}\n\n`;
 
     const profileRdfLinks = [
-      `<${BASE_URL}/id/profile/${prof.id}>; rel="describes"`,
+      `<${profileUri}>; rel="describes"`,
       `<https://www.rfc-editor.org/info/rfc6906>; rel="type"`,
+      `<http://www.w3.org/ns/dx/prof/Profile>; rel="profile"`,
       `<http://www.w3.org/ns/dx/prof/Profile>; rel="type"`,
-      `<${BASE_URL}/id/profile/${prof.id}.linkset.json>; rel="linkset"; type="application/linkset+json"`
+      `<${profileUri}.linkset.json>; rel="linkset"; type="application/linkset+json"`
     ];
 
     headersConf += `location = /id/profile/${prof.id}.ttl {\n`;
@@ -536,8 +548,31 @@ async function main() {
     headersConf += `}\n\n`;
 
     headersConf += `location = /id/profile/${prof.id}.linkset.json {\n`;
-    headersConf += `    add_header Link '<${BASE_URL}/id/profile/${prof.id}>; rel="describes"' always;\n`;
+    headersConf += `    types { application/linkset+json json; }\n`;
+    headersConf += `    default_type application/linkset+json;\n`;
+    headersConf += `    add_header Link '<${profileUri}>; rel="describes"' always;\n`;
     headersConf += `}\n\n`;
+
+    if (prof.abstractProfileId && prof.version) {
+      const nestedPrefix = `/id/profile/${prof.abstractProfileId}/${prof.version}`;
+      headersConf += `location = ${nestedPrefix}.html {\n`;
+      headersConf += `    add_header Link '${profileHtmlLinks.join(", ")}' always;\n`;
+      headersConf += `}\n\n`;
+
+      headersConf += `location = ${nestedPrefix}.ttl {\n`;
+      headersConf += `    add_header Link '${profileRdfLinks.join(", ")}' always;\n`;
+      headersConf += `}\n\n`;
+
+      headersConf += `location = ${nestedPrefix}.jsonld {\n`;
+      headersConf += `    add_header Link '${profileRdfLinks.join(", ")}' always;\n`;
+      headersConf += `}\n\n`;
+
+      headersConf += `location = ${nestedPrefix}.linkset.json {\n`;
+      headersConf += `    types { application/linkset+json json; }\n`;
+      headersConf += `    default_type application/linkset+json;\n`;
+      headersConf += `    add_header Link '<${profileUri}>; rel="describes"' always;\n`;
+      headersConf += `}\n\n`;
+    }
   }
 
   // Headers for each entity page and its format representations
@@ -550,7 +585,8 @@ async function main() {
     const localDoiUri = res.doi && res.doi.startsWith("https://doi.org/")
       ? `${BASE_URL}/doi/${res.doi.replace("https://doi.org/", "")}`
       : undefined;
-    const profileUri = res.profileId ? `${BASE_URL}/id/profile/${res.profileId}` : undefined;
+    const prof = res.profileId ? getProfileById(res.profileId) : undefined;
+    const profileUri = prof ? getProfileUri(prof, BASE_URL) : (res.profileId ? `${BASE_URL}/id/profile/${res.profileId}` : undefined);
     const typeUri = res.type === "Dataset" ? "https://schema.org/Dataset" : `https://schema.org/${res.type}`;
 
     const profileHeaders = profileUri ? [`<${profileUri}>; rel="profile"`] : [];
@@ -754,7 +790,7 @@ async function main() {
 
   const sensorCsvLinks = [
     `<${BASE_URL}/id/dataset/north-sea-sensors>; rel="cite-as"`,
-    `<${BASE_URL}/id/profile/sensor-telemetry-profile>; rel="profile"`,
+    `<${BASE_URL}/id/profile/marine-buoy-telemetry-profile>; rel="profile"`,
     `<${BASE_URL}/id/dataset/north-sea-sensors.ttl>; rel="describedby"; type="text/turtle"`,
     `<${BASE_URL}/id/dataset/north-sea-sensors.html>; rel="describedby"; type="text/html"`,
     `<${BASE_URL}/id/dataset/north-sea-sensors.linkset.json>; rel="linkset"; type="application/linkset+json"`

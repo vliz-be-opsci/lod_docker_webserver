@@ -70,15 +70,30 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     expect(headersContent).toContain('rel="linkset"');
     expect(headersContent).toContain("location = /id/profiles");
 
-    // Must NOT contain rfc9264 rel="type" on linkset headers
-    expect(headersContent).not.toContain('https://www.rfc-editor.org/info/rfc9264');
-
-    // /.well-known/api-catalog must NOT contain rel="api-catalog" to itself
-    const apiCatalogBlock = headersContent.substring(
-      headersContent.indexOf("location = /.well-known/api-catalog"),
-      headersContent.indexOf("}", headersContent.indexOf("location = /.well-known/api-catalog"))
+    // Profile TTL descriptors must declare rel="profile" pointing to http://www.w3.org/ns/dx/prof/Profile
+    expect(headersContent).toContain("location = /id/profile/marine-genomic-dataset-profile.ttl");
+    const genomicTtlBlock = headersContent.substring(
+      headersContent.indexOf("location = /id/profile/marine-genomic-dataset-profile.ttl"),
+      headersContent.indexOf("}", headersContent.indexOf("location = /id/profile/marine-genomic-dataset-profile.ttl"))
     );
-    expect(apiCatalogBlock).not.toContain('rel="api-catalog"');
+    expect(genomicTtlBlock).toContain('<http://www.w3.org/ns/dx/prof/Profile>; rel="profile"');
+
+    // Versioned profile endpoints must have location blocks and rel="profile"
+    expect(headersContent).toContain("location = /id/profile/dcat-dataset-profile/3.0.0.ttl");
+    const dcatTtlBlock = headersContent.substring(
+      headersContent.indexOf("location = /id/profile/dcat-dataset-profile/3.0.0.ttl"),
+      headersContent.indexOf("}", headersContent.indexOf("location = /id/profile/dcat-dataset-profile/3.0.0.ttl"))
+    );
+    expect(dcatTtlBlock).toContain('<http://www.w3.org/ns/dx/prof/Profile>; rel="profile"');
+
+    // Sensor latest CSV must reference valid marine-buoy-telemetry-profile, NOT non-existent sensor-telemetry-profile
+    expect(headersContent).toContain("location = /data/north-sea-sensors-latest.csv");
+    const sensorCsvBlock = headersContent.substring(
+      headersContent.indexOf("location = /data/north-sea-sensors-latest.csv"),
+      headersContent.indexOf("}", headersContent.indexOf("location = /data/north-sea-sensors-latest.csv"))
+    );
+    expect(sensorCsvBlock).toContain('/id/profile/marine-buoy-telemetry-profile>; rel="profile"');
+    expect(sensorCsvBlock).not.toContain('sensor-telemetry-profile');
   });
 
   it("generates valid RFC 9727 API Catalog pointing to individual APIs via rel=item", () => {

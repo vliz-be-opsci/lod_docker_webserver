@@ -76,15 +76,18 @@ export function generateProfileLinkset(profile: Profile, baseUrl: string) {
       primaryObj,
       {
         anchor: `${profileUri}.ttl`,
-        self: [{ href: profileUri }]
+        self: [{ href: profileUri }],
+        profile: [{ href: "http://www.w3.org/ns/dx/prof/Profile" }]
       },
       {
         anchor: `${profileUri}.jsonld`,
-        self: [{ href: profileUri }]
+        self: [{ href: profileUri }],
+        profile: [{ href: "http://www.w3.org/ns/dx/prof/Profile" }]
       },
       {
         anchor: `${profileUri}.html`,
-        self: [{ href: profileUri }]
+        self: [{ href: profileUri }],
+        profile: [{ href: "http://www.w3.org/ns/dx/prof/Profile" }]
       }
     ]
   };
@@ -111,7 +114,7 @@ export function generateProfileHistoryLinkset(profile: Profile, versions: Profil
 }
 
 export function generateProfileTurtle(profile: Profile, baseUrl: string): string {
-  const profileUri = `${baseUrl}/id/profile/${profile.id}`;
+  const profileUri = getProfileUri(profile, baseUrl);
   let ttl = `@prefix prof: <http://www.w3.org/ns/dx/prof/> .\n`;
   ttl += `@prefix dcterms: <http://purl.org/dc/terms/> .\n`;
   ttl += `@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n`;
@@ -125,7 +128,10 @@ export function generateProfileTurtle(profile: Profile, baseUrl: string): string
   ttl += `    prof:isProfileOf <${profile.conformsToStandard}> ;\n`;
 
   if (profile.composedProfiles && profile.composedProfiles.length > 0) {
-    const subUris = profile.composedProfiles.map(s => `<${baseUrl}/id/profile/${s}>`).join(",\n        ");
+    const subUris = profile.composedProfiles.map(s => {
+      const sub = getProfileById(s);
+      return `<${sub ? getProfileUri(sub, baseUrl) : `${baseUrl}/id/profile/${s}`}>`;
+    }).join(",\n        ");
     ttl += `    dcterms:hasPart ${subUris} ;\n`;
   }
 
@@ -133,7 +139,7 @@ export function generateProfileTurtle(profile: Profile, baseUrl: string): string
   ttl += `        a prof:ResourceDescriptor ;\n`;
   ttl += `        rdfs:label "SHACL Validation Shape" ;\n`;
   ttl += `        prof:hasRole <http://www.w3.org/ns/dx/prof/role/validation> ;\n`;
-  ttl += `        prof:hasArtifact <${baseUrl}/id/profile/${profile.id}.ttl> ;\n`;
+  ttl += `        prof:hasArtifact <${profileUri}.ttl> ;\n`;
   ttl += `        dcterms:format "text/turtle"\n`;
   ttl += `    ] .\n\n`;
 
@@ -144,7 +150,7 @@ export function generateProfileTurtle(profile: Profile, baseUrl: string): string
 }
 
 export function generateProfileJsonLd(profile: Profile, baseUrl: string): string {
-  const profileUri = `${baseUrl}/id/profile/${profile.id}`;
+  const profileUri = getProfileUri(profile, baseUrl);
   const jsonld: any = {
     "@context": {
       "prof": "http://www.w3.org/ns/dx/prof/",
@@ -161,9 +167,10 @@ export function generateProfileJsonLd(profile: Profile, baseUrl: string): string
   };
 
   if (profile.composedProfiles && profile.composedProfiles.length > 0) {
-    jsonld["dcterms:hasPart"] = profile.composedProfiles.map(s => ({
-      "@id": `${baseUrl}/id/profile/${s}`
-    }));
+    jsonld["dcterms:hasPart"] = profile.composedProfiles.map(s => {
+      const sub = getProfileById(s);
+      return { "@id": sub ? getProfileUri(sub, baseUrl) : `${baseUrl}/id/profile/${s}` };
+    });
   }
 
   return JSON.stringify(jsonld, null, 2);
