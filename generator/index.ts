@@ -677,8 +677,8 @@ async function main() {
   }
 
   // Headers for History endpoints (RT-P09)
-  // Headers for History endpoints (RT-P09)
   headersConf += `location = /id/dataset/dataset-90/history.linkset.json {\n`;
+  headersConf += `    types { application/linkset+json json; }\n`;
   headersConf += `    default_type application/linkset+json;\n`;
   headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
   headersConf += `    add_header Link '<${BASE_URL}/id/dataset/dataset-90>; rel="describes"' always;\n`;
@@ -689,12 +689,14 @@ async function main() {
   headersConf += `}\n\n`;
 
   headersConf += `location = /id/profile/ro-crate-package-profile/history.linkset.json {\n`;
+  headersConf += `    types { application/linkset+json json; }\n`;
   headersConf += `    default_type application/linkset+json;\n`;
   headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
   headersConf += `    add_header Link '<${BASE_URL}/id/profile/ro-crate-package-profile>; rel="describes"' always;\n`;
   headersConf += `}\n\n`;
 
   headersConf += `location = /id/profile/dcat-dataset-profile/history.linkset.json {\n`;
+  headersConf += `    types { application/linkset+json json; }\n`;
   headersConf += `    default_type application/linkset+json;\n`;
   headersConf += `    add_header Access-Control-Allow-Origin * always;\n`;
   headersConf += `    add_header Link '<${BASE_URL}/id/profile/dcat-dataset-profile>; rel="describes"' always;\n`;
