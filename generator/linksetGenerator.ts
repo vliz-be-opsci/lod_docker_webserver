@@ -35,6 +35,12 @@ export function generateApiServiceLinkset(resource: MarineEntity, baseUrl: strin
             href: `${baseUrl}/api/observations/v1/meta.ttl`,
             type: "text/turtle"
           }
+        ],
+        "alternate": [
+          {
+            href: `${baseUrl}/api/observations/v1/sitemap.xml`,
+            type: "application/xml"
+          }
         ]
       }
     ]

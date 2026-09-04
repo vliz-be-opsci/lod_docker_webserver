@@ -233,4 +233,32 @@ export function generateApiSampleResponses(distDir: string, baseUrl: string = "h
 
   // 4. Co-located Swagger UI docs
   fs.writeFileSync(path.join(v1DocsDir, "index.html"), generateApiDocsHtml(baseUrl));
+
+  // 5. Co-located dedicated API sitemap (RT-P07)
+  fs.writeFileSync(path.join(v1Dir, "sitemap.xml"), generateApiSitemapXml(baseUrl));
 }
+
+export function generateApiSitemapXml(baseUrl: string = "http://localhost:8080"): string {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n`;
+  xml += `        xmlns:rs="http://www.openarchives.org/rs/terms/">\n`;
+  xml += `  <rs:ln rel="self" href="${baseUrl}/api/observations/v1" />\n`;
+  xml += `  <url>\n`;
+  xml += `    <loc>${baseUrl}/api/observations/v1?marker_gene=18S&amp;limit=20</loc>\n`;
+  xml += `    <rs:ln rel="collection" href="${baseUrl}/api/observations/v1" />\n`;
+  xml += `    <rs:ln rel="cite-as" href="${baseUrl}/id/dataset/arms-mbon" />\n`;
+  xml += `  </url>\n`;
+  xml += `  <url>\n`;
+  xml += `    <loc>${baseUrl}/api/observations/v1?marker_gene=COI&amp;limit=20</loc>\n`;
+  xml += `    <rs:ln rel="collection" href="${baseUrl}/api/observations/v1" />\n`;
+  xml += `    <rs:ln rel="cite-as" href="${baseUrl}/id/dataset/arms-mbon" />\n`;
+  xml += `  </url>\n`;
+  xml += `  <url>\n`;
+  xml += `    <loc>${baseUrl}/api/observations/v1?marker_gene=ITS&amp;limit=20</loc>\n`;
+  xml += `    <rs:ln rel="collection" href="${baseUrl}/api/observations/v1" />\n`;
+  xml += `    <rs:ln rel="cite-as" href="${baseUrl}/id/dataset/arms-mbon" />\n`;
+  xml += `  </url>\n`;
+  xml += `</urlset>\n`;
+  return xml;
+}
+

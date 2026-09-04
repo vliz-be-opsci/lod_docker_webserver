@@ -271,4 +271,24 @@ describe("Static Generator Output & Nginx Conneg Configuration", () => {
     const nginxConf = fs.readFileSync(path.resolve(process.cwd(), "nginx.conf"), "utf-8");
     expect(nginxConf).toContain("location ~ ^/id/(?<res_type>[^/]+)/(?<res_name>[^/]+)/(?<res_sub>[^/]+)$");
   });
+
+  it("generates dedicated API sub-sitemap in dist/api/observations/v1/sitemap.xml with rel=self and query entry points", () => {
+    const apiSitemapPath = path.join(distDir, "api", "observations", "v1", "sitemap.xml");
+    expect(fs.existsSync(apiSitemapPath)).toBe(true);
+
+    const xml = fs.readFileSync(apiSitemapPath, "utf-8");
+    expect(xml).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"');
+    expect(xml).toContain('xmlns:rs="http://www.openarchives.org/rs/terms/"');
+    expect(xml).toContain('<rs:ln rel="self" href="http://localhost:8080/api/observations/v1" />');
+    expect(xml).toContain('<loc>http://localhost:8080/api/observations/v1?marker_gene=18S&amp;limit=20</loc>');
+    expect(xml).toContain('<rs:ln rel="collection" href="http://localhost:8080/api/observations/v1" />');
+    expect(xml).toContain('<rs:ln rel="cite-as" href="http://localhost:8080/id/dataset/arms-mbon" />');
+
+    const apiLinksetPath = path.join(distDir, "api", "observations", "v1", "linkset.json");
+    const linksetJson = JSON.parse(fs.readFileSync(apiLinksetPath, "utf-8"));
+    const primaryAnchor = linksetJson.linkset[0];
+    expect(primaryAnchor.alternate).toBeDefined();
+    expect(primaryAnchor.alternate[0].href).toBe("http://localhost:8080/api/observations/v1/sitemap.xml");
+  });
 });
+
