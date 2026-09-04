@@ -1,6 +1,8 @@
 import { MarineEntity, getEntityTypeSlug, getEntityNameSlug, getEntityHtmlPath, getEntityIdPath } from "./types";
 import { expandUri } from "./rdfSerializer";
 import { getResourceById } from "./resources";
+import { getProfileById } from "./profiles";
+import { getProfileUri } from "./profileGenerator";
 
 export function generateApiServiceLinkset(resource: MarineEntity, baseUrl: string): object {
   const datasetPid = resource.properties?.["dcat:servesDataset"]
@@ -79,21 +81,28 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
   }
 
   if (resource.profileId) {
+    const prof = getProfileById(resource.profileId);
+    const profUri = prof ? getProfileUri(prof, baseUrl) : `${baseUrl}/id/profile/${resource.profileId}`;
     primaryObj.profile = [
-      { href: `${baseUrl}/id/profile/${resource.profileId}` }
+      { href: profUri }
     ];
   }
 
   // RT-P09 Lifecycle & Release Links
   if (resource.latestVersionId) {
     primaryObj["latest-version"] = [{ href: expandUri(resource.latestVersionId, baseUrl) }];
-    primaryObj["version-history"] = [{ href: `${baseUrl}${idPath}/history` }];
+    primaryObj["version-history"] = [{
+      href: `${baseUrl}${idPath}/history.linkset.json`,
+      type: "application/linkset+json"
+    }];
   }
   if (resource.seriesId) {
     const seriesRes = getResourceById(resource.seriesId);
     const seriesUri = seriesRes ? expandUri(seriesRes.id, baseUrl) : `${baseUrl}/id/${typeSlug}/${getEntityNameSlug(resource.seriesId)}`;
-    primaryObj.collection = [{ href: seriesUri }];
-    primaryObj["version-history"] = [{ href: `${seriesUri}/history` }];
+    primaryObj["version-history"] = [{
+      href: `${seriesUri}/history.linkset.json`,
+      type: "application/linkset+json"
+    }];
     if (resource.predecessorVersionId) {
       primaryObj["predecessor-version"] = [{ href: expandUri(resource.predecessorVersionId, baseUrl) }];
     }
@@ -117,13 +126,20 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
     }));
   }
 
+  let metadataProfileUri: string | undefined;
+  if (resource.metadataProfileId) {
+    const mProf = getProfileById(resource.metadataProfileId);
+    metadataProfileUri = mProf ? getProfileUri(mProf, baseUrl) : `${baseUrl}/id/profile/${resource.metadataProfileId}`;
+  }
+
   return {
     linkset: [
       primaryObj,
       {
         anchor: `${baseUrl}${idPath}.ttl`,
         self: [{ href: resourceUri }],
-        ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {})
+        ...(localDoiUri ? { "cite-as": [{ href: localDoiUri }] } : {}),
+        ...(metadataProfileUri ? { profile: [{ href: metadataProfileUri }] } : {})
       },
       {
         anchor: `${baseUrl}${idPath}.jsonld`,
@@ -147,13 +163,13 @@ export function generateLinkset(resource: MarineEntity, baseUrl: string): object
 export function generateHistoryLinkset(series: MarineEntity, releases: MarineEntity[], baseUrl: string): object {
   const seriesUri = expandUri(series.id, baseUrl);
   const idPath = getEntityIdPath(series);
-  const historyUri = `${baseUrl}${idPath}/history`;
+  const historyUri = `${baseUrl}${idPath}/history.linkset.json`;
 
   return {
     linkset: [
       {
         anchor: historyUri,
-        collection: [{ href: seriesUri }],
+        describes: [{ href: seriesUri }],
         item: releases.map(rel => ({
           href: expandUri(rel.id, baseUrl),
           version: rel.version,

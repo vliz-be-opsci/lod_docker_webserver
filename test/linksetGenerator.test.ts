@@ -13,19 +13,25 @@ describe("RT-P09 Standalone Linksets", () => {
     const anchor = ls.linkset[0];
     expect(anchor.anchor).toBe(`${BASE_URL}/id/dataset/dataset-90`);
     expect(anchor["latest-version"][0].href).toBe(`${BASE_URL}/id/dataset/dataset-90/v2.1`);
-    expect(anchor["version-history"][0].href).toBe(`${BASE_URL}/id/dataset/dataset-90/history`);
+    expect(anchor["version-history"][0].href).toBe(`${BASE_URL}/id/dataset/dataset-90/history.linkset.json`);
+    expect(anchor["version-history"][0].type).toBe("application/linkset+json");
     expect(anchor["cite-as"][0].href).toBe(`${BASE_URL}/doi/10.14284/90`);
   });
 
-  it("generates Release v2.1 linkset with predecessor-version and collection", () => {
+  it("generates Release v2.1 linkset with predecessor-version, profile, and metadata profile", () => {
     const v21 = getResourceById("resource-dataset-90-v2.1")!;
     const ls: any = generateLinkset(v21, BASE_URL);
-    const anchor = ls.linkset[0];
-    expect(anchor.anchor).toBe(`${BASE_URL}/id/dataset/dataset-90/v2.1`);
-    expect(anchor["predecessor-version"][0].href).toBe(`${BASE_URL}/id/dataset/dataset-90/v2.0`);
-    expect(anchor["version-history"][0].href).toBe(`${BASE_URL}/id/dataset/dataset-90/history`);
-    expect(anchor.collection[0].href).toBe(`${BASE_URL}/id/dataset/dataset-90`);
-    expect(anchor["cite-as"][0].href).toBe(`${BASE_URL}/doi/10.14284/90.v2.1`);
+    const primary = ls.linkset[0];
+    expect(primary.anchor).toBe(`${BASE_URL}/id/dataset/dataset-90/v2.1`);
+    expect(primary["predecessor-version"][0].href).toBe(`${BASE_URL}/id/dataset/dataset-90/v2.0`);
+    expect(primary["version-history"][0].href).toBe(`${BASE_URL}/id/dataset/dataset-90/history.linkset.json`);
+    expect(primary["version-history"][0].type).toBe("application/linkset+json");
+    expect(primary.profile[0].href).toBe(`${BASE_URL}/id/profile/dcat-dataset-profile/3.0.0`);
+    expect(primary.collection).toBeUndefined();
+
+    const ttlAnchor = ls.linkset.find((entry: any) => entry.anchor === `${BASE_URL}/id/dataset/dataset-90/v2.1.ttl`);
+    expect(ttlAnchor).toBeDefined();
+    expect(ttlAnchor.profile[0].href).toBe(`${BASE_URL}/id/profile/ro-crate-package-profile/1.1.0`);
   });
 
   it("generates History linkset with item entries containing version, release-date, and title", () => {
@@ -36,7 +42,7 @@ describe("RT-P09 Standalone Linksets", () => {
       getResourceById("resource-dataset-90-v2.1")!
     ];
     const ls: any = generateHistoryLinkset(series, releases, BASE_URL);
-    expect(ls.linkset[0].anchor).toBe(`${BASE_URL}/id/dataset/dataset-90/history`);
+    expect(ls.linkset[0].anchor).toBe(`${BASE_URL}/id/dataset/dataset-90/history.linkset.json`);
     expect(ls.linkset[0].item).toHaveLength(3);
     expect(ls.linkset[0].item[0].version).toBe("1.0");
     expect(ls.linkset[0].item[0]["release-date"]).toBe("2023-06-02");
