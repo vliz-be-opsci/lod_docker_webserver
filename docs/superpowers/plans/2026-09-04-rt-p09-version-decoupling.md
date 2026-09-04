@@ -37,7 +37,7 @@
 - Consumes: `Profile` interface from `generator/profiles.ts`
 - Produces: Decoupled SemVer profile definitions (`dcat-dataset-profile-1.0.0`, `2.0.0`, `3.0.0` and `ro-crate-package-profile-1.0.0`, `1.1.0`) with `history.linkset.json` support.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 In `test/linksetGenerator.test.ts`, update profile tests to assert pure SemVer URIs and typed `version-history` linksets:
 
@@ -64,12 +64,12 @@ it("generates DCAT-3 AP Dataset Profile releases with SemVer", () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bun test test/linksetGenerator.test.ts`  
 Expected: FAIL due to missing profile IDs and legacy URI generation.
 
-- [ ] **Step 3: Update `generator/profiles.ts` and `generator/profileGenerator.ts`**
+- [x] **Step 3: Update `generator/profiles.ts` and `generator/profileGenerator.ts`**
 
 1. In `generator/profiles.ts`:
    - Replace `dcat3-dataset-profile` with conceptual profile `dcat-dataset-profile` (latest: `dcat-dataset-profile-3.0.0`) and releases `dcat-dataset-profile-1.0.0`, `dcat-dataset-profile-2.0.0`, `dcat-dataset-profile-3.0.0`.
@@ -81,12 +81,12 @@ Expected: FAIL due to missing profile IDs and legacy URI generation.
    - Update `generateProfileHistoryLinkset`:
      - Set anchor to `${profileUri}/history.linkset.json`.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `bun test test/linksetGenerator.test.ts`  
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add generator/profiles.ts generator/profileGenerator.ts test/linksetGenerator.test.ts
@@ -106,7 +106,7 @@ git commit -m "feat(profiles): decouple profile versioning with SemVer and histo
 - Consumes: `metadataProfileId` in `MarineEntity`
 - Produces: Updated Dataset 90 entities referencing decoupled profiles and history linkset.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 In `test/resources.test.ts`, assert that Dataset 90 and its releases reference the decoupled profiles and `history.linkset.json`:
 
@@ -130,12 +130,12 @@ it("configures Dataset 90 with decoupled domain profile and history linkset", ()
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bun test test/resources.test.ts`  
 Expected: FAIL due to mismatched profileId and missing metadataProfileId.
 
-- [ ] **Step 3: Update `generator/types.ts` and `generator/resources.ts`**
+- [x] **Step 3: Update `generator/types.ts` and `generator/resources.ts`**
 
 1. In `generator/types.ts`, add `metadataProfileId?: string;` to `Resource`.
 2. In `generator/resources.ts`:
@@ -144,12 +144,12 @@ Expected: FAIL due to mismatched profileId and missing metadataProfileId.
    - Update `resource-dataset-90-v2.0`: `profileId: "dcat-dataset-profile-2.0.0"`, `metadataProfileId: "ro-crate-package-profile-1.0.0"`.
    - Update `resource-dataset-90-v2.1`: `profileId: "dcat-dataset-profile-3.0.0"`, `metadataProfileId: "ro-crate-package-profile-1.1.0"`.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `bun test test/resources.test.ts`  
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add generator/types.ts generator/resources.ts test/resources.test.ts
@@ -168,7 +168,7 @@ git commit -m "feat(resources): decouple profile conformance for Dataset 90 and 
 - Consumes: `generateLinkset` and `generateHistoryLinkset`
 - Produces: RFC 9264 linksets with typed `version-history`, metadata packaging profile anchors, and no deprecated `collection` links.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 In `test/linksetGenerator.test.ts`:
 
@@ -211,12 +211,12 @@ it("generates History linkset with anchor pointing to history.linkset.json", () 
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bun test test/linksetGenerator.test.ts`  
 Expected: FAIL due to legacy history link without type, present `collection` link, and missing metadata profile on `.ttl`.
 
-- [ ] **Step 3: Update `generator/linksetGenerator.ts`**
+- [x] **Step 3: Update `generator/linksetGenerator.ts`**
 
 1. In `generateLinkset`:
    - For `latestVersionId`:
@@ -230,12 +230,12 @@ Expected: FAIL due to legacy history link without type, present `collection` lin
 2. In `generateHistoryLinkset`:
    - Set anchor to `${baseUrl}${idPath}/history.linkset.json`.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `bun test test/linksetGenerator.test.ts`  
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add generator/linksetGenerator.ts test/linksetGenerator.test.ts
@@ -256,19 +256,19 @@ git commit -m "feat(linkset): implement typed history linksets and metadata pack
 - Consumes: Static generator output
 - Produces: Clean `dist/` build, `nginx-headers.conf`, and verified discovery paths.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Update `test/nginxIntegration.test.ts` and `test/htmlAndRdf.test.ts` to expect:
 1. `nginx-headers.conf` without `collection` on `dataset-90-v*.csv` payloads.
 2. `nginx-headers.conf` location blocks for `dcat-dataset-profile/history.linkset.json`.
 3. HTML and RDF representations referencing decoupled profiles.
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bun test test/nginxIntegration.test.ts`  
 Expected: FAIL.
 
-- [ ] **Step 3: Update `generator/index.ts` and `DiscoveryCascadeEngine.ts`**
+- [x] **Step 3: Update `generator/index.ts` and `DiscoveryCascadeEngine.ts`**
 
 1. In `generator/index.ts`:
    - Output versioned profiles to `dist/id/profile/{abstractProfileId}/{version}.*` (without `'v'` prefix).
@@ -280,12 +280,12 @@ Expected: FAIL.
    - Update targetUri of history link to `/id/dataset/dataset-90/history.linkset.json`.
    - Update profile track targets to match the new profile IDs.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `bun test`  
 Expected: All tests pass across the entire test suite.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add generator/index.ts generator/metromap/engine/DiscoveryCascadeEngine.ts test/nginxIntegration.test.ts test/htmlAndRdf.test.ts
@@ -309,12 +309,12 @@ git commit -m "fix(build): align build pipeline, Nginx headers, and discovery en
 Run: `bun run build`  
 Verify that all artifacts, linksets, and Nginx configurations are compiled without errors.
 
-- [ ] **Step 2: Restart Docker container**
+- [x] **Step 2: Restart Docker container**
 
 Run: `docker compose down && docker compose up -d`  
 Wait 3 seconds for Nginx to initialize on port 8080.
 
-- [ ] **Step 3: Empirically verify live endpoints via curl**
+- [x] **Step 3: Empirically verify live endpoints via curl**
 
 Verify:
 ```bash
@@ -339,13 +339,13 @@ curl -I http://localhost:8080/data/dataset-90-v2.1.csv
 # Check: cite-as points to /id/dataset/dataset-90/v2.1; NO rel="collection"
 ```
 
-- [ ] **Step 4: Run full test suite & RT verification**
+- [x] **Step 4: Run full test suite & RT verification**
 
 Run: `bun test`  
 Run: `bash test/rt-test/run-all-tests.sh` (or bun runner)  
 Expected: 100% PASS with zero regressions.
 
-- [ ] **Step 5: Commit & Finalize Walkthrough**
+- [x] **Step 5: Commit & Finalize Walkthrough**
 
 ```bash
 git add dist/
