@@ -236,9 +236,9 @@ export const RESOURCES: MarineEntity[] = [
     spatialCoverage: "Belgian Part of the North Sea (BPNS)",
     publisher: "resource-vliz",
     creators: ["resource-marc", "resource-cedric"],
-    profileId: "dcat3-dataset-profile",
+    profileId: "dcat-dataset-profile",
     latestVersionId: "resource-dataset-90-v2.1",
-    historyUri: "/id/dataset/dataset-90/history",
+    historyUri: "/id/dataset/dataset-90/history.linkset.json",
     properties: {
       "schema:name": "Macrobenthos of the Belgian Part of the North Sea Series",
       "owl:sameAs": "https://marineinfo.org/id/dataset/90"
@@ -273,7 +273,8 @@ export const RESOURCES: MarineEntity[] = [
     spatialCoverage: "Belgian Part of the North Sea",
     publisher: "resource-vliz",
     creators: ["resource-marc", "resource-cedric"],
-    profileId: "dcat3-dataset-profile",
+    profileId: "dcat-dataset-profile-1.0.0",
+    metadataProfileId: "ro-crate-package-profile-1.0.0",
     properties: {
       "schema:name": "Macrobenthos Baseline Snapshot v1.0"
     },
@@ -316,7 +317,8 @@ export const RESOURCES: MarineEntity[] = [
     spatialCoverage: "Belgian Part of the North Sea",
     publisher: "resource-vliz",
     creators: ["resource-marc", "resource-cedric"],
-    profileId: "dcat3-dataset-profile",
+    profileId: "dcat-dataset-profile-2.0.0",
+    metadataProfileId: "ro-crate-package-profile-1.0.0",
     properties: {
       "schema:name": "Macrobenthos Harmonized Snapshot v2.0"
     },
@@ -358,7 +360,8 @@ export const RESOURCES: MarineEntity[] = [
     spatialCoverage: "Belgian Part of the North Sea",
     publisher: "resource-vliz",
     creators: ["resource-marc", "resource-cedric"],
-    profileId: "dcat3-dataset-profile",
+    profileId: "dcat-dataset-profile-3.0.0",
+    metadataProfileId: "ro-crate-package-profile-1.1.0",
     properties: {
       "schema:name": "Macrobenthos Authoritative Snapshot v2.1"
     },

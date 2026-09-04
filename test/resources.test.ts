@@ -29,13 +29,31 @@ describe("RT-P09 Resource & Profile Modeling", () => {
     expect(getEntityIdPath(v21)).toBe("/id/dataset/dataset-90/v2.1");
   });
 
-  it("defines RO-Crate abstract profile and releases", () => {
+  it("defines RO-Crate abstract profile and releases with pure SemVer", () => {
     const absProf = getProfileById("ro-crate-package-profile");
     expect(absProf).toBeDefined();
-    expect(absProf?.latestVersionId).toBe("ro-crate-package-profile-v1.1");
+    expect(absProf?.latestVersionId).toBe("ro-crate-package-profile-1.1.0");
 
-    const v11 = getProfileById("ro-crate-package-profile-v1.1");
-    expect(v11?.predecessorVersionId).toBe("ro-crate-package-profile-v1.0");
+    const v11 = getProfileById("ro-crate-package-profile-1.1.0");
+    expect(v11?.predecessorVersionId).toBe("ro-crate-package-profile-1.0.0");
     expect(v11?.abstractProfileId).toBe("ro-crate-package-profile");
+  });
+
+  it("configures Dataset 90 with decoupled domain profile, metadata packaging profile, and history linkset", () => {
+    const series = getResourceById("resource-dataset-90")!;
+    expect(series.profileId).toBe("dcat-dataset-profile");
+    expect(series.historyUri).toBe("/id/dataset/dataset-90/history.linkset.json");
+
+    const v21 = getResourceById("resource-dataset-90-v2.1")!;
+    expect(v21.profileId).toBe("dcat-dataset-profile-3.0.0");
+    expect(v21.metadataProfileId).toBe("ro-crate-package-profile-1.1.0");
+
+    const v20 = getResourceById("resource-dataset-90-v2.0")!;
+    expect(v20.profileId).toBe("dcat-dataset-profile-2.0.0");
+    expect(v20.metadataProfileId).toBe("ro-crate-package-profile-1.0.0");
+
+    const v10 = getResourceById("resource-dataset-90-v1.0")!;
+    expect(v10.profileId).toBe("dcat-dataset-profile-1.0.0");
+    expect(v10.metadataProfileId).toBe("ro-crate-package-profile-1.0.0");
   });
 });
